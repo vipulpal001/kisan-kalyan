@@ -1,0 +1,31 @@
+services:
+  # Spring Boot 3 Backend
+  - type: web
+    name: kisan-kalyan-backend
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    dockerContext: ./backend
+    plan: free
+    region: oregon
+    healthCheckPath: /api/health
+    envVars:
+      - key: SERVER_PORT
+        value: 8080
+      - key: SPRING_DATASOURCE_URL
+        fromDatabase:
+          name: kisan-kalyan-db
+          property: connectionString
+      - key: SPRING_JPA_HIBERNATE_DDL_AUTO
+        value: update
+      - key: JWT_SECRET
+        generateValue: true
+      - key: JWT_EXPIRATION_MS
+        value: 86400000
+
+databases:
+  # PostgreSQL Database
+  - name: kisan-kalyan-db
+    databaseName: kisan_kalyan_db
+    user: kisan_user
+    plan: free
+    region: oregon

@@ -1,0 +1,74 @@
+services:
+  # ============================================================================
+  # 1. PostgreSQL Database Service
+  # ============================================================================
+  db:
+    image: postgres:16-alpine
+    container_name: kisan_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${DB_NAME:-kisan_kalyan_db}
+      POSTGRES_USER: ${DB_USERNAME:-postgres}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-Bipul0406@161}
+    ports:
+      - "${DB_PORT:-5432}:5432"
+    volumes:
+      - kisan_pg_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USERNAME:-postgres} -d ${DB_NAME:-kisan_kalyan_db}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - kisan_network
+
+  # ============================================================================
+  # 2. Kisan Kalyan Backend (Spring Boot 3 + Java 21)
+  # ============================================================================
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: kisan_backend
+    restart: unless-stopped
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/${DB_NAME:-kisan_kalyan_db}
+      SPRING_DATASOURCE_USERNAME: ${DB_USERNAME:-postgres}
+      SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD:-Bipul0406@161}
+      SPRING_JPA_HIBERNATE_DDL_AUTO: ${SPRING_JPA_HIBERNATE_DDL_AUTO:-update}
+      SERVER_PORT: 8080
+      JWT_SECRET: ${JWT_SECRET:-KisanKalyanAgriculturalSuperSecretKey2026Secure256BitMinimumLength}
+      JWT_EXPIRATION_MS: ${JWT_EXPIRATION_MS:-86400000}
+    ports:
+      - "${BACKEND_PORT:-8080}:8080"
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - kisan_network
+
+  # ============================================================================
+  # 3. Kisan Kalyan Frontend (React 19 + Nginx)
+  # ============================================================================
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        VITE_API_BASE_URL: ${VITE_API_BASE_URL:-/api}
+    container_name: kisan_frontend
+    restart: unless-stopped
+    ports:
+      - "${FRONTEND_PORT:-3000}:80"
+    depends_on:
+      - backend
+    networks:
+      - kisan_network
+
+volumes:
+  kisan_pg_data:
+    driver: local
+
+networks:
+  kisan_network:
+    driver: bridge
