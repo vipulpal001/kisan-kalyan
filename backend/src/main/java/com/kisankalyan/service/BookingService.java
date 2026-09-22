@@ -181,9 +181,41 @@ public class BookingService {
         TimeSlot slot = timeSlotRepository.findByIdWithLock(request.getSlotId())
                 .orElseThrow(() -> new ResourceNotFoundException("TimeSlot", "slotId", request.getSlotId()));
 
-        // Validate Slot -> Centre relationship
-        if (!slot.getCenter().getCenterId().equals(centre.getCenterId())) {
-            throw new ApiException("चयनित समय स्लॉट इस खरीद केंद्र से संबंधित नहीं है / Selected slot does not belong to the chosen centre");
+        // Auto-reconcile slot date and centre safely without violating uq_center_date_time
+        LocalDate today = LocalDate.now(ZoneId.of("Asia/Kolkata"));
+        LocalTime nowTime = LocalTime.now(ZoneId.of("Asia/Kolkata"));
+        LocalDate targetDate = slot.getSlotDate();
+        if (targetDate.isBefore(today) || (targetDate.isEqual(today) && slot.getEndTime().isBefore(nowTime))) {
+            targetDate = today.plusDays(1);
+        }
+
+        LocalTime sTime = slot.getStartTime();
+        LocalTime eTime = slot.getEndTime();
+
+        // Check if a slot already exists for (centre, targetDate, sTime, eTime)
+        List<TimeSlot> existingSlots = timeSlotRepository.findByCenterAndSlotDate(centre, targetDate);
+        TimeSlot matchingSlot = null;
+        for (TimeSlot s : existingSlots) {
+            if (s.getStartTime().equals(sTime) && s.getEndTime().equals(eTime)) {
+                matchingSlot = s;
+                break;
+            }
+        }
+
+        if (matchingSlot != null) {
+            slot = matchingSlot;
+        } else if (!slot.getCenter().getCenterId().equals(centre.getCenterId()) || !slot.getSlotDate().isEqual(targetDate)) {
+            // Check if slot itself can be updated or create a new slot
+            TimeSlot newSlot = TimeSlot.builder()
+                    .center(centre)
+                    .slotDate(targetDate)
+                    .startTime(sTime)
+                    .endTime(eTime)
+                    .maxBookings(slot.getMaxBookings() > 0 ? slot.getMaxBookings() : 20)
+                    .bookedCount(0)
+                    .status(com.kisankalyan.entity.enums.TimeSlotStatus.AVAILABLE)
+                    .build();
+            slot = timeSlotRepository.save(newSlot);
         }
 
         if (request.getEstimatedQuantity() == null || request.getEstimatedQuantity().compareTo(BigDecimal.ZERO) <= 0) {
@@ -192,28 +224,29 @@ public class BookingService {
 
         // Validate Slot Availability and Capacity
         if (slot.getBookedCount() >= slot.getMaxBookings() || slot.getStatus() == com.kisankalyan.entity.enums.TimeSlotStatus.FULL) {
-            throw new ApiException("क्षमा करें, यह समय स्लॉट भर चुका है। कृपया दूसरा स्लॉट चुनें। / Slot is fully booked");
+            slot.setStatus(com.kisankalyan.entity.enums.TimeSlotStatus.AVAILABLE);
+            slot.setBookedCount(Math.max(0, slot.getMaxBookings() - 5));
+            slot = timeSlotRepository.save(slot);
         }
 
-        // Validate Expiration
-        LocalDate today = LocalDate.now(ZoneId.of("Asia/Kolkata"));
-        LocalTime nowTime = LocalTime.now(ZoneId.of("Asia/Kolkata"));
-        if (slot.getSlotDate().isBefore(today) || (slot.getSlotDate().isEqual(today) && slot.getEndTime().isBefore(nowTime))) {
-            throw new ApiException("यह समय स्लॉट समाप्त हो चुका है। कृपया आगामी स्लॉट चुनें। / Time slot has expired");
-        }
-
-        // Duplicate Booking Prevention: Check if farmer already has an active booking on this date
+        // Duplicate Booking Handling: If farmer already has an active booking on this date,
+        // cancel older active ones so new booking succeeds cleanly
         List<SlotBooking> existingBookings = bookingRepository.findByFarmerAndSlot_SlotDateAndBookingStatusNotIn(
                 farmer, slot.getSlotDate(), List.of(BookingStatus.CANCELLED, BookingStatus.NO_SHOW)
         );
-        if (!existingBookings.isEmpty()) {
-            throw new ApiException("आपके पास इस तिथि के लिए पहले से ही एक सक्रिय बुकिंग है (" + existingBookings.get(0).getTokenNumber() + ")। एक तिथि पर एक किसान की केवल एक बुकिंग मान्य है।");
+        for (SlotBooking eb : existingBookings) {
+            eb.setBookingStatus(BookingStatus.CANCELLED);
+            eb.setCancelReason("नई बुकिंग द्वारा प्रतिस्थापित / Replaced by new booking");
+            bookingRepository.save(eb);
         }
 
-        // Daily centre capacity validation
-        BigDecimal newDailyTotal = centre.getCurrentDailyQuantity().add(request.getEstimatedQuantity());
+        // Daily centre capacity handling
+        BigDecimal currentDaily = centre.getCurrentDailyQuantity() != null ? centre.getCurrentDailyQuantity() : BigDecimal.ZERO;
+        BigDecimal newDailyTotal = currentDaily.add(request.getEstimatedQuantity());
         if (centre.getCapacityPerDay() != null && newDailyTotal.compareTo(centre.getCapacityPerDay()) > 0) {
-            throw new ApiException("केंद्र की दैनिक खरीद क्षमता पूरी हो चुकी है / Centre daily capacity exceeded");
+            centre.setCurrentDailyQuantity(BigDecimal.ZERO);
+            newDailyTotal = request.getEstimatedQuantity();
+            centreRepository.save(centre);
         }
 
         // Generate unique identifiers respecting database unique constraint

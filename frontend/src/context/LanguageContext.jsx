@@ -65,5 +65,19 @@ export function LanguageProvider({ children }) {
 }
 
 export function useLanguage() {
-  return useContext(LanguageContext);
+  const context = useContext(LanguageContext);
+  if (!context) {
+    return {
+      lang: 'hi',
+      language: 'hi',
+      setLang: () => {},
+      toggleLanguage: () => {},
+      fontSize: 'normal',
+      setFontSize: () => {},
+      highContrast: false,
+      toggleHighContrast: () => {},
+      t: (key, fallback = '') => fallback || key,
+    };
+  }
+  return context;
 }

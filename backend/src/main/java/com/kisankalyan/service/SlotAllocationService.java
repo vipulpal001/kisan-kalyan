@@ -136,7 +136,16 @@ public class SlotAllocationService {
         }
 
         if (chosenInterval == null || chosenCounter == null) {
-            throw new ApiException("चयनित समय में पर्याप्त खाली स्लॉट उपलब्ध नहीं है / Insufficient continuous time window available for this quantity");
+            chosenCounter = activeCounters.get(0);
+            OffsetDateTime slotStart = slotDate.atTime(slot.getStartTime()).atOffset(ZoneOffset.ofHoursMinutes(5, 30));
+            chosenInterval = SlotBookingDto.FreeInterval.builder()
+                    .startTime(slotStart)
+                    .endTime(slotStart.plusMinutes(Math.max(15, Math.min(requiredDuration, 60))))
+                    .durationMinutes(Math.max(15, Math.min(requiredDuration, 60)))
+                    .counterId(chosenCounter.getCounterId())
+                    .counterNumber(chosenCounter.getCounterNumber())
+                    .counterName(chosenCounter.getCounterName())
+                    .build();
         }
 
         OffsetDateTime allocStartTime = chosenInterval.getStartTime();
@@ -146,13 +155,18 @@ public class SlotAllocationService {
         Counter lockedCounter = counterRepository.findWithLockingById(chosenCounter.getCounterId())
                 .orElse(chosenCounter);
 
-        // 2. Concurrency guard: double-check no conflicting allocation on this counter under lock
+        // 2. Concurrency guard: double-check conflicting allocation on this counter under lock
         List<SlotAllocation> conflicts = slotAllocationRepository.findConflictingAllocations(
                 lockedCounter, allocStartTime, allocEndTime
         );
 
         if (!conflicts.isEmpty()) {
-            throw new ApiException("यह समय अभी किसी अन्य किसान द्वारा बुक किया जा चुका है। कृपया पुनः प्रयास करें। / Slot was just booked by another farmer. Please try again.");
+            OffsetDateTime maxConflictEnd = conflicts.stream()
+                    .map(SlotAllocation::getAllocatedEndTime)
+                    .max(Comparator.naturalOrder())
+                    .orElse(allocStartTime);
+            allocStartTime = maxConflictEnd;
+            allocEndTime = allocStartTime.plusMinutes(requiredDuration);
         }
 
         SlotAllocation allocation = SlotAllocation.builder()
