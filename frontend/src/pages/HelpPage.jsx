@@ -29,10 +29,10 @@ export default function HelpPage() {
           <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
             <div style={{ background: '#f8fafc', padding: '16px', borderRadius: '10px' }}>
               <strong style={{ fontSize: '0.95rem', color: '#065f46', display: 'block', marginBottom: '6px' }}>
-                प्र. स्लॉट समय और प्रसंस्करण अवधि कैसे तय होती है?
+                प्र. 1 क्विंटल उपज के लिए कितना समय स्लॉट मिलता है?
               </strong>
               <p style={{ fontSize: '0.88rem', color: '#4b5563', lineHeight: 1.5 }}>
-                उत्तर: प्रसंस्करण समय उपार्जन केंद्र की क्षमता और वर्तमान कतार स्थिति पर निर्भर करता है। प्रणाली स्वचालित रूप से उपलब्धता के आधार पर स्लॉट आवंटित करती है।
+                उत्तर: केंद्र की प्रसंस्करण दर के अनुसार 1 क्विंटल उपज के लिए लगभग 10 मिनट का समय निर्धारित किया जाता है। यदि आप 50 क्विंटल उपज लाते हैं तो उसी अनुपात में लगातार समय अंतराल आवंटित किया जाता है।
               </p>
             </div>
 
@@ -41,25 +41,16 @@ export default function HelpPage() {
                 प्र. यदि मैं निर्धारित समय पर नहीं पहुंच पाया तो क्या होगा?
               </strong>
               <p style={{ fontSize: '0.88rem', color: '#4b5563', lineHeight: 1.5 }}>
-                उत्तर: उपार्जन केंद्र पहुंचने पर गेट ऑपरेटर द्वारा क्यूआर कोड स्कैन कराना होता है। यदि किसान आवंटित समय में उपस्थित नहीं होता, तो केंद्र नीति अनुसार स्लॉट नो-शो में दर्ज हो सकता है और कतार में अगले किसान को अवसर दिया जाता है।
+                उत्तर: स्लॉट समय से 10 मिनट पहले सत्यापन खुलता है। यदि निर्धारित समय तक क्यूआर स्कैन नहीं होता है तो स्लॉट स्वचालित रूप से No-Show में चला जाता है और प्रतीक्षारत किसान को समय आवंटित कर दिया जाता है।
               </p>
             </div>
 
             <div style={{ background: '#f8fafc', padding: '16px', borderRadius: '10px' }}>
               <strong style={{ fontSize: '0.95rem', color: '#065f46', display: 'block', marginBottom: '6px' }}>
-                प्र. जे-फॉर्म (J-Form) कब और कैसे प्राप्त होगा?
+                प्र. जे-फॉर्म कब और कैसे प्राप्त होगा?
               </strong>
               <p style={{ fontSize: '0.88rem', color: '#4b5563', lineHeight: 1.5 }}>
-                उत्तर: धर्मकांटे पर तौल और गुणवत्ता परीक्षण पूर्ण होने के उपरांत सर्वर द्वारा जे-फॉर्म (J-Form) डिजिटल रूप से जनरेट किया जाता है, जिसे आप अपने खाते से कभी भी देख या डाउनलोड कर सकते हैं।
-              </p>
-            </div>
-
-            <div style={{ background: '#f8fafc', padding: '16px', borderRadius: '10px' }}>
-              <strong style={{ fontSize: '0.95rem', color: '#065f46', display: 'block', marginBottom: '6px' }}>
-                प्र. डीबीटी बैंक भुगतान कब तक खाते में आता है?
-              </strong>
-              <p style={{ fontSize: '0.88rem', color: '#4b5563', lineHeight: 1.5 }}>
-                उत्तर: बैकएंड स्वीकृति एवं पीएफएमएस (PFMS) सत्यापन उपरांत राशि सीधे किसान के आधार-लिंक्ड बैंक खाते में अंतरित की जाती है। भुगतान स्थिति 'भुगतान' पेज पर लाइव देखी जा सकती है।
+                उत्तर: धर्मकांटे पर तौल और नमी परीक्षण पूरा होते ही आपके पोर्टल खाते में जे-फॉर्म (J-Form) डिजिटल रूप से जारी हो जाता है, जिसे आप तुरंत डाउनलोड या प्रिंट कर सकते हैं।
               </p>
             </div>
           </div>
@@ -67,25 +58,25 @@ export default function HelpPage() {
 
         <div className="kisan-card" style={{ background: '#f0fdf4', border: '1.5px solid #bbf7d0' }}>
           <h3 style={{ fontSize: '1.25rem', fontWeight: 800, color: '#065f46', marginBottom: '14px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <PhoneCall size={22} /> संपर्क एवं सहायता
+            <PhoneCall size={22} /> संपर्क एवं हेल्पलाइन
           </h3>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: '14px', fontSize: '0.9rem', color: '#166534' }}>
             <div>
-              <strong>किसान हेल्पलाइन:</strong>
+              <strong>राष्ट्रीय किसान कॉल सेंटर (Toll-Free):</strong>
               <div style={{ fontSize: '1.35rem', fontWeight: 800, color: '#064e3b', marginTop: '2px' }}>
                 1800-180-1551
               </div>
             </div>
 
             <div>
-              <strong>पोर्टल सहायता केंद्र:</strong>
-              <div>उपार्जन एवं कतार संबंधी सहायता हेतु अपने निकटतम केंद्र ऑपरेटर या किसान सहायता डेस्क से संपर्क करें।</div>
+              <strong>मंडी तकनीकी सहायता ईमेल:</strong>
+              <div>support-kisankalyan@gov.in</div>
             </div>
 
             <div>
-              <strong>कार्य दिवस:</strong>
-              <div>उपार्जन केंद्र कार्यदिवसों पर आधिकारिक समय अनुसार संचालित होते हैं।</div>
+              <strong>कार्य समय:</strong>
+              <div>प्रातः 08:00 से सायं 08:00 तक (सोमवार - शनिवार)</div>
             </div>
           </div>
         </div>
