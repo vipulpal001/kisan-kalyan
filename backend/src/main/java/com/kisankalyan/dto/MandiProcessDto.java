@@ -668,193 +668,124 @@ public class MandiProcessDto {
         private BigDecimal ratePerQuintal;
         private BigDecimal totalAmount;
         private String documentPath;
+        private String authorizedSignatoryName;
+        private String signatureData;
 
         public JFormResponse() {}
 
         public JFormResponse(Long jFormId, Long entryId, String jFormNumber, LocalDate issueDate, JFormStatus status, String farmerName, String farmerVillage, String farmerDistrict, String centerName, String produceName, BigDecimal quantityQuintals, BigDecimal ratePerQuintal, BigDecimal totalAmount, String documentPath) {
-
             this.jFormId = jFormId;
-
             this.entryId = entryId;
-
             this.jFormNumber = jFormNumber;
-
             this.issueDate = issueDate;
-
             this.status = status;
-
             this.farmerName = farmerName;
-
             this.farmerVillage = farmerVillage;
-
             this.farmerDistrict = farmerDistrict;
-
             this.centerName = centerName;
-
             this.produceName = produceName;
-
             this.quantityQuintals = quantityQuintals;
-
             this.ratePerQuintal = ratePerQuintal;
-
             this.totalAmount = totalAmount;
-
             this.documentPath = documentPath;
+        }
 
+        public JFormResponse(Long jFormId, Long entryId, String jFormNumber, LocalDate issueDate, JFormStatus status, String farmerName, String farmerVillage, String farmerDistrict, String centerName, String produceName, BigDecimal quantityQuintals, BigDecimal ratePerQuintal, BigDecimal totalAmount, String documentPath, String authorizedSignatoryName, String signatureData) {
+            this(jFormId, entryId, jFormNumber, issueDate, status, farmerName, farmerVillage, farmerDistrict, centerName, produceName, quantityQuintals, ratePerQuintal, totalAmount, documentPath);
+            this.authorizedSignatoryName = authorizedSignatoryName;
+            this.signatureData = signatureData;
         }
 
         public Long getJFormId() { return this.jFormId; }
-
         public void setJFormId(Long jFormId) { this.jFormId = jFormId; }
-
         public Long getEntryId() { return this.entryId; }
-
         public void setEntryId(Long entryId) { this.entryId = entryId; }
-
         public String getJFormNumber() { return this.jFormNumber; }
-
         public void setJFormNumber(String jFormNumber) { this.jFormNumber = jFormNumber; }
-
         public LocalDate getIssueDate() { return this.issueDate; }
-
         public void setIssueDate(LocalDate issueDate) { this.issueDate = issueDate; }
-
         public JFormStatus getStatus() { return this.status; }
-
         public void setStatus(JFormStatus status) { this.status = status; }
-
         public String getFarmerName() { return this.farmerName; }
-
         public void setFarmerName(String farmerName) { this.farmerName = farmerName; }
-
         public String getFarmerVillage() { return this.farmerVillage; }
-
         public void setFarmerVillage(String farmerVillage) { this.farmerVillage = farmerVillage; }
-
         public String getFarmerDistrict() { return this.farmerDistrict; }
-
         public void setFarmerDistrict(String farmerDistrict) { this.farmerDistrict = farmerDistrict; }
-
         public String getCenterName() { return this.centerName; }
-
         public void setCenterName(String centerName) { this.centerName = centerName; }
-
         public String getProduceName() { return this.produceName; }
-
         public void setProduceName(String produceName) { this.produceName = produceName; }
-
         public BigDecimal getQuantityQuintals() { return this.quantityQuintals; }
-
         public void setQuantityQuintals(BigDecimal quantityQuintals) { this.quantityQuintals = quantityQuintals; }
-
         public BigDecimal getRatePerQuintal() { return this.ratePerQuintal; }
-
         public void setRatePerQuintal(BigDecimal ratePerQuintal) { this.ratePerQuintal = ratePerQuintal; }
-
         public BigDecimal getTotalAmount() { return this.totalAmount; }
-
         public void setTotalAmount(BigDecimal totalAmount) { this.totalAmount = totalAmount; }
-
         public String getDocumentPath() { return this.documentPath; }
-
         public void setDocumentPath(String documentPath) { this.documentPath = documentPath; }
+        public String getAuthorizedSignatoryName() { return this.authorizedSignatoryName; }
+        public void setAuthorizedSignatoryName(String authorizedSignatoryName) { this.authorizedSignatoryName = authorizedSignatoryName; }
+        public String getSignatureData() { return this.signatureData; }
+        public void setSignatureData(String signatureData) { this.signatureData = signatureData; }
 
         public static Builder builder() { return new Builder(); }
 
         public static class Builder {
-
             private Long jFormId;
-
             private Long entryId;
-
             private String jFormNumber;
-
             private LocalDate issueDate;
-
             private JFormStatus status;
-
             private String farmerName;
-
             private String farmerVillage;
-
             private String farmerDistrict;
-
             private String centerName;
-
             private String produceName;
-
             private BigDecimal quantityQuintals;
-
             private BigDecimal ratePerQuintal;
-
             private BigDecimal totalAmount;
-
             private String documentPath;
+            private String authorizedSignatoryName;
+            private String signatureData;
 
             public Builder jFormId(Long jFormId) { this.jFormId = jFormId; return this; }
-
             public Builder entryId(Long entryId) { this.entryId = entryId; return this; }
-
             public Builder jFormNumber(String jFormNumber) { this.jFormNumber = jFormNumber; return this; }
-
             public Builder issueDate(LocalDate issueDate) { this.issueDate = issueDate; return this; }
-
             public Builder status(JFormStatus status) { this.status = status; return this; }
-
             public Builder farmerName(String farmerName) { this.farmerName = farmerName; return this; }
-
             public Builder farmerVillage(String farmerVillage) { this.farmerVillage = farmerVillage; return this; }
-
             public Builder farmerDistrict(String farmerDistrict) { this.farmerDistrict = farmerDistrict; return this; }
-
             public Builder centerName(String centerName) { this.centerName = centerName; return this; }
-
             public Builder produceName(String produceName) { this.produceName = produceName; return this; }
-
             public Builder quantityQuintals(BigDecimal quantityQuintals) { this.quantityQuintals = quantityQuintals; return this; }
-
             public Builder ratePerQuintal(BigDecimal ratePerQuintal) { this.ratePerQuintal = ratePerQuintal; return this; }
-
             public Builder totalAmount(BigDecimal totalAmount) { this.totalAmount = totalAmount; return this; }
-
             public Builder documentPath(String documentPath) { this.documentPath = documentPath; return this; }
+            public Builder authorizedSignatoryName(String authorizedSignatoryName) { this.authorizedSignatoryName = authorizedSignatoryName; return this; }
+            public Builder signatureData(String signatureData) { this.signatureData = signatureData; return this; }
 
             public JFormResponse build() {
-
                 JFormResponse obj = new JFormResponse();
-
                 obj.jFormId = this.jFormId;
-
                 obj.entryId = this.entryId;
-
                 obj.jFormNumber = this.jFormNumber;
-
                 obj.issueDate = this.issueDate;
-
                 obj.status = this.status;
-
                 obj.farmerName = this.farmerName;
-
                 obj.farmerVillage = this.farmerVillage;
-
                 obj.farmerDistrict = this.farmerDistrict;
-
                 obj.centerName = this.centerName;
-
                 obj.produceName = this.produceName;
-
                 obj.quantityQuintals = this.quantityQuintals;
-
                 obj.ratePerQuintal = this.ratePerQuintal;
-
                 obj.totalAmount = this.totalAmount;
-
                 obj.documentPath = this.documentPath;
-
+                obj.authorizedSignatoryName = this.authorizedSignatoryName;
+                obj.signatureData = this.signatureData;
                 return obj;
-
             }
-
         }
 
     }

@@ -28,9 +28,31 @@ public class PublicApiController {
     @Autowired
     private BookingService bookingService;
 
+    @Autowired
+    private com.kisankalyan.service.MandiProcessService mandiProcessService;
+
+    @Autowired
+    private com.kisankalyan.service.AdminAnalyticsService adminAnalyticsService;
+
+    @Autowired
+    private javax.sql.DataSource dataSource;
+
     @GetMapping("/health")
-    public ResponseEntity<java.util.Map<String, String>> getHealth() {
-        return ResponseEntity.ok(java.util.Map.of("status", "UP", "service", "Kisan Kalyan Backend"));
+    public ResponseEntity<java.util.Map<String, Object>> getHealth() {
+        boolean dbOk = false;
+        String dbProduct = "PostgreSQL";
+        try (java.sql.Connection conn = dataSource.getConnection()) {
+            dbOk = conn.isValid(2);
+            dbProduct = conn.getMetaData().getDatabaseProductName() + " " + conn.getMetaData().getDatabaseProductVersion();
+        } catch (Exception e) {
+            dbOk = false;
+        }
+        return ResponseEntity.ok(java.util.Map.of(
+                "status", "UP",
+                "service", "Kisan Kalyan Backend",
+                "database", dbOk ? "CONNECTED" : "DISCONNECTED",
+                "databaseProduct", dbProduct
+        ));
     }
 
     @GetMapping("/produce")
@@ -40,7 +62,7 @@ public class PublicApiController {
 
     @GetMapping("/centers")
     public ResponseEntity<List<ProcurementCentre>> getCentres() {
-        return ResponseEntity.ok(centreRepository.findAll());
+        return ResponseEntity.ok(centreRepository.findByStatus(com.kisankalyan.entity.enums.CentreStatus.ACTIVE));
     }
 
     @GetMapping("/centers/{id}")
@@ -56,5 +78,16 @@ public class PublicApiController {
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date,
             @RequestParam(required = false) BigDecimal quantity) {
         return ResponseEntity.ok(bookingService.getCenterSlotAvailability(centerId, date, quantity));
+    }
+
+    @GetMapping("/queue/public")
+    public ResponseEntity<List<com.kisankalyan.dto.MandiProcessDto.QueueStatusResponse>> getPublicQueue(
+            @RequestParam(required = false) Long centerId) {
+        return ResponseEntity.ok(mandiProcessService.getLiveQueue(centerId));
+    }
+
+    @GetMapping("/stats/public")
+    public ResponseEntity<com.kisankalyan.dto.AdminAnalyticsDto> getPublicStats() {
+        return ResponseEntity.ok(adminAnalyticsService.getDashboardAnalytics());
     }
 }

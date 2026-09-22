@@ -45,7 +45,7 @@ public class ProcurementEntry {
     @Column(name = "foreign_matter_percentage", precision = 5, scale = 2)
     private BigDecimal foreignMatterPercentage;
 
-    @Column(name = "quality_grade", length = 20)
+    @Column(name = "quality_grade", length = 100)
     private String qualityGrade;
 
     @Enumerated(EnumType.STRING)

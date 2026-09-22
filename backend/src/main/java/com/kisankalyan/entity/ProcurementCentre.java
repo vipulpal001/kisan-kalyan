@@ -57,6 +57,12 @@ public class ProcurementCentre {
     @Column(name = "processing_minutes_per_quintal", precision = 10, scale = 2)
     private BigDecimal processingMinutesPerQuintal;
 
+    @Column(name = "authorized_signatory_name", length = 150)
+    private String authorizedSignatoryName;
+
+    @Column(name = "signature_data", columnDefinition = "TEXT")
+    private String signatureData;
+
     public ProcurementCentre() {}
 
     public ProcurementCentre(Long centerId, String centerCode, String centerName, String centerLocation, String village, String district, String state, BigDecimal latitude, BigDecimal longitude, BigDecimal capacityPerDay, BigDecimal currentDailyQuantity, String contactNumber, CentreStatus status, OffsetDateTime createdAt, BigDecimal processingMinutesPerQuintal) {
@@ -75,6 +81,12 @@ public class ProcurementCentre {
         this.status = status;
         this.createdAt = createdAt;
         this.processingMinutesPerQuintal = processingMinutesPerQuintal;
+    }
+
+    public ProcurementCentre(Long centerId, String centerCode, String centerName, String centerLocation, String village, String district, String state, BigDecimal latitude, BigDecimal longitude, BigDecimal capacityPerDay, BigDecimal currentDailyQuantity, String contactNumber, CentreStatus status, OffsetDateTime createdAt, BigDecimal processingMinutesPerQuintal, String authorizedSignatoryName, String signatureData) {
+        this(centerId, centerCode, centerName, centerLocation, village, district, state, latitude, longitude, capacityPerDay, currentDailyQuantity, contactNumber, status, createdAt, processingMinutesPerQuintal);
+        this.authorizedSignatoryName = authorizedSignatoryName;
+        this.signatureData = signatureData;
     }
 
     public Long getCenterId() { return this.centerId; }
@@ -122,6 +134,12 @@ public class ProcurementCentre {
     public BigDecimal getProcessingMinutesPerQuintal() { return this.processingMinutesPerQuintal; }
     public void setProcessingMinutesPerQuintal(BigDecimal processingMinutesPerQuintal) { this.processingMinutesPerQuintal = processingMinutesPerQuintal; }
 
+    public String getAuthorizedSignatoryName() { return this.authorizedSignatoryName; }
+    public void setAuthorizedSignatoryName(String authorizedSignatoryName) { this.authorizedSignatoryName = authorizedSignatoryName; }
+
+    public String getSignatureData() { return this.signatureData; }
+    public void setSignatureData(String signatureData) { this.signatureData = signatureData; }
+
     public static Builder builder() { return new Builder(); }
 
     public static class Builder {
@@ -140,6 +158,8 @@ public class ProcurementCentre {
         private CentreStatus status;
         private OffsetDateTime createdAt;
         private BigDecimal processingMinutesPerQuintal;
+        private String authorizedSignatoryName;
+        private String signatureData;
 
         public Builder centerId(Long centerId) { this.centerId = centerId; return this; }
         public Builder centerCode(String centerCode) { this.centerCode = centerCode; return this; }
@@ -156,6 +176,8 @@ public class ProcurementCentre {
         public Builder status(CentreStatus status) { this.status = status; return this; }
         public Builder createdAt(OffsetDateTime createdAt) { this.createdAt = createdAt; return this; }
         public Builder processingMinutesPerQuintal(BigDecimal processingMinutesPerQuintal) { this.processingMinutesPerQuintal = processingMinutesPerQuintal; return this; }
+        public Builder authorizedSignatoryName(String authorizedSignatoryName) { this.authorizedSignatoryName = authorizedSignatoryName; return this; }
+        public Builder signatureData(String signatureData) { this.signatureData = signatureData; return this; }
 
         public ProcurementCentre build() {
             ProcurementCentre obj = new ProcurementCentre();
@@ -174,8 +196,9 @@ public class ProcurementCentre {
             obj.status = this.status;
             obj.createdAt = this.createdAt;
             obj.processingMinutesPerQuintal = this.processingMinutesPerQuintal;
+            obj.authorizedSignatoryName = this.authorizedSignatoryName;
+            obj.signatureData = this.signatureData;
             return obj;
         }
     }
-
 }

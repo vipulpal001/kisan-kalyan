@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useLanguage } from '../context/LanguageContext';
 import api from '../services/api';
+import { QRCodeSVG } from 'qrcode.react';
 import { QrCode, Calendar, Clock, MapPin, Scale, ArrowLeft, Download, ShieldCheck, AlertCircle, RefreshCw } from 'lucide-react';
 
 export default function QrPassPage() {
@@ -88,7 +89,7 @@ export default function QrPassPage() {
     }
   }
 
-  const allocStartTime = booking.allocatedStartTime 
+  const allocStartTime = booking.allocatedStartTime
     ? new Date(booking.allocatedStartTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
     : booking.slotStartTime;
 
@@ -96,8 +97,8 @@ export default function QrPassPage() {
 
   return (
     <div className="portal-container" style={{ padding: '30px 0 60px 0', maxWidth: '640px' }}>
-      <button 
-        onClick={() => navigate(-1)} 
+      <button
+        onClick={() => navigate(-1)}
         style={{ background: 'none', border: 'none', color: '#059669', display: 'flex', alignItems: 'center', gap: '6px', cursor: 'pointer', fontWeight: 700, marginBottom: '16px' }}
       >
         <ArrowLeft size={18} /> {language === 'hi' ? 'वापस जाएं (Back)' : 'Back to Dashboard'}
@@ -116,10 +117,10 @@ export default function QrPassPage() {
             <ShieldCheck size={14} color="#fef08a" /> {language === 'hi' ? 'डिजिटल ई-प्रवेश पास (Official Gate Pass)' : 'Digital Gate Pass (Official)'}
           </div>
           <h2 style={{ fontSize: '1.6rem', fontWeight: 900, color: '#fef08a', margin: 0 }}>
-            {language === 'hi' ? 'टोकन क्रमांक:' : 'Token No:'} {booking.tokenNumber || 'A-102'}
+            {language === 'hi' ? 'टोकन क्रमांक:' : 'Token No:'} {booking.tokenNumber || '—'}
           </h2>
           <p style={{ fontSize: '0.88rem', color: '#d1fae5', margin: '4px 0 0 0' }}>
-            {language === 'hi' ? 'बुकिंग संदर्भ:' : 'Booking Ref:'} <strong>{booking.bookingReference}</strong>
+            {language === 'hi' ? 'बुकिंग संदर्भ:' : 'Booking Ref:'} <strong>{booking.bookingReference || '—'}</strong>
           </p>
         </div>
 
@@ -133,15 +134,16 @@ export default function QrPassPage() {
             border: '2px solid #e2e8f0',
             boxShadow: '0 6px 16px rgba(0,0,0,0.06)'
           }}>
-            <img 
-              src={`https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${encodeURIComponent(qrPayload)}`} 
-              alt="Gate Verification QR Pass" 
-              style={{ width: '220px', height: '220px', display: 'block' }}
+            <QRCodeSVG
+              value={qrPayload}
+              size={220}
+              level="H"
+              includeMargin={true}
             />
           </div>
 
           <div style={{ marginTop: '16px', color: '#065f46', fontSize: '0.88rem', fontWeight: 700 }}>
-            {language === 'hi' ? 'मंडी गेट स्कैनर पर इस क्यूआर कोड को दिखाएं' : 'Show this QR code at the Mandi Entry Gate Scanner'}
+            {language === 'hi' ? 'उपार्जन केंद्र गेट स्कैनर पर इस क्यूआर कोड को दिखाएं' : 'Show this QR code at the Procurement Centre Gate Scanner'}
           </div>
 
           {/* Verification Deadline Live Countdown */}
@@ -161,19 +163,19 @@ export default function QrPassPage() {
         <div style={{ padding: '24px 30px', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', fontSize: '0.9rem' }}>
           <div>
             <span style={{ color: '#64748b', fontSize: '0.8rem', display: 'block' }}>{language === 'hi' ? 'किसान का नाम:' : 'Farmer Name:'}</span>
-            <strong style={{ color: '#111827', fontSize: '1rem' }}>{booking.farmerName || 'Ramesh Singh'}</strong>
+            <strong style={{ color: '#111827', fontSize: '1rem' }}>{booking.farmerName || '—'}</strong>
           </div>
           <div>
             <span style={{ color: '#64748b', fontSize: '0.8rem', display: 'block' }}>{language === 'hi' ? 'फसल एवं मात्रा:' : 'Crop & Quantity:'}</span>
-            <strong style={{ color: '#111827', fontSize: '1rem' }}>{booking.produceName || 'Wheat'} ({booking.estimatedQuantity} {t('quintal')})</strong>
+            <strong style={{ color: '#111827', fontSize: '1rem' }}>{booking.produceName || '—'}{booking.estimatedQuantity ? ` (${booking.estimatedQuantity} ${t('quintal')})` : ''}</strong>
           </div>
           <div>
             <span style={{ color: '#64748b', fontSize: '0.8rem', display: 'block' }}>{language === 'hi' ? 'खरीद केंद्र:' : 'Procurement Center:'}</span>
-            <strong style={{ color: '#064e3b' }}>{booking.centerName}</strong>
+            <strong style={{ color: '#064e3b' }}>{booking.centerName || '—'}</strong>
           </div>
           <div>
             <span style={{ color: '#64748b', fontSize: '0.8rem', display: 'block' }}>{language === 'hi' ? 'आवंटित काउंटर:' : 'Assigned Counter:'}</span>
-            <strong style={{ color: '#047857' }}>{booking.counterName || `Counter #${booking.counterNumber || 2}`}</strong>
+            <strong style={{ color: '#047857' }}>{booking.counterName || (booking.counterNumber ? `Counter #${booking.counterNumber}` : '—')}</strong>
           </div>
           <div>
             <span style={{ color: '#64748b', fontSize: '0.8rem', display: 'block' }}>{language === 'hi' ? 'तारीख:' : 'Slot Date:'}</span>
@@ -187,9 +189,9 @@ export default function QrPassPage() {
 
         {/* Action Button */}
         <div style={{ padding: '16px 30px 24px 30px', display: 'flex', gap: '12px' }}>
-          <button 
-            onClick={() => window.print()} 
-            className="btn-primary" 
+          <button
+            onClick={() => window.print()}
+            className="btn-primary"
             style={{ flex: 1, display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '8px', padding: '12px' }}
           >
             <Download size={18} /> {language === 'hi' ? 'पास डाउनलोड / प्रिंट करें' : 'Download / Print Pass'}

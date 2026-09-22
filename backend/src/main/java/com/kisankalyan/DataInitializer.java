@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.List;
 
 @Component
 public class DataInitializer implements CommandLineRunner {
@@ -51,6 +52,9 @@ public class DataInitializer implements CommandLineRunner {
     @Autowired
     private QueueStatusRepository queueStatusRepository;
 
+    @Autowired
+    private StorageLocationRepository storageLocationRepository;
+
     @Override
     public void run(String... args) throws Exception {
         // Seed default produce if empty
@@ -62,34 +66,93 @@ public class DataInitializer implements CommandLineRunner {
             produceRepository.save(new AgriculturalProduce(null, "GRAM-2026", "चना (Gram)", "Pulses", "Rabi 2026", BigDecimal.valueOf(5440.00), ProduceUnit.QUINTAL, true, null));
         }
 
-        // Seed default procurement centre if empty
-        ProcurementCentre centre;
-        if (centreRepository.count() == 0) {
-            centre = centreRepository.save(new ProcurementCentre(
-                    null, "APMC-CHUNAR", "Chunar APMC Center",
+        // Seed 4 canonical active procurement centres
+        String sigSvg1 = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='140' height='50'><path d='M10 35 Q 35 10, 60 25 T 100 20 T 130 35' stroke='%23054122' stroke-width='2.5' fill='none'/><text x='15' y='45' font-family='sans-serif' font-size='9' fill='%23054122'>S. Verma (APMC)</text></svg>";
+        String sigSvg2 = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='140' height='50'><path d='M10 30 Q 40 5, 70 28 T 110 15 T 130 30' stroke='%23054122' stroke-width='2.5' fill='none'/><text x='15' y='45' font-family='sans-serif' font-size='9' fill='%23054122'>R. Kumar (Mandi)</text></svg>";
+        String sigSvg3 = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='140' height='50'><path d='M12 28 Q 45 8, 75 25 T 105 18 T 130 32' stroke='%23054122' stroke-width='2.5' fill='none'/><text x='15' y='45' font-family='sans-serif' font-size='9' fill='%23054122'>A. Singh (In-Charge)</text></svg>";
+        String sigSvg4 = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='140' height='50'><path d='M10 25 Q 35 12, 65 30 T 105 15 T 135 28' stroke='%23054122' stroke-width='2.5' fill='none'/><text x='15' y='45' font-family='sans-serif' font-size='9' fill='%23054122'>M. Tiwari (QCI)</text></svg>";
+
+        ProcurementCentre centre1 = centreRepository.findByCenterCode("APMC-CHUNAR").orElseGet(() -> {
+            return centreRepository.save(new ProcurementCentre(
+                    null, "APMC-CHUNAR", "चुनार कृषि उपज मंडी समिति (Chunar APMC Center)",
                     "Chunar Kheda, Mirzapur, Uttar Pradesh",
                     "Chunar Kheda", "Mirzapur", "Uttar Pradesh",
                     BigDecimal.valueOf(25.1234567), BigDecimal.valueOf(82.8765432),
                     BigDecimal.valueOf(1000.00), BigDecimal.valueOf(0.00),
                     "1800-180-1551", CentreStatus.ACTIVE, null,
-                    BigDecimal.valueOf(10.00) // 10 min/quintal processing rate
+                    BigDecimal.valueOf(0.25), "सुरेश वर्मा (Suresh Verma, Mandi Officer)", sigSvg1
             ));
-        } else {
-            centre = centreRepository.findAll().get(0);
-            if (centre.getProcessingMinutesPerQuintal() == null) {
-                centre.setProcessingMinutesPerQuintal(BigDecimal.valueOf(10.00));
-                centreRepository.save(centre);
+        });
+
+        ProcurementCentre centre2 = centreRepository.findByCenterCode("MANDI-MIRZAPUR").orElseGet(() -> {
+            return centreRepository.save(new ProcurementCentre(
+                    null, "MANDI-MIRZAPUR", "मीरजापुर मुख्य अनाज मंडी (Mirzapur Main Mandi)",
+                    "शास्त्री ब्रिज के पास, मीरजापुर",
+                    "Shastri Bridge", "Mirzapur", "Uttar Pradesh",
+                    BigDecimal.valueOf(25.1462000), BigDecimal.valueOf(82.5690000),
+                    BigDecimal.valueOf(1200.00), BigDecimal.valueOf(0.00),
+                    "1800-180-1552", CentreStatus.ACTIVE, null,
+                    BigDecimal.valueOf(0.25), "राजेश कुमार (Rajesh Kumar, Mandi Inspector)", sigSvg2
+            ));
+        });
+
+        ProcurementCentre centre3 = centreRepository.findByCenterCode("CEN-AHRAURA").orElseGet(() -> {
+            return centreRepository.save(new ProcurementCentre(
+                    null, "CEN-AHRAURA", "अहरौरा क्रय केंद्र (Ahraura Procurement Centre)",
+                    "मंडी समिति, अहरौरा, मीरजापुर",
+                    "Ahraura", "Mirzapur", "Uttar Pradesh",
+                    BigDecimal.valueOf(25.0185000), BigDecimal.valueOf(83.0234000),
+                    BigDecimal.valueOf(800.00), BigDecimal.valueOf(0.00),
+                    "1800-180-1553", CentreStatus.ACTIVE, null,
+                    BigDecimal.valueOf(0.25), "अनिल सिंह (Anil Singh, Procurement In-Charge)", sigSvg3
+            ));
+        });
+
+        ProcurementCentre centre4 = centreRepository.findByCenterCode("CEN-LALGANJ").orElseGet(() -> {
+            return centreRepository.save(new ProcurementCentre(
+                    null, "CEN-LALGANJ", "लालगंज सरकारी खरीद केंद्र (Lalganj Procurement Centre)",
+                    "रीवा रोड, लालगंज, मीरजापुर",
+                    "Lalganj", "Mirzapur", "Uttar Pradesh",
+                    BigDecimal.valueOf(24.9580000), BigDecimal.valueOf(82.3550000),
+                    BigDecimal.valueOf(900.00), BigDecimal.valueOf(0.00),
+                    "1800-180-1554", CentreStatus.ACTIVE, null,
+                    BigDecimal.valueOf(0.25), "मनोज तिवारी (Manoj Tiwari, QCI Officer)", sigSvg4
+            ));
+        });
+
+        ProcurementCentre centre = centre1;
+        for (ProcurementCentre c : centreRepository.findAll()) {
+            c.setProcessingMinutesPerQuintal(BigDecimal.valueOf(0.25));
+            if (c.getAuthorizedSignatoryName() == null) {
+                c.setAuthorizedSignatoryName("सुरेश वर्मा (Suresh Verma, Mandi Officer)");
+                c.setSignatureData(sigSvg1);
             }
+            centreRepository.save(c);
         }
 
-        // Seed default counters
+        // Seed counters for all centres
         Counter counter2 = null;
-        if (counterRepository.count() == 0) {
-            counterRepository.save(new Counter(null, centre, 1, "Weighbridge 1 (मुख्य तौल कांटा)", null, "A-101", CounterType.WEIGHBRIDGE, CentreStatus.ACTIVE, null));
-            counter2 = counterRepository.save(new Counter(null, centre, 2, "Weighbridge 2 (अतिरिक्त तौल कांटा)", null, "A-102", CounterType.WEIGHBRIDGE, CentreStatus.ACTIVE, null));
-            counterRepository.save(new Counter(null, centre, 3, "Quality & Moisture Helpdesk", null, null, CounterType.HELP_DESK, CentreStatus.ACTIVE, null));
-        } else {
+        for (ProcurementCentre pc : List.of(centre1, centre2, centre3, centre4)) {
+            if (counterRepository.findByCenter(pc).isEmpty()) {
+                counterRepository.save(new Counter(null, pc, 1, "Weighbridge 1 (मुख्य तौल कांटा)", null, "A-101", CounterType.WEIGHBRIDGE, CentreStatus.ACTIVE, null));
+                Counter c2 = counterRepository.save(new Counter(null, pc, 2, "Weighbridge 2 (अतिरिक्त तौल कांटा)", null, "A-102", CounterType.WEIGHBRIDGE, CentreStatus.ACTIVE, null));
+                counterRepository.save(new Counter(null, pc, 3, "Quality & Moisture Helpdesk", null, null, CounterType.HELP_DESK, CentreStatus.ACTIVE, null));
+                if (pc.getCenterId().equals(centre.getCenterId())) {
+                    counter2 = c2;
+                }
+            }
+        }
+        if (counter2 == null) {
             counter2 = counterRepository.findAll().stream().filter(c -> c.getCounterNumber() != null && c.getCounterNumber() == 2).findFirst().orElse(counterRepository.findAll().get(0));
+        }
+
+        // Seed Storage Locations for each centre
+        for (ProcurementCentre pc : List.of(centre1, centre2, centre3, centre4)) {
+            if (storageLocationRepository.findByCenter(pc).isEmpty()) {
+                storageLocationRepository.save(new StorageLocation(null, pc, "GDN-" + pc.getCenterId() + "-A", "गोदाम ए - वैज्ञानिक भंडारण (Godown A - Scientific Storage)", "सेक्टर A शेड", BigDecimal.valueOf(5000.00), BigDecimal.valueOf(450.00), StorageLocationStatus.ACTIVE, null));
+                storageLocationRepository.save(new StorageLocation(null, pc, "SILO-" + pc.getCenterId() + "-1", "साइलो यूनिट 1 - आधुनिक अनाज भंडारण (Silo Unit 1 - Steel Grain Silo)", "साइलो परिसर", BigDecimal.valueOf(3500.00), BigDecimal.valueOf(120.00), StorageLocationStatus.ACTIVE, null));
+                storageLocationRepository.save(new StorageLocation(null, pc, "WRH-" + pc.getCenterId() + "-CWC", "केंद्रीय भंडारण निगम बफर गोदाम (CWC Buffer Godown)", "CWC वेयरहाउस", BigDecimal.valueOf(4000.00), BigDecimal.valueOf(0.00), StorageLocationStatus.ACTIVE, null));
+            }
         }
 
         // Seed users (FARMER, OPERATOR, ADMIN) with phone number existence checks

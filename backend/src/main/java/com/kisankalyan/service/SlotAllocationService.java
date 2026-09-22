@@ -38,10 +38,9 @@ public class SlotAllocationService {
     private SlotAllocationRepository slotAllocationRepository;
 
     public long calculateProcessingDurationMinutes(ProcurementCentre centre, BigDecimal quantityQuintals) {
-        BigDecimal rate = centre.getProcessingMinutesPerQuintal();
-        if (rate == null || rate.compareTo(BigDecimal.ZERO) <= 0) {
-            rate = BigDecimal.valueOf(10); // default 10 min/quintal
-        }
+        BigDecimal rate = (centre != null && centre.getProcessingMinutesPerQuintal() != null && centre.getProcessingMinutesPerQuintal().compareTo(BigDecimal.ZERO) > 0)
+                ? centre.getProcessingMinutesPerQuintal()
+                : BigDecimal.valueOf(10);
         return quantityQuintals.multiply(rate).setScale(0, RoundingMode.CEILING).longValue();
     }
 

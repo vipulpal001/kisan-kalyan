@@ -27,6 +27,12 @@ public class JForm {
     @Column(name = "document_path", columnDefinition = "TEXT")
     private String documentPath;
 
+    @Column(name = "authorized_signatory_name", length = 150)
+    private String authorizedSignatoryName;
+
+    @Column(name = "signature_data", columnDefinition = "TEXT")
+    private String signatureData;
+
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false, length = 20)
     private JFormStatus status;
@@ -46,6 +52,12 @@ public class JForm {
         this.createdAt = createdAt;
     }
 
+    public JForm(Long jFormId, ProcurementEntry entry, String jFormNumber, LocalDate issueDate, String documentPath, JFormStatus status, OffsetDateTime createdAt, String authorizedSignatoryName, String signatureData) {
+        this(jFormId, entry, jFormNumber, issueDate, documentPath, status, createdAt);
+        this.authorizedSignatoryName = authorizedSignatoryName;
+        this.signatureData = signatureData;
+    }
+
     public Long getJFormId() { return this.jFormId; }
     public void setJFormId(Long jFormId) { this.jFormId = jFormId; }
 
@@ -61,6 +73,12 @@ public class JForm {
     public String getDocumentPath() { return this.documentPath; }
     public void setDocumentPath(String documentPath) { this.documentPath = documentPath; }
 
+    public String getAuthorizedSignatoryName() { return this.authorizedSignatoryName; }
+    public void setAuthorizedSignatoryName(String authorizedSignatoryName) { this.authorizedSignatoryName = authorizedSignatoryName; }
+
+    public String getSignatureData() { return this.signatureData; }
+    public void setSignatureData(String signatureData) { this.signatureData = signatureData; }
+
     public JFormStatus getStatus() { return this.status; }
     public void setStatus(JFormStatus status) { this.status = status; }
 
@@ -75,6 +93,8 @@ public class JForm {
         private String jFormNumber;
         private LocalDate issueDate;
         private String documentPath;
+        private String authorizedSignatoryName;
+        private String signatureData;
         private JFormStatus status;
         private OffsetDateTime createdAt;
 
@@ -83,6 +103,8 @@ public class JForm {
         public Builder jFormNumber(String jFormNumber) { this.jFormNumber = jFormNumber; return this; }
         public Builder issueDate(LocalDate issueDate) { this.issueDate = issueDate; return this; }
         public Builder documentPath(String documentPath) { this.documentPath = documentPath; return this; }
+        public Builder authorizedSignatoryName(String authorizedSignatoryName) { this.authorizedSignatoryName = authorizedSignatoryName; return this; }
+        public Builder signatureData(String signatureData) { this.signatureData = signatureData; return this; }
         public Builder status(JFormStatus status) { this.status = status; return this; }
         public Builder createdAt(OffsetDateTime createdAt) { this.createdAt = createdAt; return this; }
 
@@ -93,6 +115,8 @@ public class JForm {
             obj.jFormNumber = this.jFormNumber;
             obj.issueDate = this.issueDate;
             obj.documentPath = this.documentPath;
+            obj.authorizedSignatoryName = this.authorizedSignatoryName;
+            obj.signatureData = this.signatureData;
             obj.status = this.status;
             obj.createdAt = this.createdAt;
             return obj;

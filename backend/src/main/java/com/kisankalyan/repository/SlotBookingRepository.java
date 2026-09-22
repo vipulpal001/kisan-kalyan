@@ -18,6 +18,8 @@ public interface SlotBookingRepository extends JpaRepository<SlotBooking, Long> 
     List<SlotBooking> findByFarmer(Farmer farmer);
     List<SlotBooking> findByCenterAndBookingStatus(ProcurementCentre center, BookingStatus bookingStatus);
     List<SlotBooking> findBySlot(TimeSlot slot);
+    List<SlotBooking> findByFarmerAndSlot_SlotDateAndBookingStatusNotIn(Farmer farmer, java.time.LocalDate slotDate, List<BookingStatus> statuses);
+    List<SlotBooking> findByFarmerAndSlotAndBookingStatusNotIn(Farmer farmer, TimeSlot slot, List<BookingStatus> statuses);
 
     @org.springframework.data.jpa.repository.Query("SELECT b FROM SlotBooking b WHERE b.bookingStatus = :status AND b.qrVerifiedAt IS NULL AND b.verificationDeadline IS NOT NULL AND b.verificationDeadline < :now")
     List<SlotBooking> findExpiredUnverifiedBookings(

@@ -7,6 +7,7 @@ export function LanguageProvider({ children }) {
   const [lang, setLang] = useState(() => localStorage.getItem('kisan_lang') || 'hi');
   const [fontSize, setFontSize] = useState(() => localStorage.getItem('kisan_font_size') || 'normal');
   const [highContrast, setHighContrast] = useState(() => localStorage.getItem('kisan_high_contrast') === 'true');
+  const [darkMode, setDarkMode] = useState(() => localStorage.getItem('kisan_dark_mode') === 'true');
 
   useEffect(() => {
     localStorage.setItem('kisan_lang', lang);
@@ -27,12 +28,27 @@ export function LanguageProvider({ children }) {
     }
   }, [highContrast]);
 
+  useEffect(() => {
+    localStorage.setItem('kisan_dark_mode', darkMode ? 'true' : 'false');
+    if (darkMode) {
+      document.documentElement.classList.add('dark');
+      document.body.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+      document.body.classList.remove('dark');
+    }
+  }, [darkMode]);
+
   const toggleLanguage = () => {
     setLang(prev => (prev === 'hi' ? 'en' : 'hi'));
   };
 
   const toggleHighContrast = () => {
     setHighContrast(prev => !prev);
+  };
+
+  const toggleDarkMode = () => {
+    setDarkMode(prev => !prev);
   };
 
   const t = (key, fallback = '') => {
@@ -55,9 +71,11 @@ export function LanguageProvider({ children }) {
       setFontSize, 
       highContrast, 
       toggleHighContrast, 
+      darkMode,
+      toggleDarkMode,
       t 
     }}>
-      <div className={`font-size-${fontSize} ${highContrast ? 'high-contrast' : ''}`}>
+      <div className={`font-size-${fontSize} ${highContrast ? 'high-contrast' : ''} ${darkMode ? 'dark' : ''}`}>
         {children}
       </div>
     </LanguageContext.Provider>

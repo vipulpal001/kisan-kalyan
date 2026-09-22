@@ -23,4 +23,14 @@ public class AuthController {
     public ResponseEntity<AuthDto.AuthResponse> registerFarmer(@Valid @RequestBody AuthDto.RegisterFarmerRequest request) {
         return ResponseEntity.ok(authService.registerFarmer(request));
     }
+
+    @PostMapping("/forgot-password")
+    public ResponseEntity<AuthDto.ForgotPasswordResponse> forgotPassword(@Valid @RequestBody AuthDto.ForgotPasswordRequest request) {
+        return ResponseEntity.ok(authService.forgotPassword(request));
+    }
+
+    @PostMapping("/reset-password")
+    public ResponseEntity<AuthDto.MessageResponse> resetPassword(@Valid @RequestBody AuthDto.ResetPasswordRequest request) {
+        return ResponseEntity.ok(authService.resetPassword(request));
+    }
 }

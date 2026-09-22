@@ -1,5 +1,7 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
+import api from '../services/api';
 import { 
   Calendar, 
   ListOrdered, 
@@ -10,12 +12,39 @@ import {
   CheckCircle2, 
   PhoneCall, 
   Warehouse, 
-  FileText 
+  FileText,
+  Building2,
+  Users,
+  Coins,
+  TrendingUp
 } from 'lucide-react';
 
 import kisanHeroImg from '../assets/kisan_hero.jpg';
 
 export default function LandingPage() {
+  const { user } = useAuth();
+  const [stats, setStats] = useState(null);
+  const [statsLoading, setStatsLoading] = useState(true);
+  const [statsError, setStatsError] = useState(false);
+
+  useEffect(() => {
+    fetchStats();
+  }, []);
+
+  const fetchStats = async () => {
+    setStatsLoading(true);
+    setStatsError(false);
+    try {
+      const res = await api.get('/stats/public');
+      if (res.data) setStats(res.data);
+    } catch (e) {
+      console.error("Public stats error:", e);
+      setStatsError(true);
+    } finally {
+      setStatsLoading(false);
+    }
+  };
+
   return (
     <div style={{ paddingBottom: '60px' }}>
       {/* Hero Banner with Agricultural Design */}
@@ -42,9 +71,15 @@ export default function LandingPage() {
             </p>
 
             <div style={{ display: 'flex', gap: '14px', flexWrap: 'wrap' }}>
-              <Link to="/register" className="btn-primary" style={{ background: '#fef08a', color: '#713f12', padding: '14px 28px', fontSize: '1.05rem', fontWeight: 800 }}>
-                किसान के रूप में शुरू करें <ArrowRight size={18} />
-              </Link>
+              {user ? (
+                <Link to="/farmer/dashboard" className="btn-primary" style={{ background: '#fef08a', color: '#713f12', padding: '14px 28px', fontSize: '1.05rem', fontWeight: 800 }}>
+                  डैशबोर्ड पर जाएं (Dashboard) <ArrowRight size={18} />
+                </Link>
+              ) : (
+                <Link to="/register" className="btn-primary" style={{ background: '#fef08a', color: '#713f12', padding: '14px 28px', fontSize: '1.05rem', fontWeight: 800 }}>
+                  किसान के रूप में शुरू करें <ArrowRight size={18} />
+                </Link>
+              )}
               <Link to="/centers" className="btn-secondary" style={{ background: 'transparent', color: '#ffffff', borderColor: '#ffffff', padding: '14px 24px', fontSize: '1.05rem' }}>
                 निकटतम केंद्र खोजें
               </Link>
@@ -81,11 +116,11 @@ export default function LandingPage() {
               </li>
               <li style={{ display: 'flex', alignItems: 'flex-start', gap: '10px' }}>
                 <CheckCircle2 color="#34d399" size={20} style={{ flexShrink: 0, marginTop: '2px' }} />
-                <span><strong>लाइव टोकन कतार:</strong> मंडी पहुंचने से पहले अपने मोबाइल पर कतार स्थिति देखें।</span>
+                <span><strong>लाइव टोकन कतार:</strong> उपार्जन केंद्र पहुंचने से पहले अपने मोबाइल पर कतार स्थिति देखें।</span>
               </li>
               <li style={{ display: 'flex', alignItems: 'flex-start', gap: '10px' }}>
                 <CheckCircle2 color="#34d399" size={20} style={{ flexShrink: 0, marginTop: '2px' }} />
-                <span><strong>क्यूआर कोड आगमन सत्यापन:</strong> मंडी प्रवेश पर त्वरित गैर-संपर्क सत्यापन।</span>
+                <span><strong>क्यूआर कोड आगमन सत्यापन:</strong> उपार्जन केंद्र प्रवेश पर त्वरित गैर-संपर्क सत्यापन।</span>
               </li>
               <li style={{ display: 'flex', alignItems: 'flex-start', gap: '10px' }}>
                 <CheckCircle2 color="#34d399" size={20} style={{ flexShrink: 0, marginTop: '2px' }} />
@@ -101,6 +136,97 @@ export default function LandingPage() {
       </div>
     </section>
 
+      {/* Live Dynamic Stats Banner (Real Backend / PostgreSQL Data) */}
+      <div className="portal-container" style={{ marginTop: '-30px', position: 'relative', zIndex: 10 }}>
+        <div style={{ 
+          background: '#ffffff', 
+          borderRadius: '16px', 
+          padding: '20px 28px', 
+          boxShadow: '0 10px 30px rgba(0,0,0,0.1)', 
+          border: '1px solid #e2e8f0', 
+          minHeight: '84px',
+          display: 'flex',
+          alignItems: 'center'
+        }}>
+          {statsLoading ? (
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%', gap: '10px', color: '#059669', fontWeight: 600, fontSize: '0.92rem' }}>
+              <div style={{ width: '20px', height: '20px', border: '3px solid #a7f3d0', borderTopColor: '#059669', borderRadius: '50%', animation: 'spin 1s linear infinite' }} />
+              <span>डेटा लोड हो रहा है... (Loading live statistics...)</span>
+            </div>
+          ) : statsError ? (
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%', gap: '12px', color: '#b91c1c', fontSize: '0.9rem', fontWeight: 600 }}>
+              <span>डेटा उपलब्ध नहीं (Data unavailable)</span>
+              <button onClick={fetchStats} style={{ background: '#fee2e2', border: '1px solid #fca5a5', color: '#991b1b', padding: '4px 12px', borderRadius: '6px', cursor: 'pointer', fontSize: '0.8rem', fontWeight: 700 }}>
+                पुनः प्रयास करें (Retry)
+              </button>
+            </div>
+          ) : (
+            <div style={{ 
+              display: 'grid', 
+              gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', 
+              gap: '20px',
+              width: '100%'
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+                <div style={{ width: '44px', height: '44px', borderRadius: '12px', background: '#ecfdf5', color: '#059669', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <Building2 size={22} />
+                </div>
+                <div>
+                  <div style={{ fontSize: '1.45rem', fontWeight: 800, color: '#064e3b', lineHeight: 1.1 }}>
+                    {stats?.activeCentres != null ? stats.activeCentres : '—'}
+                  </div>
+                  <div style={{ fontSize: '0.78rem', color: '#64748b', fontWeight: 600 }}>
+                    सक्रिय क्रय केंद्र (Active Centres)
+                  </div>
+                </div>
+              </div>
+
+              <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+                <div style={{ width: '44px', height: '44px', borderRadius: '12px', background: '#eff6ff', color: '#2563eb', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <Users size={22} />
+                </div>
+                <div>
+                  <div style={{ fontSize: '1.45rem', fontWeight: 800, color: '#1e3a8a', lineHeight: 1.1 }}>
+                    {stats?.totalFarmers != null ? stats.totalFarmers : '—'}
+                  </div>
+                  <div style={{ fontSize: '0.78rem', color: '#64748b', fontWeight: 600 }}>
+                    पंजीकृत किसान (Registered)
+                  </div>
+                </div>
+              </div>
+
+              <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+                <div style={{ width: '44px', height: '44px', borderRadius: '12px', background: '#fef3c7', color: '#b45309', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <Calendar size={22} />
+                </div>
+                <div>
+                  <div style={{ fontSize: '1.45rem', fontWeight: 800, color: '#78350f', lineHeight: 1.1 }}>
+                    {stats != null ? (stats.todayBookings ?? 0) : '—'}
+                  </div>
+                  <div style={{ fontSize: '0.78rem', color: '#64748b', fontWeight: 600 }}>
+                    आज की बुकिंग (Today's Slots)
+                  </div>
+                </div>
+              </div>
+
+              <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+                <div style={{ width: '44px', height: '44px', borderRadius: '12px', background: '#fdf2f8', color: '#db2777', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <Warehouse size={22} />
+                </div>
+                <div>
+                  <div style={{ fontSize: '1.45rem', fontWeight: 800, color: '#831843', lineHeight: 1.1 }}>
+                    {stats?.totalStorageCapacityQuintals != null ? `${Number(stats.totalStorageCapacityQuintals).toLocaleString('en-IN')} Qtl` : '—'}
+                  </div>
+                  <div style={{ fontSize: '0.78rem', color: '#64748b', fontWeight: 600 }}>
+                    कुल भंडारण क्षमता (Storage Capacity)
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+
       {/* How it Works / 6 Steps Process */}
       <section className="portal-container" style={{ marginTop: '50px' }}>
         <div style={{ textAlign: 'center', marginBottom: '40px' }}>
@@ -111,7 +237,7 @@ export default function LandingPage() {
             खरीद प्रक्रिया कैसे कार्य करती है?
           </h2>
           <p style={{ color: '#6b7280', fontSize: '1rem', maxWidth: '650px', margin: '8px auto 0 auto' }}>
-            मंडी में अनावश्यक कतारों और लंबी प्रतीक्षा से मुक्ति — पारदर्शी डिजिटल चरणों में अपनी उपज बेचें।
+            उपार्जन केंद्र पर अनावश्यक कतारों और लंबी प्रतीक्षा से मुक्ति — पारदर्शी डिजिटल चरणों में अपनी उपज बेचें।
           </p>
         </div>
 
@@ -142,7 +268,7 @@ export default function LandingPage() {
             </div>
             <h4 style={{ fontSize: '1.15rem', fontWeight: 700, color: '#111827', marginBottom: '8px' }}>3. लाइव कतार एवं काउंटर</h4>
             <p style={{ color: '#6b7280', fontSize: '0.92rem', lineHeight: 1.5 }}>
-              मंडी ऑपरेटर द्वारा क्यूआर स्कैन होते ही आगमन दर्ज हो जाता है और स्क्रीन पर आपका काउंटर नंबर प्रदर्शित होता है।
+              उपार्जन केंद्र ऑपरेटर द्वारा क्यूआर स्कैन होते ही आगमन दर्ज हो जाता है और स्क्रीन पर आपका काउंटर नंबर प्रदर्शित होता है।
             </p>
           </div>
 
@@ -196,7 +322,7 @@ export default function LandingPage() {
               किसान हेल्पलाइन एवं सहायता केंद्र
             </h3>
             <p style={{ color: '#a7f3d0', fontSize: '0.95rem' }}>
-              स्लॉट बुकिंग अथवा मंडी भुगतान संबंधी किसी भी जानकारी के लिए निशुल्क कॉल करें।
+              स्लॉट आरक्षण अथवा डीबीटी भुगतान संबंधी किसी भी जानकारी के लिए निशुल्क कॉल करें।
             </p>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>

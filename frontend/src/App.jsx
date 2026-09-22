@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate, Link } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { LanguageProvider } from './context/LanguageContext';
 import Header from './components/Header';
@@ -39,7 +39,10 @@ export default function App() {
                 <Route path="/login" element={<LoginPage />} />
                 <Route path="/register" element={<RegisterPage />} />
                 <Route path="/centers" element={<CenterDiscoveryPage />} />
+                <Route path="/find-centres" element={<CenterDiscoveryPage />} />
+                <Route path="/live-queue" element={<LiveQueuePage />} />
                 <Route path="/help" element={<HelpPage />} />
+                <Route path="/support" element={<HelpPage />} />
 
                 {/* Farmer Routes */}
                 <Route path="/farmer/dashboard" element={
@@ -68,6 +71,11 @@ export default function App() {
                   </ProtectedRoute>
                 } />
                 <Route path="/farmer/payment" element={
+                  <ProtectedRoute allowedRoles={['FARMER', 'ADMIN']}>
+                    <FarmerPaymentPage />
+                  </ProtectedRoute>
+                } />
+                <Route path="/farmer/payments" element={
                   <ProtectedRoute allowedRoles={['FARMER', 'ADMIN']}>
                     <FarmerPaymentPage />
                   </ProtectedRoute>
@@ -110,9 +118,9 @@ export default function App() {
                   </div>
                 </div>
                 <div style={{ display: 'flex', gap: '16px' }}>
-                  <a href="/help" style={{ color: '#fef08a', textDecoration: 'none' }}>मदद व संपर्क</a>
-                  <a href="/centers" style={{ color: '#fef08a', textDecoration: 'none' }}>खरीद केंद्र</a>
-                  <a href="/login" style={{ color: '#fef08a', textDecoration: 'none' }}>अधिकारी लॉगिन</a>
+                  <Link to="/help" style={{ color: '#fef08a', textDecoration: 'none' }}>मदद व संपर्क</Link>
+                  <Link to="/centers" style={{ color: '#fef08a', textDecoration: 'none' }}>खरीद केंद्र</Link>
+                  <Link to="/login" style={{ color: '#fef08a', textDecoration: 'none' }}>अधिकारी लॉगिन</Link>
                 </div>
               </div>
             </footer>

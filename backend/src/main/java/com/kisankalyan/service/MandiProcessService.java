@@ -48,6 +48,45 @@ public class MandiProcessService {
     @Autowired
     private StaffRepository staffRepository;
 
+    @Autowired
+    private NotificationRepository notificationRepository;
+
+    @Autowired
+    private WebSocketBroadcastService webSocketBroadcastService;
+
+    @Autowired
+    private AdminAnalyticsService adminAnalyticsService;
+
+    public Optional<MandiProcessDto.ProcurementEntryResponse> getProcurementEntryByBooking(Long bookingId) {
+        return bookingRepository.findById(bookingId)
+                .flatMap(procurementEntryRepository::findByBooking)
+                .map(this::mapToProcurementResponse);
+    }
+
+    public Optional<MandiProcessDto.JFormResponse> getJFormByBooking(Long bookingId) {
+        return bookingRepository.findById(bookingId)
+                .flatMap(procurementEntryRepository::findByBooking)
+                .flatMap(jFormRepository::findByEntry)
+                .map(this::mapToJFormResponse);
+    }
+
+    public Optional<MandiProcessDto.PaymentResponse> getPaymentByBooking(Long bookingId) {
+        return bookingRepository.findById(bookingId)
+                .flatMap(procurementEntryRepository::findByBooking)
+                .flatMap(entry -> paymentRepository.findAll().stream().filter(p -> p.getEntry().getEntryId().equals(entry.getEntryId())).findFirst())
+                .map(p -> MandiProcessDto.PaymentResponse.builder()
+                        .paymentId(p.getPaymentId())
+                        .entryId(p.getEntry().getEntryId())
+                        .amount(p.getAmount())
+                        .paymentMode(p.getPaymentMode())
+                        .paymentStatus(p.getPaymentStatus())
+                        .transactionReference(p.getTransactionReference())
+                        .bankName(p.getBankName())
+                        .paymentDate(p.getPaymentDate())
+                        .failureReason(p.getFailureReason())
+                        .build());
+    }
+
     public List<MandiProcessDto.QueueStatusResponse> getLiveQueue(Long centerId) {
         List<QueueStatus> queueList = queueStatusRepository.findAll();
         if (centerId != null) {
@@ -80,7 +119,24 @@ public class MandiProcessService {
         booking.setBookingStatus(BookingStatus.PROCESSING);
         bookingRepository.save(booking);
 
-        return mapToQueueResponse(qs);
+        MandiProcessDto.QueueStatusResponse resp = mapToQueueResponse(qs);
+        webSocketBroadcastService.broadcastTokenCalled(resp);
+        webSocketBroadcastService.broadcastQueueUpdate(booking.getCenter().getCenterId(), getLiveQueue(booking.getCenter().getCenterId()));
+        webSocketBroadcastService.broadcastBookingUpdate(booking);
+
+        if (booking.getFarmer() != null && booking.getFarmer().getUser() != null) {
+            Notification notif = Notification.builder()
+                    .user(booking.getFarmer().getUser())
+                    .booking(booking)
+                    .notificationType(NotificationType.TOKEN_CALLED)
+                    .message("🔔 टोकन " + qs.getTokenNumber() + " काउंटर " + (qs.getCounter() != null ? qs.getCounter().getCounterNumber() : "1") + " पर पुकारा गया है। कृपया आगे बढ़ें।")
+                    .isRead(false)
+                    .build();
+            notificationRepository.save(notif);
+            webSocketBroadcastService.broadcastFarmerNotification(booking.getFarmer().getUser().getUsername(), notif.getMessage());
+        }
+
+        return resp;
     }
 
     @Transactional
@@ -97,10 +153,31 @@ public class MandiProcessService {
 
         entry.setMoisturePercentage(request.getMoisturePercentage());
         entry.setForeignMatterPercentage(request.getForeignMatterPercentage());
-        entry.setQualityGrade(request.getQualityGrade());
+        String grade = request.getQualityGrade();
+        if (grade != null) {
+            if (grade.contains("Grade A")) grade = "FAQ Grade A";
+            else if (grade.contains("Grade B")) grade = "FAQ Grade B";
+            else if (grade.length() > 20) grade = grade.substring(0, 20);
+        }
+        entry.setQualityGrade(grade);
         entry.setQciStatus(request.getQciStatus() != null ? request.getQciStatus() : QciStatus.PASSED);
 
         entry = procurementEntryRepository.save(entry);
+        webSocketBroadcastService.broadcastQueueUpdate(booking.getCenter().getCenterId(), getLiveQueue(booking.getCenter().getCenterId()));
+        webSocketBroadcastService.broadcastBookingUpdate(booking);
+
+        if (booking.getFarmer() != null && booking.getFarmer().getUser() != null) {
+            Notification notif = Notification.builder()
+                    .user(booking.getFarmer().getUser())
+                    .booking(booking)
+                    .notificationType(NotificationType.QUALITY_UPDATE)
+                    .message("✅ गुणवत्ता जांच पूर्ण: नमी " + entry.getMoisturePercentage() + "%, ग्रेड: " + entry.getQualityGrade() + " (" + entry.getQciStatus() + ")")
+                    .isRead(false)
+                    .build();
+            notificationRepository.save(notif);
+            webSocketBroadcastService.broadcastFarmerNotification(booking.getFarmer().getUser().getUsername(), notif.getMessage());
+        }
+
         return mapToProcurementResponse(entry);
     }
 
@@ -148,6 +225,22 @@ public class MandiProcessService {
             queueStatusRepository.save(qs);
         });
 
+        webSocketBroadcastService.broadcastQueueUpdate(booking.getCenter().getCenterId(), getLiveQueue(booking.getCenter().getCenterId()));
+        webSocketBroadcastService.broadcastBookingUpdate(booking);
+        webSocketBroadcastService.broadcastAdminAnalytics(adminAnalyticsService.getDashboardAnalytics());
+
+        if (booking.getFarmer() != null && booking.getFarmer().getUser() != null) {
+            Notification notif = Notification.builder()
+                    .user(booking.getFarmer().getUser())
+                    .booking(booking)
+                    .notificationType(NotificationType.WEIGHMENT_UPDATE)
+                    .message("🌾 तौल पूर्ण: " + entry.getActualQuantityQuintals() + " क्विंटल। डिजिटल J-Form जारी कर दिया गया है एवं DBT भुगतान शुरू हो चुका है।")
+                    .isRead(false)
+                    .build();
+            notificationRepository.save(notif);
+            webSocketBroadcastService.broadcastFarmerNotification(booking.getFarmer().getUser().getUsername(), notif.getMessage());
+        }
+
         return mapToProcurementResponse(entry);
     }
 
@@ -158,6 +251,12 @@ public class MandiProcessService {
             return mapToJFormResponse(existing.get());
         }
 
+        ProcurementCentre center = entry.getBooking().getCenter();
+        String sigName = (center != null && center.getAuthorizedSignatoryName() != null)
+                ? center.getAuthorizedSignatoryName()
+                : "APMC Mandi Secretary";
+        String sigData = (center != null) ? center.getSignatureData() : null;
+
         String jFormNum = "JF-" + LocalDate.now().getYear() + "-" + (entry.getEntryId() + 1000);
         JForm jForm = JForm.builder()
                 .entry(entry)
@@ -165,6 +264,8 @@ public class MandiProcessService {
                 .issueDate(LocalDate.now())
                 .status(JFormStatus.ISSUED)
                 .documentPath("/documents/jforms/" + jFormNum + ".pdf")
+                .authorizedSignatoryName(sigName)
+                .signatureData(sigData)
                 .build();
 
         jForm = jFormRepository.save(jForm);
@@ -286,11 +387,26 @@ public class MandiProcessService {
                 .build();
     }
 
+    public Optional<StorageRecord> getStorageRecordByBooking(Long bookingId) {
+        return bookingRepository.findById(bookingId)
+                .flatMap(procurementEntryRepository::findByBooking)
+                .map(storageRecordRepository::findByProcurementEntry)
+                .flatMap(list -> list.stream().findFirst());
+    }
+
     private MandiProcessDto.JFormResponse mapToJFormResponse(JForm jf) {
         ProcurementEntry e = jf.getEntry();
         BigDecimal msp = e.getBooking().getProduce().getMspRate();
         BigDecimal qty = e.getActualQuantityQuintals() != null ? e.getActualQuantityQuintals() : e.getBooking().getEstimatedQuantity();
         BigDecimal total = qty.multiply(msp).setScale(2, RoundingMode.HALF_UP);
+
+        String sigName = jf.getAuthorizedSignatoryName() != null
+                ? jf.getAuthorizedSignatoryName()
+                : (e.getBooking().getCenter() != null ? e.getBooking().getCenter().getAuthorizedSignatoryName() : null);
+
+        String sigData = jf.getSignatureData() != null
+                ? jf.getSignatureData()
+                : (e.getBooking().getCenter() != null ? e.getBooking().getCenter().getSignatureData() : null);
 
         return MandiProcessDto.JFormResponse.builder()
                 .jFormId(jf.getJFormId())
@@ -307,6 +423,8 @@ public class MandiProcessService {
                 .ratePerQuintal(msp)
                 .totalAmount(total)
                 .documentPath(jf.getDocumentPath())
+                .authorizedSignatoryName(sigName)
+                .signatureData(sigData)
                 .build();
     }
 }

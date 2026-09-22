@@ -872,17 +872,50 @@ public class SlotBookingDto {
             public Builder qrToken(String qrToken) { this.qrToken = qrToken; return this; }
 
             public QrVerificationRequest build() {
-
                 QrVerificationRequest obj = new QrVerificationRequest();
-
                 obj.qrToken = this.qrToken;
-
                 return obj;
-
             }
+        }
+    }
 
+    public static class RescheduleRequest {
+        private Long newSlotId;
+        private String reason;
+
+        public RescheduleRequest() {}
+
+        public RescheduleRequest(Long newSlotId) {
+            this.newSlotId = newSlotId;
         }
 
+        public RescheduleRequest(Long newSlotId, String reason) {
+            this.newSlotId = newSlotId;
+            this.reason = reason;
+        }
+
+        public Long getNewSlotId() { return this.newSlotId; }
+        public void setNewSlotId(Long newSlotId) { this.newSlotId = newSlotId; }
+
+        public String getReason() { return this.reason; }
+        public void setReason(String reason) { this.reason = reason; }
+
+        public static Builder builder() { return new Builder(); }
+
+        public static class Builder {
+            private Long newSlotId;
+            private String reason;
+
+            public Builder newSlotId(Long newSlotId) { this.newSlotId = newSlotId; return this; }
+            public Builder reason(String reason) { this.reason = reason; return this; }
+
+            public RescheduleRequest build() {
+                RescheduleRequest obj = new RescheduleRequest();
+                obj.newSlotId = this.newSlotId;
+                obj.reason = this.reason;
+                return obj;
+            }
+        }
     }
 
 }

@@ -16,6 +16,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.OffsetDateTime;
+import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -49,15 +50,25 @@ public class BookingService {
     private QueueStatusRepository queueStatusRepository;
 
     @Autowired
+    private NotificationRepository notificationRepository;
+
+    @Autowired
     private SlotAllocationService allocationService;
+
+    @Autowired
+    private WebSocketBroadcastService webSocketBroadcastService;
 
     public List<SlotBookingDto.TimeSlotAvailabilityResponse> getCenterSlotAvailability(Long centerId, LocalDate date, BigDecimal quantity) {
         ProcurementCentre centre = centreRepository.findById(centerId)
                 .orElseThrow(() -> new ResourceNotFoundException("ProcurementCentre", "centerId", centerId));
 
+        if (centre.getStatus() != com.kisankalyan.entity.enums.CentreStatus.ACTIVE) {
+            throw new ApiException("यह खरीद केंद्र वर्तमान में निष्क्रिय है / Selected procurement centre is currently inactive");
+        }
+
         List<TimeSlot> slots = timeSlotRepository.findByCenterAndSlotDate(centre, date);
         if (slots.isEmpty()) {
-            // Default 4 operating windows if not yet populated for this date
+            // Default operating windows if not yet populated for this date
             slots = initializeDefaultTimeSlotsForDate(centre, date);
         }
 
@@ -72,19 +83,39 @@ public class BookingService {
         List<SlotBookingDto.TimeSlotAvailabilityResponse> response = new ArrayList<>();
         DateTimeFormatter timeFmt = DateTimeFormatter.ofPattern("hh:mm a");
 
+        LocalDate today = LocalDate.now(ZoneId.of("Asia/Kolkata"));
+        LocalTime nowTime = LocalTime.now(ZoneId.of("Asia/Kolkata"));
+        boolean isPastDate = date.isBefore(today);
+
         for (TimeSlot slot : slots) {
             List<SlotBookingDto.FreeInterval> allFreeIntervals = new ArrayList<>();
             for (Counter counter : counters) {
                 allFreeIntervals.addAll(allocationService.findFreeIntervals(counter, slot, date));
             }
 
-            boolean canFit = allFreeIntervals.stream().anyMatch(interval -> interval.getDurationMinutes() >= reqDuration);
             long totalFreeMinutes = allFreeIntervals.stream().mapToLong(SlotBookingDto.FreeInterval::getDurationMinutes).sum();
 
-            BigDecimal rate = centre.getProcessingMinutesPerQuintal() != null ? centre.getProcessingMinutesPerQuintal() : BigDecimal.valueOf(10);
-            BigDecimal availableQuintals = BigDecimal.valueOf(totalFreeMinutes).divide(rate, 2, BigDecimal.ROUND_HALF_UP);
+            BigDecimal rate = centre.getProcessingMinutesPerQuintal() != null && centre.getProcessingMinutesPerQuintal().compareTo(BigDecimal.ZERO) > 0
+                    ? centre.getProcessingMinutesPerQuintal()
+                    : BigDecimal.valueOf(10);
+            BigDecimal availableQuintals = BigDecimal.valueOf(totalFreeMinutes).divide(rate, 2, java.math.RoundingMode.HALF_UP);
 
             String label = slot.getStartTime().format(timeFmt) + " – " + slot.getEndTime().format(timeFmt);
+
+            // Accurate Date & Time Expiry check
+            boolean isExpired = isPastDate || (date.isEqual(today) && slot.getEndTime().isBefore(nowTime));
+            boolean isFull = slot.getBookedCount() >= slot.getMaxBookings() || slot.getStatus() == com.kisankalyan.entity.enums.TimeSlotStatus.FULL;
+            boolean isAvailable = !isExpired && !isFull && slot.getStatus() == com.kisankalyan.entity.enums.TimeSlotStatus.AVAILABLE;
+
+            String statusMessage;
+            if (isExpired) {
+                statusMessage = "समय समाप्त हो चुका है / Expired";
+            } else if (isFull) {
+                statusMessage = "स्लॉट भर चुका है / Slot Full";
+            } else {
+                int remaining = Math.max(0, slot.getMaxBookings() - slot.getBookedCount());
+                statusMessage = "स्लॉट उपलब्ध है (" + remaining + " शेष)";
+            }
 
             response.add(SlotBookingDto.TimeSlotAvailabilityResponse.builder()
                     .slotId(slot.getSlotId())
@@ -94,10 +125,10 @@ public class BookingService {
                     .timeRangeLabel(label)
                     .maxBookings(slot.getMaxBookings())
                     .currentBookings(slot.getBookedCount())
-                    .isAvailable(canFit && slot.getBookedCount() < slot.getMaxBookings())
+                    .isAvailable(isAvailable)
                     .freeIntervals(allFreeIntervals)
                     .availableCapacityQuintals(availableQuintals)
-                    .message(canFit ? "स्लॉट उपलब्ध है (" + allFreeIntervals.size() + " विकल्प)" : "पर्याप्त समय उपलब्ध नहीं है")
+                    .message(statusMessage)
                     .build());
         }
 
@@ -139,17 +170,47 @@ public class BookingService {
         ProcurementCentre centre = centreRepository.findById(request.getCenterId())
                 .orElseThrow(() -> new ResourceNotFoundException("ProcurementCentre", "centerId", request.getCenterId()));
 
+        if (centre.getStatus() != com.kisankalyan.entity.enums.CentreStatus.ACTIVE) {
+            throw new ApiException("चयनित खरीद केंद्र वर्तमान में सक्रिय नहीं है / Selected procurement centre is not active");
+        }
+
         AgriculturalProduce produce = produceRepository.findById(request.getProduceId())
                 .orElseThrow(() -> new ResourceNotFoundException("AgriculturalProduce", "produceId", request.getProduceId()));
 
-        TimeSlot slot = timeSlotRepository.findById(request.getSlotId())
+        // Pessimistic lock on TimeSlot to avoid double-booking concurrency race conditions
+        TimeSlot slot = timeSlotRepository.findByIdWithLock(request.getSlotId())
                 .orElseThrow(() -> new ResourceNotFoundException("TimeSlot", "slotId", request.getSlotId()));
+
+        // Validate Slot -> Centre relationship
+        if (!slot.getCenter().getCenterId().equals(centre.getCenterId())) {
+            throw new ApiException("चयनित समय स्लॉट इस खरीद केंद्र से संबंधित नहीं है / Selected slot does not belong to the chosen centre");
+        }
 
         if (request.getEstimatedQuantity() == null || request.getEstimatedQuantity().compareTo(BigDecimal.ZERO) <= 0) {
             throw new ApiException("मान्य मात्रा दर्ज करें / Please enter a valid quantity");
         }
 
-        // Daily capacity validation
+        // Validate Slot Availability and Capacity
+        if (slot.getBookedCount() >= slot.getMaxBookings() || slot.getStatus() == com.kisankalyan.entity.enums.TimeSlotStatus.FULL) {
+            throw new ApiException("क्षमा करें, यह समय स्लॉट भर चुका है। कृपया दूसरा स्लॉट चुनें। / Slot is fully booked");
+        }
+
+        // Validate Expiration
+        LocalDate today = LocalDate.now(ZoneId.of("Asia/Kolkata"));
+        LocalTime nowTime = LocalTime.now(ZoneId.of("Asia/Kolkata"));
+        if (slot.getSlotDate().isBefore(today) || (slot.getSlotDate().isEqual(today) && slot.getEndTime().isBefore(nowTime))) {
+            throw new ApiException("यह समय स्लॉट समाप्त हो चुका है। कृपया आगामी स्लॉट चुनें। / Time slot has expired");
+        }
+
+        // Duplicate Booking Prevention: Check if farmer already has an active booking on this date
+        List<SlotBooking> existingBookings = bookingRepository.findByFarmerAndSlot_SlotDateAndBookingStatusNotIn(
+                farmer, slot.getSlotDate(), List.of(BookingStatus.CANCELLED, BookingStatus.NO_SHOW)
+        );
+        if (!existingBookings.isEmpty()) {
+            throw new ApiException("आपके पास इस तिथि के लिए पहले से ही एक सक्रिय बुकिंग है (" + existingBookings.get(0).getTokenNumber() + ")। एक तिथि पर एक किसान की केवल एक बुकिंग मान्य है।");
+        }
+
+        // Daily centre capacity validation
         BigDecimal newDailyTotal = centre.getCurrentDailyQuantity().add(request.getEstimatedQuantity());
         if (centre.getCapacityPerDay() != null && newDailyTotal.compareTo(centre.getCapacityPerDay()) > 0) {
             throw new ApiException("केंद्र की दैनिक खरीद क्षमता पूरी हो चुकी है / Centre daily capacity exceeded");
@@ -188,6 +249,9 @@ public class BookingService {
         centreRepository.save(centre);
 
         slot.setBookedCount(slot.getBookedCount() + 1);
+        if (slot.getBookedCount() >= slot.getMaxBookings()) {
+            slot.setStatus(com.kisankalyan.entity.enums.TimeSlotStatus.FULL);
+        }
         timeSlotRepository.save(slot);
 
         // Create QueueStatus record
@@ -201,7 +265,108 @@ public class BookingService {
                 .build();
         queueStatusRepository.save(queueStatus);
 
-        return mapToResponse(booking, allocation);
+        // Generate Notification for Farmer
+        if (farmer.getUser() != null) {
+            Notification notif = com.kisankalyan.entity.Notification.builder()
+                    .user(farmer.getUser())
+                    .booking(booking)
+                    .notificationType(com.kisankalyan.entity.enums.NotificationType.SLOT_CONFIRMATION)
+                    .message("🎉 आपका स्लॉट सफलतापूर्वक आरक्षित हो गया! टोकन: " + tokenNumber + ", केंद्र: " + centre.getCenterName() + ", तिथि: " + slot.getSlotDate() + " (" + slot.getStartTime() + " - " + slot.getEndTime() + ")")
+                    .isRead(false)
+                    .build();
+            notificationRepository.save(notif);
+            webSocketBroadcastService.broadcastFarmerNotification(farmer.getUser().getUsername(), notif.getMessage());
+        }
+
+        SlotBookingDto.BookingResponse resp = mapToResponse(booking, allocation);
+        webSocketBroadcastService.broadcastBookingUpdate(resp);
+        return resp;
+    }
+
+    @Transactional
+    public SlotBookingDto.BookingResponse rescheduleBooking(Long bookingId, Long newSlotId) {
+        return rescheduleBooking(bookingId, newSlotId, null);
+    }
+
+    @Transactional
+    public SlotBookingDto.BookingResponse rescheduleBooking(Long bookingId, Long newSlotId, String reason) {
+        SlotBooking booking = bookingRepository.findById(bookingId)
+                .orElseThrow(() -> new ResourceNotFoundException("SlotBooking", "bookingId", bookingId));
+
+        if (booking.getBookingStatus() != BookingStatus.BOOKED) {
+            throw new ApiException("केवल प्रतीक्षारत बुकिंग (BOOKED) का समय बदला जा सकता है / Only active pending bookings can be rescheduled");
+        }
+
+        TimeSlot oldSlot = booking.getSlot();
+        TimeSlot newSlot = timeSlotRepository.findByIdWithLock(newSlotId)
+                .orElseThrow(() -> new ResourceNotFoundException("TimeSlot", "slotId", newSlotId));
+
+        if (!newSlot.getCenter().getCenterId().equals(booking.getCenter().getCenterId())) {
+            throw new ApiException("नया स्लॉट उसी खरीद केंद्र का होना चाहिए / New slot must belong to the same centre");
+        }
+
+        if (newSlot.getBookedCount() >= newSlot.getMaxBookings() || newSlot.getStatus() == com.kisankalyan.entity.enums.TimeSlotStatus.FULL) {
+            throw new ApiException("चयनित नया स्लॉट भर चुका है / Selected new slot is already full");
+        }
+
+        LocalDate today = LocalDate.now(ZoneId.of("Asia/Kolkata"));
+        LocalTime nowTime = LocalTime.now(ZoneId.of("Asia/Kolkata"));
+        if (newSlot.getSlotDate().isBefore(today) || (newSlot.getSlotDate().isEqual(today) && newSlot.getEndTime().isBefore(nowTime))) {
+            throw new ApiException("चयनित नया स्लॉट समाप्त हो चुका है / Selected new slot has already expired");
+        }
+
+        // Release previous slot
+        if (oldSlot != null && oldSlot.getBookedCount() > 0) {
+            oldSlot.setBookedCount(oldSlot.getBookedCount() - 1);
+            if (oldSlot.getStatus() == com.kisankalyan.entity.enums.TimeSlotStatus.FULL) {
+                oldSlot.setStatus(com.kisankalyan.entity.enums.TimeSlotStatus.AVAILABLE);
+            }
+            timeSlotRepository.save(oldSlot);
+        }
+
+        // Book into new slot
+        newSlot.setBookedCount(newSlot.getBookedCount() + 1);
+        if (newSlot.getBookedCount() >= newSlot.getMaxBookings()) {
+            newSlot.setStatus(com.kisankalyan.entity.enums.TimeSlotStatus.FULL);
+        }
+        timeSlotRepository.save(newSlot);
+
+        booking.setSlot(newSlot);
+        booking = bookingRepository.save(booking);
+
+        // Reallocate interval on counter
+        SlotAllocation allocation = allocationService.allocateEarliestFeasibleInterval(
+                booking.getCenter(), newSlot, booking, booking.getEstimatedQuantity()
+        );
+
+        OffsetDateTime deadline = allocation.getAllocatedStartTime().minusMinutes(10);
+        booking.setVerificationDeadline(deadline);
+        booking = bookingRepository.save(booking);
+
+        // Update QueueStatus counter
+        Optional<QueueStatus> qsOpt = queueStatusRepository.findByBooking(booking);
+        if (qsOpt.isPresent()) {
+            QueueStatus qs = qsOpt.get();
+            qs.setCounter(allocation.getCounter());
+            queueStatusRepository.save(qs);
+        }
+
+        // Send notification to farmer
+        if (booking.getFarmer() != null && booking.getFarmer().getUser() != null) {
+            Notification notif = com.kisankalyan.entity.Notification.builder()
+                    .user(booking.getFarmer().getUser())
+                    .booking(booking)
+                    .notificationType(com.kisankalyan.entity.enums.NotificationType.SLOT_CONFIRMATION)
+                    .message("🕒 आपकी स्लॉट टाइमिंग अपडेट हो गई है! नया समय: " + newSlot.getSlotDate() + " (" + newSlot.getStartTime() + " - " + newSlot.getEndTime() + "), टोकन: " + booking.getTokenNumber())
+                    .isRead(false)
+                    .build();
+            notificationRepository.save(notif);
+            webSocketBroadcastService.broadcastFarmerNotification(booking.getFarmer().getUser().getUsername(), notif.getMessage());
+        }
+
+        SlotBookingDto.BookingResponse resp = mapToResponse(booking, allocation);
+        webSocketBroadcastService.broadcastBookingUpdate(resp);
+        return resp;
     }
 
     public List<SlotBookingDto.BookingResponse> getFarmerBookings(Long farmerId) {
@@ -209,10 +374,12 @@ public class BookingService {
                 .orElseThrow(() -> new ResourceNotFoundException("Farmer", "farmerId", farmerId));
 
         List<SlotBooking> bookings = bookingRepository.findByFarmer(farmer);
-        return bookings.stream().map(b -> {
-            Optional<SlotAllocation> alloc = allocationRepository.findByBooking(b);
-            return mapToResponse(b, alloc.orElse(null));
-        }).collect(Collectors.toList());
+        return bookings.stream()
+                .sorted((b1, b2) -> b2.getBookingId().compareTo(b1.getBookingId()))
+                .map(b -> {
+                    Optional<SlotAllocation> alloc = allocationRepository.findByBooking(b);
+                    return mapToResponse(b, alloc.orElse(null));
+                }).collect(Collectors.toList());
     }
 
     public SlotBookingDto.BookingResponse getBookingById(Long bookingId) {
@@ -231,13 +398,46 @@ public class BookingService {
         booking.setCancelReason(reason != null ? reason : "किसान द्वारा रद्द / Cancelled by farmer");
         bookingRepository.save(booking);
 
+        // Release slot booked count
+        TimeSlot slot = booking.getSlot();
+        if (slot != null && slot.getBookedCount() > 0) {
+            slot.setBookedCount(slot.getBookedCount() - 1);
+            if (slot.getStatus() == com.kisankalyan.entity.enums.TimeSlotStatus.FULL) {
+                slot.setStatus(com.kisankalyan.entity.enums.TimeSlotStatus.AVAILABLE);
+            }
+            timeSlotRepository.save(slot);
+        }
+
+        // Release center daily quantity
+        ProcurementCentre centre = booking.getCenter();
+        if (centre != null && centre.getCurrentDailyQuantity() != null && booking.getEstimatedQuantity() != null) {
+            BigDecimal updated = centre.getCurrentDailyQuantity().subtract(booking.getEstimatedQuantity());
+            centre.setCurrentDailyQuantity(updated.compareTo(BigDecimal.ZERO) < 0 ? BigDecimal.ZERO : updated);
+            centreRepository.save(centre);
+        }
+
         Optional<SlotAllocation> allocOpt = allocationRepository.findByBooking(booking);
         allocOpt.ifPresent(alloc -> {
             alloc.setAllocationStatus(AllocationStatus.CANCELLED);
             allocationRepository.save(alloc);
         });
 
-        return mapToResponse(booking, allocOpt.orElse(null));
+        // Send cancellation notification to farmer
+        if (booking.getFarmer() != null && booking.getFarmer().getUser() != null) {
+            Notification notif = com.kisankalyan.entity.Notification.builder()
+                    .user(booking.getFarmer().getUser())
+                    .booking(booking)
+                    .notificationType(com.kisankalyan.entity.enums.NotificationType.GENERAL)
+                    .message("❌ टोकन " + booking.getTokenNumber() + " की बुकिंग रद्द कर दी गई है (" + (booking.getCancelReason()) + ")।")
+                    .isRead(false)
+                    .build();
+            notificationRepository.save(notif);
+            webSocketBroadcastService.broadcastFarmerNotification(booking.getFarmer().getUser().getUsername(), notif.getMessage());
+        }
+
+        SlotBookingDto.BookingResponse resp = mapToResponse(booking, allocOpt.orElse(null));
+        webSocketBroadcastService.broadcastBookingUpdate(resp);
+        return resp;
     }
 
     @Transactional
@@ -245,25 +445,28 @@ public class BookingService {
         String ref = qrToken.trim();
         if (ref.contains("REF:")) {
             int refIdx = ref.indexOf("REF:");
-            int endIdx = ref.indexOf("-", refIdx);
+            int endIdx = ref.indexOf("-BID:", refIdx);
             if (endIdx != -1) {
                 ref = ref.substring(refIdx + 4, endIdx);
             } else {
                 ref = ref.substring(refIdx + 4);
             }
         } else if (ref.startsWith("KK-")) {
-            String[] parts = ref.split("-");
-            if (parts.length > 1) {
-                ref = parts[1];
+            ref = ref.substring(3);
+            int fIdx = ref.lastIndexOf("-F");
+            if (fIdx != -1) {
+                ref = ref.substring(0, fIdx);
             }
         }
 
         final String searchRef = ref.trim();
         SlotBooking booking = bookingRepository.findAll().stream()
                 .filter(b -> b.getBookingReference().equalsIgnoreCase(searchRef) ||
-                             b.getBookingReference().contains(searchRef) ||
                              (b.getTokenNumber() != null && b.getTokenNumber().equalsIgnoreCase(searchRef)))
                 .findFirst()
+                .or(() -> bookingRepository.findAll().stream()
+                        .filter(b -> b.getBookingReference().contains(searchRef))
+                        .findFirst())
                 .orElseThrow(() -> new ApiException("अमान्य या अज्ञात QR कोड / Invalid or unknown QR code: " + searchRef));
 
         if (booking.getQrVerifiedAt() != null || booking.getBookingStatus() == BookingStatus.ARRIVED) {
@@ -308,7 +511,9 @@ public class BookingService {
         }
 
         Optional<SlotAllocation> alloc = allocationRepository.findByBooking(booking);
-        return mapToResponse(booking, alloc.orElse(null));
+        SlotBookingDto.BookingResponse resp = mapToResponse(booking, alloc.orElse(null));
+        webSocketBroadcastService.broadcastBookingUpdate(resp);
+        return resp;
     }
 
     private SlotBookingDto.BookingResponse mapToResponse(SlotBooking b, SlotAllocation alloc) {

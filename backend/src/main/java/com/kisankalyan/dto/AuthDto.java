@@ -389,4 +389,79 @@ public class AuthDto {
 
     }
 
+    public static class ForgotPasswordRequest {
+        @NotBlank(message = "उपयोगकर्ता नाम अथवा मोबाइल नंबर अनिवार्य है / Username or phone number is required")
+        private String usernameOrPhone;
+
+        public ForgotPasswordRequest() {}
+        public ForgotPasswordRequest(String usernameOrPhone) { this.usernameOrPhone = usernameOrPhone; }
+
+        public String getUsernameOrPhone() { return usernameOrPhone; }
+        public void setUsernameOrPhone(String usernameOrPhone) { this.usernameOrPhone = usernameOrPhone; }
+    }
+
+    public static class ForgotPasswordResponse {
+        private boolean success;
+        private String username;
+        private String maskedPhone;
+        private String message;
+
+        public ForgotPasswordResponse() {}
+        public ForgotPasswordResponse(boolean success, String username, String maskedPhone, String message) {
+            this.success = success;
+            this.username = username;
+            this.maskedPhone = maskedPhone;
+            this.message = message;
+        }
+
+        public boolean isSuccess() { return success; }
+        public void setSuccess(boolean success) { this.success = success; }
+        public String getUsername() { return username; }
+        public void setUsername(String username) { this.username = username; }
+        public String getMaskedPhone() { return maskedPhone; }
+        public void setMaskedPhone(String maskedPhone) { this.maskedPhone = maskedPhone; }
+        public String getMessage() { return message; }
+        public void setMessage(String message) { this.message = message; }
+    }
+
+    public static class ResetPasswordRequest {
+        @NotBlank(message = "उपयोगकर्ता नाम अथवा मोबाइल नंबर अनिवार्य है")
+        private String usernameOrPhone;
+
+        @NotBlank(message = "सत्यापन के लिए पंजीकृत 10-अंकीय मोबाइल नंबर दर्ज करें")
+        private String phoneNumber;
+
+        @NotBlank(message = "नया पासवर्ड अनिवार्य है")
+        private String newPassword;
+
+        public ResetPasswordRequest() {}
+        public ResetPasswordRequest(String usernameOrPhone, String phoneNumber, String newPassword) {
+            this.usernameOrPhone = usernameOrPhone;
+            this.phoneNumber = phoneNumber;
+            this.newPassword = newPassword;
+        }
+
+        public String getUsernameOrPhone() { return usernameOrPhone; }
+        public void setUsernameOrPhone(String usernameOrPhone) { this.usernameOrPhone = usernameOrPhone; }
+        public String getPhoneNumber() { return phoneNumber; }
+        public void setPhoneNumber(String phoneNumber) { this.phoneNumber = phoneNumber; }
+        public String getNewPassword() { return newPassword; }
+        public void setNewPassword(String newPassword) { this.newPassword = newPassword; }
+    }
+
+    public static class MessageResponse {
+        private boolean success;
+        private String message;
+
+        public MessageResponse() {}
+        public MessageResponse(boolean success, String message) {
+            this.success = success;
+            this.message = message;
+        }
+
+        public boolean isSuccess() { return success; }
+        public void setSuccess(boolean success) { this.success = success; }
+        public String getMessage() { return message; }
+        public void setMessage(String message) { this.message = message; }
+    }
 }
