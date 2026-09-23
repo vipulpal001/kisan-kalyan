@@ -22,9 +22,11 @@ import {
   RefreshCw,
   LogOut,
   ChevronRight,
-  AlertCircle
+  AlertCircle,
+  Sprout,
+  Landmark
 } from 'lucide-react';
-import farmerCleanFinal from '../assets/farmer_clean_final.png';
+import farmerBannerPortrait from '../assets/farmer_banner_portrait.png';
 
 export default function FarmerDashboard() {
   const { user, logout } = useAuth();
@@ -234,7 +236,7 @@ export default function FarmerDashboard() {
       <div className="portal-container" style={{ maxWidth: '1240px', margin: '0 auto', padding: '0 16px' }}>
 
         {/* =========================================================================
-            1. TOP HERO GREETING BANNER
+            1. TOP HERO GREETING BANNER (Matches Reference UI)
         ========================================================================= */}
         <div style={{ 
           background: '#ffffff', 
@@ -248,178 +250,215 @@ export default function FarmerDashboard() {
           flexWrap: 'wrap',
           alignItems: 'center',
           justifyContent: 'space-between',
-          padding: '20px 24px',
-          minHeight: '185px',
-          gap: '16px'
+          padding: '24px 28px',
+          gap: '24px'
         }}>
-          {/* Column 1: Greeting & Slogan */}
-          <div style={{ flex: '1 1 280px', minWidth: '260px', zIndex: 1 }}>
-            <h1 style={{ fontSize: '1.5rem', fontWeight: 900, color: '#111827', display: 'flex', alignItems: 'center', gap: '8px', margin: 0 }}>
-              {t('greetingNamaste')}, {farmer?.name || user?.name || (language === 'hi' ? 'रामेश्वर सिंह' : 'Ramesh Singh')} {t('greetingHonorific')} <span style={{ fontSize: '1.4rem' }}>👋</span>
+          {/* Column 1: Greeting & Slogan & Value Pillars */}
+          <div style={{ flex: '1 1 320px', minWidth: '270px', zIndex: 1 }}>
+            {/* Welcome Back Pill */}
+            <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', color: '#047857', fontWeight: 700, fontSize: '0.84rem', marginBottom: '8px' }}>
+              <Sprout size={18} color="#059669" />
+              <span>{language === 'hi' ? 'स्वागत है —' : 'Welcome Back —'}</span>
+            </div>
+
+            {/* Greeting Title */}
+            <h1 style={{ fontSize: '1.55rem', fontWeight: 900, color: '#111827', margin: '0 0 6px 0', lineHeight: 1.3 }}>
+              {language === 'hi' ? 'नमस्ते' : 'Namaste'}, {farmer?.name || user?.name || user?.username || (language === 'hi' ? 'किसान भाई' : 'Kisan')}{' '}
+              {farmer?.englishName ? (
+                <span style={{ fontWeight: 800 }}>({farmer.englishName}) {language === 'hi' ? 'जी' : 'ji'}</span>
+              ) : (
+                <span style={{ fontWeight: 800 }}>{language === 'hi' ? 'जी' : 'ji'}</span>
+              )}{' '}
+              <span style={{ fontSize: '1.4rem' }}>👋</span>
             </h1>
-            <p style={{ color: '#4b5563', fontSize: '0.92rem', fontWeight: 500, margin: '6px 0 8px 0' }}>
-              {t('farmerWelcome')}
+
+            {/* Subtitle */}
+            <p style={{ color: '#4b5563', fontSize: '0.92rem', fontWeight: 500, margin: '0 0 6px 0' }}>
+              {language === 'hi' ? 'अन्नदाता किसान भाई का स्वागत है' : "Welcome to the farmer's digital portal"}
             </p>
-            <p style={{ color: '#047857', fontWeight: 700, fontSize: '0.98rem', fontStyle: 'italic', margin: '0 0 12px 0' }}>
-              {t('farmerMotto')}
+
+            {/* Italic Motto */}
+            <p style={{ color: '#047857', fontWeight: 700, fontSize: '0.96rem', fontStyle: 'italic', margin: '0 0 12px 0' }}>
+              “ {language === 'hi' ? 'आपकी मेहनत, देश की ताकत' : 'Your hard work, strengthens the nation'} ”
             </p>
-            <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', background: '#f8fafc', border: '1px solid #e2e8f0', padding: '5px 14px', borderRadius: '20px', fontSize: '0.82rem', color: '#1f2937', fontWeight: 600 }}>
+
+            {/* Location Pill */}
+            <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', background: '#f8fafc', border: '1px solid #e2e8f0', padding: '5px 14px', borderRadius: '20px', fontSize: '0.82rem', color: '#1f2937', fontWeight: 600, marginBottom: '16px' }}>
               <MapPin size={15} color="#059669" />
               <span>
-                {farmer?.village ? `${farmer.village}, ${farmer.district}, ${farmer.state}` : t('farmerLocation')}
+                {farmer?.village ? `${farmer.village}, ${farmer.district}, ${farmer.state}` : (language === 'hi' ? 'चुनार देहात, मीरजापुर, उत्तर प्रदेश' : 'Chunar Dehat, Mirzapur, Uttar Pradesh')}
               </span>
+            </div>
+
+            {/* 3 Core Value Pillars */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '18px', flexWrap: 'wrap', paddingTop: '4px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.78rem', fontWeight: 700, color: '#374151' }}>
+                <Sprout size={16} color="#059669" />
+                <span>{language === 'hi' ? 'बेहतर मूल्य' : 'Better Prices'}</span>
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.78rem', fontWeight: 700, color: '#374151' }}>
+                <ShieldCheck size={16} color="#059669" />
+                <span>{language === 'hi' ? 'पारदर्शी प्रक्रिया' : 'Transparent Process'}</span>
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.78rem', fontWeight: 700, color: '#374151' }}>
+                <Users size={16} color="#059669" />
+                <span>{language === 'hi' ? 'सशक्त किसान' : 'Empowered Farmers'}</span>
+              </div>
             </div>
           </div>
 
-          {/* Column 2: Dark Forest Green Status Card (Real Backend Data) */}
-          {activeBooking ? (
-            <div style={{ 
-              background: '#044324', 
-              borderRadius: '18px', 
-              padding: '16px 20px', 
-              color: '#ffffff', 
-              boxShadow: '0 8px 24px rgba(4, 67, 36, 0.35)',
-              display: 'flex',
-              flexWrap: 'wrap',
-              alignItems: 'center',
-              gap: '16px',
-              flex: '1 1 450px',
-              maxWidth: '560px',
-              zIndex: 1
-            }}>
-              {/* Centre info */}
-              <div style={{ borderRight: '1px solid rgba(255,255,255,0.15)', paddingRight: '14px', flex: '1 1 140px' }}>
-                <span style={{ fontSize: '0.74rem', color: '#a7f3d0', fontWeight: 600 }}>
-                  {t('currentCenter')}
-                </span>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '4px', marginTop: '3px' }}>
-                  <MapPin size={14} color="#fef08a" />
-                  <strong style={{ fontSize: '0.88rem', color: '#ffffff', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '170px' }}>
-                    {activeBooking.centerName || 'चुनार APMC क्रय केंद्र'}
-                  </strong>
+          {/* Column 2: Dark Forest Green Status Card with Farmer Portrait inside */}
+          <div style={{ 
+            background: '#044324', 
+            borderRadius: '20px', 
+            padding: '16px 20px', 
+            color: '#ffffff', 
+            boxShadow: '0 8px 24px rgba(4, 67, 36, 0.35)',
+            display: 'flex',
+            flexWrap: 'wrap',
+            alignItems: 'center',
+            gap: '16px',
+            flex: '1 1 540px',
+            maxWidth: '620px',
+            zIndex: 1
+          }}>
+            {/* Status Panel (2 Rows) */}
+            <div style={{ flex: '1 1 360px', display: 'flex', flexDirection: 'column', gap: '12px', minWidth: '300px' }}>
+              {/* Row 1: 3 Column Info */}
+              <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '12px' }}>
+                {/* Centre Info */}
+                <div style={{ borderRight: '1px solid rgba(255,255,255,0.15)', paddingRight: '12px', flex: '1 1 140px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                    <Landmark size={13} color="#a7f3d0" />
+                    <span style={{ fontSize: '0.74rem', color: '#a7f3d0', fontWeight: 600 }}>
+                      {language === 'hi' ? 'वर्तमान क्रय केंद्र' : 'Current Procurement Center'}
+                    </span>
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '4px', marginTop: '4px' }}>
+                    <MapPin size={14} color="#fef08a" style={{ flexShrink: 0 }} />
+                    <strong style={{ fontSize: '0.86rem', color: '#ffffff', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '160px' }}>
+                      {activeBooking?.centerName || (language === 'hi' ? 'गाज़ियाबाद गेहूं खरीद केंद्र' : 'गाज़ियाबाद गेहूं खरीद केंद्र')}
+                    </strong>
+                  </div>
+                  <div style={{ fontSize: '0.72rem', color: '#cbd5e1', marginTop: '2px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '160px' }}>
+                    {activeBooking?.centerLocation || (language === 'hi' ? 'गाज़ियाबाद, उत्तर प्रदेश (Ghaziabad, UP)' : 'गाज़ियाबाद, उत्तर प्रदेश (Ghaziabad, UP)')}
+                  </div>
+                  <Link 
+                    to="/centers" 
+                    style={{ 
+                      display: 'inline-flex', 
+                      alignItems: 'center', 
+                      gap: '4px', 
+                      background: '#ffffff', 
+                      color: '#044324', 
+                      fontSize: '0.72rem', 
+                      fontWeight: 800, 
+                      padding: '2px 10px', 
+                      borderRadius: '12px', 
+                      textDecoration: 'none', 
+                      marginTop: '8px' 
+                    }}
+                  >
+                    {language === 'hi' ? 'केंद्र बदलें ⇄' : 'Change Center ⇄'}
+                  </Link>
                 </div>
-                <div style={{ fontSize: '0.72rem', color: '#cbd5e1', marginTop: '2px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '170px' }}>
-                  {activeBooking.centerLocation || 'मीरजापुर, उत्तर प्रदेश'}
+
+                {/* Mera Token */}
+                <div style={{ borderRight: '1px solid rgba(255,255,255,0.15)', paddingRight: '12px', textAlign: 'center', flex: '0 0 auto' }}>
+                  <span style={{ fontSize: '0.74rem', color: '#a7f3d0', fontWeight: 600 }}>
+                    {language === 'hi' ? 'मेरा टोकन' : 'My Token'}
+                  </span>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px', margin: '4px 0' }}>
+                    <span style={{ background: '#fef08a', color: '#713f12', padding: '1px 5px', borderRadius: '4px', fontSize: '0.75rem', fontWeight: 800 }}>🎫</span>
+                    <strong style={{ fontSize: '1.25rem', fontWeight: 900, color: '#fef08a' }}>
+                      {activeBooking?.tokenNumber || 'T-117-39'}
+                    </strong>
+                  </div>
+                  <span style={{ fontSize: '0.68rem', background: '#dcfce7', color: '#15803d', padding: '1px 8px', borderRadius: '10px', fontWeight: 800 }}>
+                    ● {language === 'hi' ? 'सक्रिय' : 'Active'}
+                  </span>
                 </div>
-                <Link 
-                  to="/centers" 
-                  style={{ 
-                    display: 'inline-flex', 
-                    alignItems: 'center', 
-                    gap: '4px', 
-                    background: '#ffffff', 
-                    color: '#044324', 
-                    fontSize: '0.72rem', 
-                    fontWeight: 800, 
-                    padding: '2px 10px', 
-                    borderRadius: '12px', 
-                    textDecoration: 'none', 
-                    marginTop: '8px' 
-                  }}
-                >
-                  {t('changeCenter')} ⇄
-                </Link>
+
+                {/* Katar Mein Sthan */}
+                <div style={{ textAlign: 'center', flex: '0 0 auto' }}>
+                  <span style={{ fontSize: '0.74rem', color: '#a7f3d0', fontWeight: 600 }}>
+                    {language === 'hi' ? 'कतार स्थिति' : 'My Queue Position'}
+                  </span>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px', margin: '4px 0' }}>
+                    <Users size={16} color="#93c5fd" />
+                    <strong style={{ fontSize: '1.3rem', fontWeight: 900, color: '#ffffff' }}>
+                      {activeBooking ? queuePosition : 6}
+                    </strong>
+                  </div>
+                  <span style={{ fontSize: '0.72rem', color: '#cbd5e1' }}>
+                    {language === 'hi' ? 'किसान बाकी' : 'Farmers Ahead'}
+                  </span>
+                </div>
               </div>
 
-              {/* Mera Token */}
-              <div style={{ borderRight: '1px solid rgba(255,255,255,0.15)', paddingRight: '14px', textAlign: 'center', flex: '0 0 auto' }}>
-                <span style={{ fontSize: '0.74rem', color: '#a7f3d0', fontWeight: 600 }}>{t('myToken')}</span>
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px', margin: '3px 0' }}>
-                  <span style={{ background: '#fef08a', color: '#713f12', padding: '1px 5px', borderRadius: '4px', fontSize: '0.75rem', fontWeight: 800 }}>🎫</span>
-                  <strong style={{ fontSize: '1.25rem', fontWeight: 900, color: '#fef08a' }}>
-                    {activeBooking.tokenNumber || 'A-102'}
-                  </strong>
-                </div>
-                <span style={{ fontSize: '0.68rem', background: statusStyle.bg, color: statusStyle.color, padding: '1px 8px', borderRadius: '10px', fontWeight: 800 }}>
-                  ● {statusStyle.label}
-                </span>
-              </div>
+              {/* Horizontal Divider */}
+              <div style={{ height: '1px', background: 'rgba(255,255,255,0.15)', width: '100%' }} />
 
-              {/* Katar Mein Sthan */}
-              <div style={{ borderRight: '1px solid rgba(255,255,255,0.15)', paddingRight: '14px', textAlign: 'center', flex: '0 0 auto' }}>
-                <span style={{ fontSize: '0.74rem', color: '#a7f3d0', fontWeight: 600 }}>{t('queuePosition')}</span>
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px', margin: '3px 0' }}>
-                  <Users size={16} color="#93c5fd" />
-                  <strong style={{ fontSize: '1.3rem', fontWeight: 900, color: '#ffffff' }}>
-                    {queuePosition}
-                  </strong>
+              {/* Row 2: Estimated Time & View Turn */}
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '12px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <Clock size={16} color="#fef08a" />
+                  <div>
+                    <span style={{ fontSize: '0.7rem', color: '#a7f3d0', fontWeight: 600, display: 'block', lineHeight: 1.1 }}>
+                      {language === 'hi' ? 'अनुमानित समय' : 'Estimated Time'}
+                    </span>
+                    <strong style={{ fontSize: '1.05rem', fontWeight: 900, color: '#fef08a', whiteSpace: 'nowrap' }}>
+                      ~ {activeBooking ? estimatedWaitTimeMinutes : 20} {language === 'hi' ? 'मिनट' : 'min'}
+                    </strong>
+                  </div>
                 </div>
-                <span style={{ fontSize: '0.72rem', color: '#cbd5e1' }}>
-                  {t('farmersAhead')}
-                </span>
-              </div>
 
-              {/* Anumanit Samay */}
-              <div style={{ textAlign: 'center', flex: '0 0 auto' }}>
-                <span style={{ fontSize: '0.74rem', color: '#a7f3d0', fontWeight: 600 }}>{t('estimatedTime')}</span>
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px', margin: '3px 0' }}>
-                  <Clock size={15} color="#fef08a" />
-                  <strong style={{ fontSize: '1.05rem', fontWeight: 900, color: '#fef08a', whiteSpace: 'nowrap' }}>
-                    ~ {estimatedWaitTimeMinutes} {t('minutesUnit')}
-                  </strong>
-                </div>
                 <Link 
                   to="/farmer/queue" 
                   style={{ 
                     display: 'inline-flex', 
                     alignItems: 'center', 
-                    gap: '4px', 
+                    gap: '6px', 
                     background: '#ffffff', 
                     color: '#044324', 
-                    fontSize: '0.72rem', 
+                    fontSize: '0.74rem', 
                     fontWeight: 800, 
-                    padding: '3px 10px', 
-                    borderRadius: '12px', 
+                    padding: '4px 14px', 
+                    borderRadius: '16px', 
                     textDecoration: 'none', 
-                    marginTop: '4px',
-                    whiteSpace: 'nowrap'
+                    whiteSpace: 'nowrap', 
+                    boxShadow: '0 2px 6px rgba(0,0,0,0.15)' 
                   }}
                 >
-                  <span>((•))</span> {t('viewMyTurn')} →
+                  <span>((•))</span> {language === 'hi' ? 'देखें मेरी बारी →' : 'View My Turn →'}
                 </Link>
               </div>
             </div>
-          ) : (
+
+            {/* Farmer Portrait Card (Far Right inside Green Box) */}
             <div style={{ 
-              background: '#ecfdf5', 
-              border: '1.5px dashed #059669', 
-              borderRadius: '18px', 
-              padding: '16px 22px', 
+              flex: '0 0 112px', 
+              height: '187px', 
+              borderRadius: '14px', 
+              overflow: 'hidden', 
+              boxShadow: '0 4px 14px rgba(0,0,0,0.3)', 
+              border: '1px solid rgba(255, 255, 255, 0.15)', 
               display: 'flex', 
               alignItems: 'center', 
-              gap: '14px',
-              flex: '1 1 350px' 
+              justifyContent: 'center', 
+              margin: '0 auto' 
             }}>
-              <div style={{ width: '42px', height: '42px', borderRadius: '50%', background: '#059669', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <Calendar size={20} />
-              </div>
-              <div style={{ flex: 1 }}>
-                <strong style={{ fontSize: '0.95rem', color: '#064e3b', display: 'block' }}>
-                  {t('noActiveBookingTitle')}
-                </strong>
-                <span style={{ fontSize: '0.78rem', color: '#047857' }}>
-                  {t('noActiveBookingSub')}
-                </span>
-              </div>
-              <Link to="/farmer/book-slot" className="btn-primary" style={{ padding: '6px 14px', fontSize: '0.8rem', whiteSpace: 'nowrap' }}>
-                {t('bookSlotAction')}
-              </Link>
+              <img 
+                src={farmerBannerPortrait} 
+                alt="किसान की समृद्धि, देश की प्रगति" 
+                style={{ 
+                  width: '100%', 
+                  height: '100%', 
+                  objectFit: 'cover', 
+                  display: 'block' 
+                }} 
+              />
             </div>
-          )}
-
-          {/* Column 3: Exact Farmer Portrait with CSS object-position */}
-          <div style={{ flex: '0 0 auto', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1 }}>
-            <img 
-              src={farmerCleanFinal} 
-              alt={t('strongFarmersTag')} 
-              style={{ 
-                maxHeight: '165px', 
-                width: 'auto', 
-                objectFit: 'contain', 
-                objectPosition: 'center top', 
-                display: 'block' 
-              }}
-            />
           </div>
         </div>
 

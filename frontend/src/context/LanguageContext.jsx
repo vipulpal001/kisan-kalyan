@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { translations } from '../services/translations';
+import { translations, SUPPORTED_LANGUAGES } from '../services/translations';
 
 const LanguageContext = createContext();
 
@@ -10,12 +10,25 @@ export function LanguageProvider({ children }) {
 
   useEffect(() => {
     localStorage.setItem('kisan_lang', lang);
+    const langObj = SUPPORTED_LANGUAGES.find(l => l.code === lang);
+    const dir = langObj?.dir || 'ltr';
+    document.documentElement.setAttribute('lang', lang);
+    document.documentElement.setAttribute('dir', dir);
   }, [lang]);
 
   useEffect(() => {
     localStorage.setItem('kisan_font_size', fontSize);
-    document.documentElement.classList.remove('font-scale-small', 'font-scale-normal', 'font-scale-large');
+    document.documentElement.classList.remove('font-scale-small', 'font-scale-normal', 'font-scale-large', 'font-scale-xlarge');
     document.documentElement.classList.add(`font-scale-${fontSize}`);
+    if (fontSize === 'small') {
+      document.documentElement.style.fontSize = '14px';
+    } else if (fontSize === 'large') {
+      document.documentElement.style.fontSize = '18px';
+    } else if (fontSize === 'xlarge') {
+      document.documentElement.style.fontSize = '20px';
+    } else {
+      document.documentElement.style.fontSize = '16px';
+    }
   }, [fontSize]);
 
   useEffect(() => {
@@ -28,6 +41,7 @@ export function LanguageProvider({ children }) {
   }, [highContrast]);
 
   const toggleLanguage = () => {
+    // If current is Hindi switch to English, else switch to Hindi
     setLang(prev => (prev === 'hi' ? 'en' : 'hi'));
   };
 
@@ -39,16 +53,23 @@ export function LanguageProvider({ children }) {
     if (translations[lang] && translations[lang][key]) {
       return translations[lang][key];
     }
+    if (translations['hi'] && translations['hi'][key]) {
+      return translations['hi'][key];
+    }
     if (translations['en'] && translations['en'][key]) {
       return translations['en'][key];
     }
     return fallback || key;
   };
 
+  const currentLangObj = SUPPORTED_LANGUAGES.find(l => l.code === lang) || SUPPORTED_LANGUAGES[0];
+
   return (
     <LanguageContext.Provider value={{ 
       lang, 
       language: lang,
+      currentLanguage: currentLangObj,
+      supportedLanguages: SUPPORTED_LANGUAGES,
       setLang, 
       toggleLanguage, 
       fontSize, 
@@ -70,6 +91,8 @@ export function useLanguage() {
     return {
       lang: 'hi',
       language: 'hi',
+      currentLanguage: SUPPORTED_LANGUAGES[0],
+      supportedLanguages: SUPPORTED_LANGUAGES,
       setLang: () => {},
       toggleLanguage: () => {},
       fontSize: 'normal',

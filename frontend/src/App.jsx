@@ -2,6 +2,7 @@ import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { LanguageProvider } from './context/LanguageContext';
+import { BookingProvider } from './context/BookingContext';
 import Header from './components/Header';
 import LandingPage from './pages/LandingPage';
 import LoginPage from './pages/LoginPage';
@@ -29,8 +30,9 @@ export default function App() {
   return (
     <AuthProvider>
       <LanguageProvider>
-        <BrowserRouter>
-          <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
+        <BookingProvider>
+          <BrowserRouter>
+            <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
             <Header />
             <main style={{ flex: 1 }}>
               <Routes>
@@ -118,6 +120,7 @@ export default function App() {
             </footer>
           </div>
         </BrowserRouter>
+        </BookingProvider>
       </LanguageProvider>
     </AuthProvider>
   );

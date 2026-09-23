@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { 
   MapPin, 
   Search, 
@@ -26,15 +26,26 @@ import tractorFieldImg from '../assets/tractor_field.png';
 
 export default function CenterDiscoveryPage() {
   const navigate = useNavigate();
+  const location = useLocation();
   const [activeFilter, setActiveFilter] = useState('all');
-  const [searchQuery, setSearchQuery] = useState('');
+  
+  // Read ?q= query param from header search if present
+  const queryParam = new URLSearchParams(location.search).get('q') || '';
+  const [searchQuery, setSearchQuery] = useState(queryParam);
   const [selectedDistrict, setSelectedDistrict] = useState('All');
   const [sortBy, setSortBy] = useState('nearest');
+
+  useEffect(() => {
+    const q = new URLSearchParams(location.search).get('q') || '';
+    if (q) {
+      setSearchQuery(q);
+    }
+  }, [location.search]);
 
   const centers = [
     {
       id: 'CEN-001',
-      name: 'चुनार कृषि उपज मंडी समिति',
+      name: 'चुनार कृषि उपज मंडी समिति (Chunar APMC)',
       address: 'रेलवे स्टेशन रोड के पास, चुनार, मिर्ज़ापुर, उ.प्र.',
       distance: '3.2 km दूर',
       crowd: 'भीड़ कम',
@@ -110,7 +121,7 @@ export default function CenterDiscoveryPage() {
   });
 
   return (
-    <div style={{ background: '#f8fafc', minHeight: '90vh', padding: '24px 0 40px 0' }}>
+    <div style={{ background: 'transparent', minHeight: '90vh', padding: '24px 0 40px 0' }}>
       <div className="portal-container" style={{ display: 'flex', gap: '24px', alignItems: 'flex-start' }}>
         
         {/* ================= LEFT SIDEBAR ================= */}

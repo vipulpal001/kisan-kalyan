@@ -21,20 +21,11 @@ import khetiSketch from '../assets/kheti_sketch.png';
 export default function FarmerPaymentPage() {
   return (
     <div style={{ 
-      background: 'linear-gradient(180deg, #d8e5d3 0%, #e9f2e7 60%, #f4fbf7 100%)', 
+      background: 'transparent', 
       minHeight: 'calc(100vh - 110px)', 
       padding: '24px 0 40px 0',
       position: 'relative'
     }}>
-      
-      {/* Flanking Sketch on Left: "समय पर भुगतान, विश्वास का आधार" */}
-      <div style={{ position: 'absolute', bottom: '60px', left: '15px', zIndex: 1, textAlign: 'center' }}>
-        <img src={khetiSketch} alt="Wheat sketch" style={{ width: '82px', height: 'auto', display: 'block', margin: '0 auto' }} />
-        <div style={{ fontSize: '0.85rem', fontWeight: 800, color: '#064e3b', marginTop: '6px' }}>
-          समय पर भुगतान <br /> विश्वास का आधार
-        </div>
-      </div>
-
       <div className="portal-container" style={{ maxWidth: '1240px', margin: '0 auto', padding: '0 16px', position: 'relative', zIndex: 2 }}>
 
         {/* ================= 1. TOP DBT BANNER ================= */}

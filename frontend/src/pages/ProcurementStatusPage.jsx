@@ -15,36 +15,26 @@ import {
   Coins,
   FileCheck
 } from 'lucide-react';
+import { useBooking } from '../context/BookingContext';
 import wheatBadge from '../assets/wheat_badge.png';
 import mandiSignature from '../assets/mandi_signature.png';
 import annadataSketch from '../assets/annadata_sketch.png';
 import tractorField from '../assets/tractor_field.png';
 
 export default function ProcurementStatusPage() {
+  const { activeBooking } = useBooking();
+  const tokenNum = activeBooking?.tokenNumber || 'T-114-30';
+  const cropName = activeBooking?.cropName || activeBooking?.produceName || 'गेहूं (Wheat / Gehun)';
+  const centerName = activeBooking?.centerName || 'चुनार कृषि उपज मंडी समिति (Chunar APMC)';
+  const displayDate = '24 सितम्बर 2026';
+
   return (
     <div style={{ 
-      background: 'linear-gradient(180deg, #d8e5d3 0%, #e9f2e7 60%, #f4fbf7 100%)', 
+      background: 'transparent', 
       minHeight: 'calc(100vh - 110px)', 
       padding: '24px 0 40px 0',
       position: 'relative'
     }}>
-      
-      {/* Flanking Sketch on Left */}
-      <div style={{ position: 'absolute', bottom: '60px', left: '15px', zIndex: 1, textAlign: 'center' }}>
-        <div style={{ fontSize: '0.85rem', fontWeight: 800, color: '#064e3b', marginBottom: '4px' }}>
-          “किसान की समृद्धि, <br /> हमारी प्राथमिकता”
-        </div>
-        <img src={tractorField} alt="Tractor in field" style={{ width: '110px', height: 'auto', display: 'block', opacity: 0.85 }} />
-      </div>
-
-      {/* Flanking Sketch on Right */}
-      <div style={{ position: 'absolute', bottom: '60px', right: '15px', zIndex: 1, textAlign: 'center' }}>
-        <img src={annadataSketch} alt="Annadata sketch" style={{ width: '120px', height: 'auto', display: 'block', margin: '0 auto' }} />
-        <div style={{ fontSize: '0.9rem', fontWeight: 800, color: '#017953', marginTop: '4px' }}>
-          समृद्ध किसान <br /> समृद्ध भारत
-        </div>
-      </div>
-
       <div className="portal-container" style={{ maxWidth: '1180px', margin: '0 auto', padding: '0 16px', position: 'relative', zIndex: 2 }}>
 
         {/* ================= 1. TOP 8-STEP PROCUREMENT TRACKING CARD ================= */}
@@ -62,7 +52,7 @@ export default function ProcurementStatusPage() {
                   फसल खरीद प्रक्रिया ट्रैकिंग (8 चरण)
                 </h2>
                 <p style={{ fontSize: '0.82rem', color: '#64748b', margin: 0 }}>
-                  टोकन: <strong>A-107</strong> | गेहूं (Wheat / Gehun) @ चुनार कृषि उपज मंडी समिति, मिर्ज़ापुर
+                  टोकन: <strong>{tokenNum}</strong> | {cropName} @ {centerName}
                 </p>
               </div>
             </div>
@@ -72,7 +62,7 @@ export default function ProcurementStatusPage() {
                 ● प्रगति पर
               </span>
               <span style={{ fontSize: '0.8rem', color: '#4b5563' }}>
-                📅 दिनांक: <strong>15 सितम्बर 2026</strong>
+                📅 दिनांक: <strong>{displayDate}</strong>
               </span>
               <button style={{ background: '#017953', color: '#ffffff', border: 'none', borderRadius: '8px', padding: '8px 16px', fontSize: '0.84rem', fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px' }}>
                 <FileText size={15} /> <span>रसीद देखें / डाउनलोड</span>
@@ -179,24 +169,30 @@ export default function ProcurementStatusPage() {
             </div>
 
             {/* Big Green Earned Amount Box */}
-            <div style={{ background: '#ecfdf5', border: '2px solid #a7f3d0', borderRadius: '18px', padding: '20px 24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-              <div>
-                <span style={{ fontSize: '0.78rem', color: '#065f46', fontWeight: 700, textTransform: 'uppercase' }}>
-                  आपकी अर्जित राशि
-                </span>
-                <div style={{ fontSize: '2.2rem', fontWeight: 900, color: '#017953', margin: '4px 0' }}>
-                  ₹1,13,750
+            <div style={{ background: '#ecfdf5', border: '2px solid #a7f3d0', borderRadius: '18px', padding: '20px 24px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <div>
+                  <span style={{ fontSize: '0.78rem', color: '#065f46', fontWeight: 700, textTransform: 'uppercase' }}>
+                    अनुमानित खरीद मूल्य (Estimated Procurement Value)
+                  </span>
+                  <div style={{ fontSize: '2.2rem', fontWeight: 900, color: '#017953', margin: '4px 0' }}>
+                    ₹1,13,750
+                  </div>
+                  <div style={{ fontSize: '0.8rem', color: '#4b5563' }}>
+                    (50 क्विंटल × ₹2,275 MSP)
+                  </div>
+                  <div style={{ fontSize: '0.74rem', color: '#017953', fontWeight: 700, marginTop: '4px' }}>
+                    ✓ DBT द्वारा सीधे बैंक खाते में भुगतान
+                  </div>
                 </div>
-                <div style={{ fontSize: '0.8rem', color: '#4b5563' }}>
-                  (50 क्विंटल × ₹2,275)
-                </div>
-                <div style={{ fontSize: '0.74rem', color: '#017953', fontWeight: 700, marginTop: '4px' }}>
-                  ✓ DBT द्वारा भुगतान किया जाएगा
+
+                <div style={{ width: '56px', height: '56px', borderRadius: '14px', background: '#017953', color: '#ffffff', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                  <Wallet size={30} />
                 </div>
               </div>
 
-              <div style={{ width: '56px', height: '56px', borderRadius: '14px', background: '#017953', color: '#ffffff', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <Wallet size={30} />
+              <div style={{ fontSize: '0.72rem', color: '#047857', borderTop: '1px dashed #a7f3d0', paddingTop: '8px', marginTop: '4px', lineHeight: 1.35 }}>
+                ℹ️ <strong>नोट:</strong> अंतिम भुगतान वास्तविक स्वीकृत मात्रा और लागू गुणवत्ता मूल्यांकन (Moisture & Grade) के आधार पर निर्धारित किया जाएगा।
               </div>
             </div>
 
@@ -254,9 +250,9 @@ export default function ProcurementStatusPage() {
 
               <div style={{ flex: 1 }}>
                 <div style={{ fontSize: '0.76rem', color: '#64748b' }}>वेब्रिज आईडी</div>
-                <div style={{ fontSize: '1rem', fontWeight: 900, color: '#111827' }}>BK-2026-0915-0012</div>
+                <div style={{ fontSize: '1rem', fontWeight: 900, color: '#111827' }}>BK-2026-0924-0012</div>
                 <div style={{ fontSize: '0.74rem', color: '#64748b', marginTop: '2px' }}>
-                  तौल दिनांक एवं समय: <strong>15 सितम्बर 2026, 10:45 AM</strong>
+                  तौल दिनांक एवं समय: <strong>24 सितम्बर 2026, 12:45 PM</strong>
                 </div>
                 <div style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', fontSize: '0.72rem', background: '#ecfdf5', color: '#017953', padding: '2px 8px', borderRadius: '10px', fontWeight: 700, marginTop: '6px' }}>
                   <Check size={12} strokeWidth={3} /> Verified

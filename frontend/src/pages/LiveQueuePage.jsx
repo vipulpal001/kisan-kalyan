@@ -13,6 +13,8 @@ import {
   Calendar,
   Scale
 } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
+import { useBooking } from '../context/BookingContext';
 import mandiShed from '../assets/mandi_shed.png';
 import cropWheat from '../assets/crop_wheat.png';
 import cropMaize from '../assets/crop_maize.png';
@@ -20,7 +22,29 @@ import cropGram from '../assets/crop_gram.png';
 import apmcBuilding from '../assets/apmc_building.png';
 
 export default function LiveQueuePage() {
+  const { user } = useAuth();
+  const { activeBooking, advanceQueueStage } = useBooking();
   const [refreshing, setRefreshing] = useState(false);
+  const [lastUpdated, setLastUpdated] = useState(new Date().toLocaleTimeString());
+
+  const tokenNum = activeBooking?.tokenNumber || 'WHT-042';
+  const nowServingToken = activeBooking?.currentServingToken || 'WHT-037';
+  const farmerName = activeBooking?.farmerName || user?.name || user?.username || 'किसान भाई (Farmer)';
+  const cropDisplay = activeBooking?.cropName || 'गेहूं (Wheat)';
+  const queuePos = activeBooking?.queuePosition || 6;
+  const farmersAhead = activeBooking?.farmersAhead !== undefined ? activeBooking.farmersAhead : 5;
+  const waitMinutes = activeBooking?.estimatedWaitMinutes !== undefined ? activeBooking.estimatedWaitMinutes : 25;
+  const counterName = activeBooking?.counterName || 'काउंटर 02 (Counter 02)';
+  const centerName = activeBooking?.centerName || 'गाज़ियाबाद गेहूं खरीद केंद्र (Ghaziabad Procurement Centre)';
+  const currentStage = activeBooking?.queueStage || 'QUALITY_CHECK';
+
+  // Auto-refresh polling every 10 seconds
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setLastUpdated(new Date().toLocaleTimeString());
+    }, 10000);
+    return () => clearInterval(interval);
+  }, []);
 
   const speakAnnouncement = (text) => {
     if ('speechSynthesis' in window) {
@@ -34,12 +58,14 @@ export default function LiveQueuePage() {
 
   const handleRefresh = () => {
     setRefreshing(true);
+    setLastUpdated(new Date().toLocaleTimeString());
     setTimeout(() => setRefreshing(false), 600);
   };
 
+
   return (
     <div style={{ 
-      background: 'linear-gradient(180deg, #d8e5d3 0%, #e9f2e7 60%, #f4fbf7 100%)', 
+      background: 'transparent', 
       minHeight: 'calc(100vh - 110px)', 
       padding: '24px 0 40px 0',
       position: 'relative'
@@ -102,14 +128,14 @@ export default function LiveQueuePage() {
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '2px' }}>
                     <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#10b981', display: 'inline-block' }}></span>
                     <span style={{ fontSize: '0.72rem', fontWeight: 800, color: '#017953', background: '#ecfdf5', padding: '2px 8px', borderRadius: '6px' }}>
-                      LIVE MANDI FEED वास्तविक समय कतार स्थिति
+                      DEMO APMC FEED • वास्तविक समय कतार स्थिति (Demo Feed)
                     </span>
                   </div>
                   <h3 style={{ fontSize: '1.35rem', fontWeight: 900, color: '#111827', margin: 0 }}>
                     मंडी लाइव कतार मॉनिटर
                   </h3>
                   <div style={{ fontSize: '0.78rem', color: '#64748b', marginTop: '1px' }}>
-                    चुनार कृषि उपज मंडी समिति, मिर्ज़ापुर (Mirzapur)
+                    {centerName}
                   </div>
                 </div>
               </div>
@@ -118,7 +144,7 @@ export default function LiveQueuePage() {
               <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                 <div style={{ background: '#f8fafc', border: '1px solid #cbd5e1', borderRadius: '20px', padding: '6px 14px', fontSize: '0.82rem', fontWeight: 700, color: '#1e293b', display: 'flex', alignItems: 'center', gap: '6px' }}>
                   <MapPin size={14} color="#017953" />
-                  <span>चुनार कृषि उपज मंडी समिति (Mirzapur)</span>
+                  <span>{centerName}</span>
                   <span style={{ fontSize: '0.7rem' }}>⌵</span>
                 </div>
                 <button 
@@ -131,59 +157,138 @@ export default function LiveQueuePage() {
               </div>
             </div>
 
-            {/* 4 Status Cards Row (Matching Screenshot 3) */}
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '12px' }}>
+            {/* 5 Status Cards Row (Section 7 Exact Requirements) */}
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '10px' }}>
               
-              {/* Card 1: Aapka Token */}
-              <div style={{ background: '#ecfdf5', border: '1.5px solid #a7f3d0', borderRadius: '16px', padding: '14px 16px' }}>
-                <span style={{ fontSize: '0.74rem', color: '#166534', fontWeight: 600 }}>आपका टोकन</span>
+              {/* Card 1: YOUR TOKEN */}
+              <div style={{ background: '#ecfdf5', border: '1.5px solid #a7f3d0', borderRadius: '16px', padding: '14px 12px', textAlign: 'center' }}>
+                <span style={{ fontSize: '0.7rem', color: '#166534', fontWeight: 700, textTransform: 'uppercase' }}>YOUR TOKEN (आपका टोकन)</span>
                 <div style={{ fontSize: '1.8rem', fontWeight: 900, color: '#017953', margin: '2px 0' }}>
-                  A-107
+                  {tokenNum}
                 </div>
-                <div style={{ fontSize: '0.74rem', color: '#374151', fontWeight: 600 }}>
-                  Wheat (Gehun)
+                <div style={{ fontSize: '0.72rem', color: '#374151', fontWeight: 600 }}>
+                  {cropDisplay}
                 </div>
-                <span style={{ display: 'inline-block', fontSize: '0.68rem', background: '#017953', color: '#ffffff', padding: '2px 8px', borderRadius: '10px', fontWeight: 700, marginTop: '4px' }}>
-                  ✓ Active
+                <span style={{ display: 'inline-block', fontSize: '0.66rem', background: '#017953', color: '#ffffff', padding: '2px 8px', borderRadius: '10px', fontWeight: 700, marginTop: '4px' }}>
+                  ● Active (स्थान {queuePos})
                 </span>
               </div>
 
-              {/* Card 2: Abhi Aap Se Pehle Hai */}
-              <div style={{ background: '#eff6ff', border: '1.5px solid #bfdbfe', borderRadius: '16px', padding: '14px 16px' }}>
-                <span style={{ fontSize: '0.74rem', color: '#1e40af', fontWeight: 600 }}>अभी आप से पहले है</span>
+              {/* Card 2: NOW SERVING */}
+              <div style={{ background: '#eff6ff', border: '1.5px solid #bfdbfe', borderRadius: '16px', padding: '14px 12px', textAlign: 'center' }}>
+                <span style={{ fontSize: '0.7rem', color: '#1e40af', fontWeight: 700, textTransform: 'uppercase' }}>NOW SERVING (अब सेवा में)</span>
                 <div style={{ fontSize: '1.8rem', fontWeight: 900, color: '#1d4ed8', margin: '2px 0' }}>
-                  A-103
+                  {nowServingToken}
                 </div>
-                <div style={{ fontSize: '0.74rem', background: '#dbeafe', color: '#1e40af', display: 'inline-block', padding: '2px 8px', borderRadius: '6px', fontWeight: 700 }}>
-                  काउंटर 2 पर
+                <div style={{ fontSize: '0.72rem', background: '#dbeafe', color: '#1e40af', display: 'inline-block', padding: '2px 8px', borderRadius: '6px', fontWeight: 700 }}>
+                  {counterName.split(' ')[0]}
                 </div>
-                <div style={{ fontSize: '0.7rem', color: '#64748b', marginTop: '4px' }}>
-                  2 टोकन बाकी
+                <div style={{ fontSize: '0.68rem', color: '#64748b', marginTop: '4px' }}>
+                  धर्मकांटा तौल जारी
                 </div>
               </div>
 
-              {/* Card 3: Aapse Aage Kisan */}
-              <div style={{ background: '#fefce8', border: '1.5px solid #fef08a', borderRadius: '16px', padding: '14px 16px' }}>
-                <span style={{ fontSize: '0.74rem', color: '#854d0e', fontWeight: 600 }}>आपसे आगे किसान</span>
+              {/* Card 3: AHEAD OF YOU */}
+              <div style={{ background: '#fefce8', border: '1.5px solid #fef08a', borderRadius: '16px', padding: '14px 12px', textAlign: 'center' }}>
+                <span style={{ fontSize: '0.7rem', color: '#854d0e', fontWeight: 700, textTransform: 'uppercase' }}>AHEAD OF YOU (आगे किसान)</span>
                 <div style={{ fontSize: '1.8rem', fontWeight: 900, color: '#b45309', margin: '2px 0' }}>
-                  4
+                  {farmersAhead}
                 </div>
-                <div style={{ fontSize: '0.74rem', color: '#713f12', fontWeight: 600 }}>
-                  किसान कतार में
+                <div style={{ fontSize: '0.74rem', color: '#713f12', fontWeight: 700 }}>
+                  Farmers (किसान)
+                </div>
+                <div style={{ fontSize: '0.68rem', color: '#854d0e', marginTop: '4px' }}>
+                  कतार में प्रतीक्षारत
                 </div>
               </div>
 
-              {/* Card 4: Anumanit Pratiksha */}
-              <div style={{ background: '#fff1f2', border: '1.5px solid #fecdd3', borderRadius: '16px', padding: '14px 16px' }}>
-                <span style={{ fontSize: '0.74rem', color: '#9f1239', fontWeight: 600 }}>अनुमानित प्रतीक्षा</span>
+              {/* Card 4: ESTIMATED WAIT */}
+              <div style={{ background: '#fff1f2', border: '1.5px solid #fecdd3', borderRadius: '16px', padding: '14px 12px', textAlign: 'center' }}>
+                <span style={{ fontSize: '0.7rem', color: '#9f1239', fontWeight: 700, textTransform: 'uppercase' }}>ESTIMATED WAIT (प्रतीक्षा)</span>
                 <div style={{ fontSize: '1.8rem', fontWeight: 900, color: '#e11d48', margin: '2px 0' }}>
-                  18 <span style={{ fontSize: '0.9rem', fontWeight: 700 }}>min</span>
+                  ~{waitMinutes} <span style={{ fontSize: '0.85rem', fontWeight: 700 }}>min</span>
                 </div>
-                <div style={{ fontSize: '0.72rem', color: '#9f1239', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '3px' }}>
-                  <Zap size={13} /> <span>फास्ट प्रोसेसिंग</span>
+                <div style={{ fontSize: '0.7rem', color: '#9f1239', fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '3px' }}>
+                  <Zap size={12} /> <span>फास्ट लेन</span>
                 </div>
               </div>
 
+              {/* Card 5: COUNTER NUMBER */}
+              <div style={{ background: '#f3e8ff', border: '1.5px solid #d8b4fe', borderRadius: '16px', padding: '14px 12px', textAlign: 'center' }}>
+                <span style={{ fontSize: '0.7rem', color: '#6b21a8', fontWeight: 700, textTransform: 'uppercase' }}>COUNTER (काउंटर)</span>
+                <div style={{ fontSize: '1.5rem', fontWeight: 900, color: '#7e22ce', margin: '4px 0' }}>
+                  Counter 02
+                </div>
+                <div style={{ fontSize: '0.7rem', color: '#6b21a8', fontWeight: 700 }}>
+                  धर्मकांटा 2
+                </div>
+                <div style={{ fontSize: '0.66rem', color: '#7e22ce', marginTop: '4px' }}>
+                  Rajesh Verma
+                </div>
+              </div>
+
+            </div>
+
+            {/* Real-Time Queue Stages Progress Tracker (Section 6) */}
+            <div style={{ background: '#ffffff', borderRadius: '20px', border: '1.5px solid #a7f3d0', padding: '18px 22px', boxShadow: '0 4px 16px rgba(1, 121, 83, 0.04)' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px', flexWrap: 'wrap', gap: '8px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <span style={{ fontSize: '1.2rem' }}>⚡</span>
+                  <div>
+                    <h4 style={{ fontSize: '1rem', fontWeight: 800, color: '#064e3b', margin: 0 }}>
+                      कतार प्रगति चक्र (Real-Time Queue Lifecycle Stages)
+                    </h4>
+                    <span style={{ fontSize: '0.72rem', color: '#64748b' }}>
+                      स्वचालित अपडेट: {lastUpdated} • टोकन {tokenNum}
+                    </span>
+                  </div>
+                </div>
+
+                <div style={{ display: 'flex', gap: '8px' }}>
+                  <button 
+                    onClick={() => advanceQueueStage()}
+                    style={{ background: '#017953', color: '#ffffff', border: 'none', borderRadius: '8px', padding: '6px 14px', fontSize: '0.76rem', fontWeight: 700, cursor: 'pointer' }}
+                  >
+                    अगला चरण सिम्युलेट करें (Advance Stage) →
+                  </button>
+                </div>
+              </div>
+
+              {/* Progress Flow Banner */}
+              <div style={{ 
+                display: 'flex', 
+                alignItems: 'center', 
+                justifyContent: 'space-between', 
+                background: '#f8fafc', 
+                borderRadius: '12px', 
+                padding: '12px 14px', 
+                border: '1px solid #e2e8f0',
+                fontSize: '0.76rem',
+                flexWrap: 'wrap',
+                gap: '8px'
+              }}>
+                <span style={{ color: '#017953', fontWeight: 800, display: 'flex', alignItems: 'center', gap: '4px' }}>
+                  <Check size={14} strokeWidth={3} /> Booking Confirmed
+                </span>
+                <span style={{ color: '#cbd5e1' }}>→</span>
+                <span style={{ color: '#017953', fontWeight: 800, display: 'flex', alignItems: 'center', gap: '4px' }}>
+                  <Check size={14} strokeWidth={3} /> Farmer Arrived
+                </span>
+                <span style={{ color: '#cbd5e1' }}>→</span>
+                <span style={{ color: '#017953', fontWeight: 800, display: 'flex', alignItems: 'center', gap: '4px' }}>
+                  <Check size={14} strokeWidth={3} /> Verification
+                </span>
+                <span style={{ color: '#cbd5e1' }}>→</span>
+                <span style={{ color: '#2563eb', fontWeight: 900, background: '#dbeafe', border: '1px solid #bfdbfe', padding: '3px 8px', borderRadius: '6px', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                  <span>●</span> Quality Check (सक्रिय)
+                </span>
+                <span style={{ color: '#cbd5e1' }}>→</span>
+                <span style={{ color: '#64748b', fontWeight: 600 }}>○ Weighing</span>
+                <span style={{ color: '#cbd5e1' }}>→</span>
+                <span style={{ color: '#64748b', fontWeight: 600 }}>○ Procurement</span>
+                <span style={{ color: '#cbd5e1' }}>→</span>
+                <span style={{ color: '#64748b', fontWeight: 600 }}>○ Payment</span>
+              </div>
             </div>
 
             {/* Active Weighbridges Section */}
@@ -202,9 +307,9 @@ export default function LiveQueuePage() {
 
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '14px' }}>
                 {[
-                  { name: 'काउंटर 1', status: 'Active', operator: 'Vikas Sharma', token: 'A-089' },
-                  { name: 'काउंटर 2', status: 'Active', operator: 'Rajesh Verma', token: 'A-103', isCalling: true },
-                  { name: 'काउंटर 3', status: 'Active', operator: 'Sanjay Kumar', token: 'A-095' }
+                  { name: 'काउंटर 1', status: 'Active', operator: 'Vikas Sharma', token: 'T-114-28' },
+                  { name: 'काउंटर 2', status: 'Active', operator: 'Rajesh Verma', token: 'T-114-29', isCalling: true },
+                  { name: 'काउंटर 3', status: 'Active', operator: 'Sanjay Kumar', token: 'T-114-27' }
                 ].map((cnt) => (
                   <div key={cnt.name} style={{ border: cnt.isCalling ? '1.5px solid #017953' : '1px solid #e2e8f0', background: cnt.isCalling ? '#f0fdf4' : '#fafafa', borderRadius: '12px', padding: '12px 14px' }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -228,7 +333,7 @@ export default function LiveQueuePage() {
               </div>
             </div>
 
-            {/* Waiting Stream Table (8 Tokens List matching Screenshot 1 & 3) */}
+            {/* Waiting Stream Table (Unified Booking with No Duplicates) */}
             <div style={{ background: '#ffffff', borderRadius: '20px', border: '1px solid #e2e8f0', padding: '20px', boxShadow: '0 4px 20px rgba(0,0,0,0.03)' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
@@ -246,7 +351,7 @@ export default function LiveQueuePage() {
                     ● Live अपडेट
                   </span>
                   <span style={{ fontSize: '0.74rem', color: '#475569', fontWeight: 700, background: '#f1f5f9', padding: '3px 10px', borderRadius: '12px' }}>
-                    👥 कुल प्रतीक्षा: 8
+                    👥 कुल प्रतीक्षा: 6
                   </span>
                 </div>
               </div>
@@ -254,14 +359,12 @@ export default function LiveQueuePage() {
               {/* Stream Rows */}
               <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                 {[
-                  { pos: 1, token: 'A-103', name: 'सुरेश यादव', crop: 'गेहूं', icon: cropWheat, status: 'CALLED TO COUNTER 2', isCalling: true },
-                  { pos: 2, token: 'A-104', name: 'मनोज तिवारी', crop: 'गेहूं', icon: cropWheat, status: 'Waiting (2 Ahead)' },
-                  { pos: 3, token: 'A-105', name: 'देवेंद्र पाल', crop: 'गेहूं', icon: cropWheat, status: 'Waiting (3 Ahead)' },
-                  { pos: 4, token: 'A-106', name: 'राजू शर्मा', crop: 'मक्का', icon: cropMaize, status: 'Waiting (4 Ahead)' },
-                  { pos: 5, token: 'A-107', name: 'दिलीप बिन्द', isYou: true, crop: 'गेहूं', icon: cropWheat, status: 'Waiting (5 Ahead)' },
-                  { pos: 6, token: 'A-104', name: 'रामेश्वर सिंह (Rameshwar Singh)', isYou: true, crop: 'गेहूं', icon: cropWheat, status: 'Waiting' },
-                  { pos: 7, token: 'A-105', name: 'रामेश्वर सिंह (Rameshwar Singh)', isYou: true, crop: 'चना', icon: cropGram, status: 'Waiting' },
-                  { pos: 8, token: 'A-107', name: 'रामेश्वर सिंह (Rameshwar Singh)', isYou: true, crop: 'चना', icon: cropGram, status: 'Waiting' }
+                  { pos: 1, token: 'T-114-29', name: 'सुरेश यादव', crop: 'गेहूं', icon: cropWheat, status: 'CALLED TO COUNTER 2', isCalling: true },
+                  { pos: 2, token: tokenNum, name: farmerName, isYou: true, crop: 'गेहूं', icon: cropWheat, status: 'Waiting (1 Ahead)' },
+                  { pos: 3, token: 'T-114-31', name: 'मनोज तिवारी', crop: 'गेहूं', icon: cropWheat, status: 'Waiting (2 Ahead)' },
+                  { pos: 4, token: 'T-114-32', name: 'देवेंद्र पाल', crop: 'गेहूं', icon: cropWheat, status: 'Waiting (3 Ahead)' },
+                  { pos: 5, token: 'T-114-33', name: 'राजू शर्मा', crop: 'मक्का', icon: cropMaize, status: 'Waiting (4 Ahead)' },
+                  { pos: 6, token: 'T-114-34', name: 'सुशील मौर्य', crop: 'चना', icon: cropGram, status: 'Waiting (5 Ahead)' }
                 ].map((row) => (
                   <div 
                     key={row.pos + row.token + row.name}
@@ -323,7 +426,7 @@ export default function LiveQueuePage() {
                     <div style={{ textAlign: 'right' }}>
                       {row.isCalling ? (
                         <button 
-                          onClick={() => speakAnnouncement("टोकन नंबर A-103, सुरेश यादव, कृपया काउंटर 2 पर जाएं")}
+                          onClick={() => speakAnnouncement(`टोकन नंबर ${row.token}, ${row.name}, कृपया काउंटर 2 पर जाएं`)}
                           style={{ background: '#2563eb', color: '#ffffff', border: 'none', borderRadius: '20px', padding: '5px 14px', fontSize: '0.78rem', fontWeight: 800, display: 'inline-flex', alignItems: 'center', gap: '6px', cursor: 'pointer' }}
                         >
                           <span>📢 CALLED TO COUNTER 2</span>
