@@ -56,8 +56,15 @@ public class ProcurementEntry {
     @Column(name = "entry_status", length = 30)
     private EntryStatus entryStatus;
 
-    @Column(name = "entry_datetime", nullable = false, insertable = false, updatable = false)
+    @Column(name = "entry_datetime", nullable = false, updatable = false)
     private OffsetDateTime entryDatetime;
+
+    @PrePersist
+    protected void onCreate() {
+        if (this.entryDatetime == null) {
+            this.entryDatetime = OffsetDateTime.now();
+        }
+    }
 
     public ProcurementEntry() {}
 

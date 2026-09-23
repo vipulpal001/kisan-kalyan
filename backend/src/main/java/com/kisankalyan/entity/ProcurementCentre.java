@@ -51,8 +51,15 @@ public class ProcurementCentre {
     @Column(name = "status", nullable = false, length = 20)
     private CentreStatus status;
 
-    @Column(name = "created_at", nullable = false, insertable = false, updatable = false)
+    @Column(name = "created_at", nullable = false, updatable = false)
     private OffsetDateTime createdAt;
+
+    @PrePersist
+    protected void onCreate() {
+        if (this.createdAt == null) {
+            this.createdAt = OffsetDateTime.now();
+        }
+    }
 
     @Column(name = "processing_minutes_per_quintal", precision = 10, scale = 2)
     private BigDecimal processingMinutesPerQuintal;

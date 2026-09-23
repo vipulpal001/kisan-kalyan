@@ -33,8 +33,15 @@ public class Notification {
     @Column(name = "is_read", nullable = false)
     private Boolean isRead;
 
-    @Column(name = "sent_at", nullable = false, insertable = false, updatable = false)
+    @Column(name = "sent_at", nullable = false, updatable = false)
     private OffsetDateTime sentAt;
+
+    @PrePersist
+    protected void onCreate() {
+        if (this.sentAt == null) {
+            this.sentAt = OffsetDateTime.now();
+        }
+    }
 
     public Notification() {}
 

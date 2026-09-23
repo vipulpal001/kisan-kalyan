@@ -21,7 +21,7 @@ public class JForm {
     @Column(name = "j_form_number", nullable = false, unique = true, length = 50)
     private String jFormNumber;
 
-    @Column(name = "issue_date", nullable = false, insertable = false)
+    @Column(name = "issue_date", nullable = false)
     private LocalDate issueDate;
 
     @Column(name = "document_path", columnDefinition = "TEXT")
@@ -37,8 +37,18 @@ public class JForm {
     @Column(name = "status", nullable = false, length = 20)
     private JFormStatus status;
 
-    @Column(name = "created_at", nullable = false, insertable = false, updatable = false)
+    @Column(name = "created_at", nullable = false, updatable = false)
     private OffsetDateTime createdAt;
+
+    @PrePersist
+    protected void onCreate() {
+        if (this.issueDate == null) {
+            this.issueDate = LocalDate.now();
+        }
+        if (this.createdAt == null) {
+            this.createdAt = OffsetDateTime.now();
+        }
+    }
 
     public JForm() {}
 

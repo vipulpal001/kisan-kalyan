@@ -25,8 +25,15 @@ public class StorageRecord {
     @Column(name = "quantity_quintals", nullable = false, precision = 12, scale = 2)
     private BigDecimal quantityQuintals;
 
-    @Column(name = "storage_date", nullable = false, insertable = false, updatable = false)
+    @Column(name = "storage_date", nullable = false, updatable = false)
     private OffsetDateTime storageDate;
+
+    @PrePersist
+    protected void onCreate() {
+        if (this.storageDate == null) {
+            this.storageDate = OffsetDateTime.now();
+        }
+    }
 
     @Column(name = "release_date")
     private OffsetDateTime releaseDate;
