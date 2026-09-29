@@ -341,6 +341,14 @@
   right: auto;
 }
 
+/* Desktop & Mobile Header Visibility Rules */
+.desktop-header-tiers {
+  display: block;
+}
+.mobile-header-tiers {
+  display: none !important;
+}
+
 /* Responsive Media Queries */
 @media (max-width: 1200px) {
   .hero-motto-badge {
@@ -351,64 +359,307 @@
   }
 }
 
+/* Mobile & Tablet Phone Header (<= 992px) */
 @media (max-width: 992px) {
-  .gov-strip {
-    padding: 6px 14px;
+  /* HIDE ALL DESKTOP CLUTTER COMPLETELY ON MOBILE */
+  .desktop-header-tiers {
+    display: none !important;
+  }
+
+  /* SHOW SLEEK DEDICATED MOBILE HEADER ON MOBILE */
+  .mobile-header-tiers {
+    display: block !important;
+    width: 100%;
+    background: #ffffff;
+  }
+
+  .kisan-header {
+    position: relative !important;
+    top: auto !important;
+    box-shadow: none !important;
+  }
+
+  /* 1. Mobile Top Gov Bar */
+  .mobile-top-bar {
+    background: #045d3f;
+    color: #ffffff;
+    padding: 5px 12px;
+    font-size: 0.68rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+  }
+  .mobile-top-left {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-weight: 700;
+  }
+  .mobile-top-emblem {
+    height: 18px;
+    width: auto;
+    object-fit: contain;
+  }
+  .mobile-top-gov-text {
+    color: #ffffff;
+    letter-spacing: 0.1px;
+  }
+  .mobile-top-right {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .mobile-top-tel {
+    color: #fef08a;
+    text-decoration: none;
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    gap: 4px;
     font-size: 0.72rem;
   }
-  .hero-banner {
-    padding: 8px 14px;
-    min-height: auto;
-    flex-wrap: wrap;
-    gap: 12px;
+  .mobile-top-loc {
+    background: rgba(255, 255, 255, 0.15);
+    border: none;
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    gap: 3px;
+    font-size: 0.68rem;
+    font-weight: 600;
+    cursor: pointer;
+    padding: 2px 7px;
+    border-radius: 12px;
   }
-  .hero-brand-container {
-    max-width: 100%;
-  }
-  .hero-controls-stack {
-    width: 100%;
-    align-items: stretch;
-  }
-  .utility-row {
+
+  /* 2. Main Mobile Brand & Action Bar (Sticky at top: 0 on mobile) */
+  .mobile-main-bar {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: #ffffff;
+    display: flex;
     justify-content: space-between;
+    align-items: center;
+    padding: 8px 12px;
+    border-bottom: 1px solid #e2e8f0;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  }
+  .mobile-brand-link {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    text-decoration: none;
+    color: inherit;
+    min-width: 0;
+  }
+  .mobile-brand-logo {
+    height: 36px;
+    width: auto;
+    object-fit: contain;
+    flex-shrink: 0;
+  }
+  .mobile-brand-info {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.15;
+  }
+  .mobile-brand-heading {
+    font-size: 0.96rem;
+    font-weight: 900;
+    color: #064e3b;
+    letter-spacing: 0.2px;
+  }
+  .mobile-brand-sub {
+    font-size: 0.62rem;
+    font-weight: 600;
+    color: #b45309;
+  }
+
+  /* Right Action Cluster */
+  .mobile-header-actions {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-shrink: 0;
+  }
+  .mobile-action-pill {
+    background: #f0fdf4;
+    border: 1px solid #bbf7d0;
+    border-radius: 16px;
+    padding: 4px 8px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 0.72rem;
+    font-weight: 800;
+    color: #065f46;
+    cursor: pointer;
+  }
+  .mobile-action-btn {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 50%;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    position: relative;
+  }
+  .mobile-bell-badge {
+    position: absolute;
+    top: -2px;
+    right: -2px;
+    background: #ef4444;
+    color: #ffffff;
+    font-size: 0.58rem;
+    font-weight: 900;
+    border-radius: 10px;
+    padding: 1px 4px;
+    line-height: 1;
+  }
+  .mobile-menu-pill {
+    background: #017953;
+    color: #ffffff;
+    border: none;
+    border-radius: 16px;
+    padding: 6px 12px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 0.78rem;
+    font-weight: 800;
+    cursor: pointer;
+    box-shadow: 0 2px 6px rgba(1, 121, 83, 0.25);
+  }
+
+  /* 3. Mobile Search Strip */
+  .mobile-search-strip {
+    background: #f8fafc;
+    padding: 6px 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    border-bottom: 1px solid #e2e8f0;
+  }
+  .mobile-search-box {
+    flex: 1;
+    position: relative;
+    background: #ffffff;
+    border: 1.5px solid #cbd5e1;
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    padding: 5px 12px;
+    gap: 6px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.03);
+  }
+  .mobile-search-submit {
+    background: none;
+    border: none;
+    padding: 0;
+    display: flex;
+    cursor: pointer;
+  }
+  .mobile-search-text-input {
+    border: none;
+    outline: none;
     width: 100%;
+    font-size: 0.8rem;
+    color: #1e293b;
+    background: transparent;
   }
-  .action-row {
-    width: 100%;
-    justify-content: space-between;
-  }
-  .search-box-container {
-    flex: 1 !important;
-    width: auto !important;
-  }
-  .main-nav {
-    padding: 6px 14px;
-  }
-  .mobile-nav-toggle {
+  .mobile-search-clear-btn {
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    color: #94a3b8;
     display: flex;
   }
-  .main-nav-desktop-tabs {
-    display: none !important;
+  .mobile-weather-chip {
+    background: #ffffff;
+    border: 1px solid #cbd5e1;
+    border-radius: 16px;
+    padding: 5px 10px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 0.76rem;
+    color: #1e293b;
+    cursor: pointer;
+    flex-shrink: 0;
+    white-space: nowrap;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.03);
   }
-  .main-nav-download-btn {
-    display: none !important;
+
+  /* 4. Mobile Ticker Strip */
+  .mobile-ticker-strip {
+    background: #f0fdf4;
+    border-bottom: 1px solid #d1fae5;
+    padding: 4px 10px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.72rem;
+    color: #166534;
+    overflow: hidden;
+  }
+  .mobile-ticker-tag {
+    background: #166534;
+    color: #ffffff;
+    border-radius: 12px;
+    padding: 2px 7px;
+    font-size: 0.65rem;
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    flex-shrink: 0;
+  }
+  .mobile-ticker-content {
+    flex: 1;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    font-weight: 600;
+    font-size: 0.76rem;
+  }
+  .mobile-ticker-controls {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    flex-shrink: 0;
+  }
+  .mobile-ticker-controls button {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: #dcfce7;
+    color: #166534;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    padding: 0;
   }
 }
 
-@media (max-width: 640px) {
-  .gov-campaigns {
-    display: none !important;
+@media (max-width: 480px) {
+  .mobile-brand-sub {
+    display: none;
   }
-  .gov-strip-right {
-    width: 100%;
-    justify-content: space-between;
+  .mobile-menu-pill span {
+    display: none;
   }
-  .action-row {
-    flex-direction: column;
-    align-items: stretch;
-    gap: 8px;
+  .mobile-menu-pill {
+    padding: 6px 9px;
   }
-  .ticker-bar {
-    padding: 5px 12px;
+  .mobile-drawer {
+    width: 290px;
   }
 }

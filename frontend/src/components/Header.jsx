@@ -109,6 +109,7 @@ export default function Header() {
   const reportsRef = useRef(null);
   const resourcesRef = useRef(null);
   const languageRef = useRef(null);
+  const mobileLanguageRef = useRef(null);
 
   // Notifications List
   const [notifications, setNotifications] = useState([
@@ -249,7 +250,9 @@ export default function Header() {
       if (resourcesRef.current && !resourcesRef.current.contains(e.target)) {
         setShowResourcesMenu(false);
       }
-      if (languageRef.current && !languageRef.current.contains(e.target)) {
+      const isInsideDesktop = languageRef.current && languageRef.current.contains(e.target);
+      const isInsideMobile = mobileLanguageRef.current && mobileLanguageRef.current.contains(e.target);
+      if (!isInsideDesktop && !isInsideMobile) {
         setShowLanguageDropdown(false);
       }
       if (searchContainerRef.current && !searchContainerRef.current.contains(e.target)) {
@@ -412,6 +415,11 @@ export default function Header() {
       </a>
 
       {/* =========================================================================
+          DESKTOP FULL HEADER (100% Preserved for screens > 992px)
+      ========================================================================= */}
+      <div className="desktop-header-tiers">
+
+      {/* =========================================================================
           TIER 1: GOVERNMENT OF INDIA TOP STRIP (Functional & Official Links)
       ========================================================================= */}
       <div className="gov-strip">
@@ -571,16 +579,16 @@ export default function Header() {
             className="hero-brand-logo-img"
           />
           <div className="hero-brand-text">
-            <span className="hero-brand-title">Smart Procurement & Storage Management Portal</span>
-            <span className="hero-brand-subtitle">किसान का सम्मान, देश की पहचान</span>
+            <span className="hero-brand-title">{t('portalSub', 'Smart Procurement & Storage Management Portal')}</span>
+            <span className="hero-brand-subtitle">{t('portalMotto', 'किस्मत का सम्मान, देश की पहचान')}</span>
           </div>
         </Link>
 
         {/* Center: National Agri Campaign Motto */}
         <div className="hero-motto-badge" aria-label="National Agricultural Motto">
           <div className="hero-motto-flag-stripe"></div>
-          <span className="hero-motto-text">Samriddh Kisan, Samriddh Bharat</span>
-          <span className="hero-motto-sub">समृद्ध किसान, समृद्ध भारत 🌾</span>
+          <span className="hero-motto-text">{t('sloganTop', 'Samriddh Kisan')}, {t('sloganBottom', 'Samriddh Bharat')}</span>
+          <span className="hero-motto-sub">{t('sloganSub', 'समृद्ध किसान, समृद्ध भारत 🌾')}</span>
         </div>
 
         {/* Right: Controls Stack */}
@@ -1516,6 +1524,229 @@ export default function Header() {
           </button>
         </div>
       </div>
+      </div> {/* End .desktop-header-tiers (100% preserved desktop layout) */}
+
+      {/* =========================================================================
+          MOBILE PHONE DEDICATED HEADER (Shown only on phone / screens <= 992px)
+      ========================================================================= */}
+      <div className="mobile-header-tiers">
+        {/* Tier 1: Compact Gov Strip */}
+        <div className="mobile-top-bar">
+          <div className="mobile-top-left">
+            <img 
+              src="/emblem_of_india_gold.svg" 
+              alt="Ashoka Emblem" 
+              className="mobile-top-emblem" 
+            />
+            <span className="mobile-top-gov-text">भारत सरकार | कृषि मंत्रालय</span>
+          </div>
+          <div className="mobile-top-right">
+            <a href="tel:18001801551" className="mobile-top-tel" title="हेल्पलाइन 1800-180-1551">
+              <PhoneCall size={11} /> 1800-180-1551
+            </a>
+            <button 
+              type="button" 
+              onClick={() => setShowLocationModal(true)} 
+              className="mobile-top-loc"
+              title="स्थान बदलें"
+            >
+              <MapPin size={11} color="#fef08a" />
+              <span>{selectedLocation.district}</span>
+            </button>
+          </div>
+        </div>
+
+        {/* Tier 2: Sticky Brand & Action Header */}
+        <div className="mobile-main-bar">
+          <Link 
+            to={isOperatorRoute ? "/operator/dashboard" : "/farmer/dashboard"} 
+            className="mobile-brand-link"
+          >
+            <img 
+              src="/kisan_kalyan_official_logo.png" 
+              alt="Kisan Kalyan Logo" 
+              className="mobile-brand-logo"
+            />
+            <div className="mobile-brand-info">
+              <strong className="mobile-brand-heading">{t('portalTitle', 'किसान कल्याण')}</strong>
+              <span className="mobile-brand-sub">{t('portalSub', 'Smart Procurement')}</span>
+            </div>
+          </Link>
+
+          <div className="mobile-header-actions">
+            {/* Language Switcher */}
+            <div ref={mobileLanguageRef} style={{ position: 'relative' }}>
+              <button 
+                type="button" 
+                onClick={() => setShowLanguageDropdown(prev => !prev)}
+                className="mobile-action-pill mobile-lang-pill"
+                aria-label="Change Language"
+                aria-haspopup="listbox"
+                aria-expanded={showLanguageDropdown}
+              >
+                <Globe size={13} color="#045d3f" />
+                <span>{currentLanguage?.code?.toUpperCase() || 'HI'}</span>
+                <ChevronDown size={10} color="#64748b" />
+              </button>
+
+              {showLanguageDropdown && (
+                <div 
+                  role="listbox" 
+                  aria-label="Available Indian Languages"
+                  className="mobile-lang-dropdown"
+                  style={{
+                    position: 'absolute',
+                    top: '34px',
+                    right: 0,
+                    width: '210px',
+                    maxHeight: '300px',
+                    overflowY: 'auto',
+                    background: '#ffffff',
+                    borderRadius: '14px',
+                    boxShadow: '0 12px 32px rgba(0,0,0,0.22)',
+                    border: '1.5px solid #a7f3d0',
+                    zIndex: 9999,
+                    padding: '6px'
+                  }}
+                >
+                  <div style={{ padding: '6px 10px', fontSize: '0.72rem', fontWeight: 800, color: '#045d3f', borderBottom: '1px solid #f1f5f9', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <span>भाषा / Language</span>
+                    <span style={{ fontSize: '0.64rem', color: '#64748b' }}>13 Languages</span>
+                  </div>
+                  {supportedLanguages.map(item => (
+                    <button
+                      key={item.code}
+                      type="button"
+                      onClick={() => {
+                        setLang(item.code);
+                        setShowLanguageDropdown(false);
+                      }}
+                      style={{
+                        width: '100%',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                        padding: '8px 10px',
+                        borderRadius: '8px',
+                        background: lang === item.code ? '#ecfdf5' : 'transparent',
+                        color: lang === item.code ? '#065f46' : '#1e293b',
+                        fontWeight: lang === item.code ? 800 : 500,
+                        border: 'none',
+                        cursor: 'pointer',
+                        textAlign: 'left',
+                        fontSize: '0.82rem',
+                        margin: '2px 0'
+                      }}
+                    >
+                      <div>
+                        <div>{item.name}</div>
+                        <div style={{ fontSize: '0.65rem', color: '#64748b' }}>{item.englishName}</div>
+                      </div>
+                      {lang === item.code && <Check size={14} color="#059669" strokeWidth={3} />}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* Dark Mode Moon */}
+            <button 
+              type="button"
+              onClick={toggleHighContrast}
+              className="mobile-action-btn"
+              title={highContrast ? "Light Mode" : "Dark Mode"}
+              aria-label="Toggle Theme"
+            >
+              {highContrast ? <Sun size={15} color="#38bdf8" /> : <Moon size={15} color="#1e293b" />}
+            </button>
+
+            {/* Notifications Bell */}
+            <button 
+              type="button"
+              onClick={() => setShowNotifications(prev => !prev)}
+              className="mobile-action-btn"
+              title="Notifications"
+              aria-label="Notifications"
+            >
+              <Bell size={15} color="#1e293b" />
+              {unreadCount > 0 && <span className="mobile-bell-badge">{unreadCount}</span>}
+            </button>
+
+            {/* Hamburger Menu Toggle */}
+            <button 
+              type="button" 
+              onClick={() => setShowMobileDrawer(true)} 
+              className="mobile-menu-pill"
+              aria-label="Open Navigation Menu"
+            >
+              <Menu size={16} />
+              <span>{t('mobileMenu', 'मेनू')}</span>
+            </button>
+          </div>
+        </div>
+
+        {/* Tier 3: Compact Search Bar with Weather Chip */}
+        <div className="mobile-search-strip">
+          <div className="mobile-search-box">
+            <button 
+              type="button" 
+              onClick={() => executeSearch(searchQuery)}
+              className="mobile-search-submit"
+              aria-label="Search"
+            >
+              <Search size={14} color="#045d3f" />
+            </button>
+            <input 
+              type="text"
+              value={searchQuery}
+              onFocus={() => setIsSearchOpen(true)}
+              onChange={(e) => {
+                setSearchQuery(e.target.value);
+                setIsSearchOpen(true);
+                setSearchSelectedIndex(-1);
+              }}
+              onKeyDown={handleSearchKeyDown}
+              placeholder={t('searchPlaceholder', 'केंद्र, फसल, योजना खोजें...')}
+              className="mobile-search-text-input"
+            />
+            {searchQuery && (
+              <button 
+                type="button" 
+                onClick={() => setSearchQuery('')}
+                className="mobile-search-clear-btn"
+                aria-label="Clear Search text"
+              >
+                <X size={12} />
+              </button>
+            )}
+          </div>
+
+          <button 
+            type="button"
+            onClick={() => setShowLocationModal(true)}
+            className="mobile-weather-chip"
+            title={`${selectedLocation.district} Weather: ${weather.temp}°C`}
+          >
+            <span>{weather.emoji}</span>
+            <span style={{ fontWeight: 800 }}>{weather.temp}°C</span>
+          </button>
+        </div>
+
+        {/* Tier 4: Compact Announcement Ticker */}
+        <div className="mobile-ticker-strip">
+          <div className="mobile-ticker-tag">
+            <Megaphone size={11} />
+            <span>{t('mobileUpdates', 'अपडेट')}</span>
+          </div>
+          <div className="mobile-ticker-content">
+            <span>{tickerItems[tickerIndex] || tickerItems[0]}</span>
+          </div>
+          <div className="mobile-ticker-controls">
+            <button type="button" onClick={prevTicker} aria-label="Previous"><ChevronLeft size={12} /></button>
+            <button type="button" onClick={nextTicker} aria-label="Next"><ChevronRight size={12} /></button>
+          </div>
+        </div>
+      </div>
 
       {/* =========================================================================
           MOBILE DRAWER NAVIGATION (Responsive Slide-in)
@@ -1529,7 +1760,7 @@ export default function Header() {
           />
           <div className="mobile-drawer" role="dialog" aria-label="Mobile Navigation Menu">
             <div style={{ padding: '16px 20px', background: '#045d3f', color: '#ffffff', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <div style={{ fontWeight: 800, fontSize: '1rem' }}>किसान कल्याण पोर्टल</div>
+              <div style={{ fontWeight: 800, fontSize: '1rem' }}>{t('portalTitle', 'किसान कल्याण')}</div>
               <button 
                 type="button"
                 onClick={() => setShowMobileDrawer(false)}
@@ -1593,6 +1824,26 @@ export default function Header() {
 
               <div style={{ borderTop: '1px solid #e2e8f0', margin: '8px 0' }}></div>
 
+              {/* Language Selector in Drawer */}
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 14px', borderRadius: '8px', background: '#f8fafc', border: '1px solid #e2e8f0' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontWeight: 700, fontSize: '0.86rem', color: '#1e293b' }}>
+                  <Globe size={18} color="#045d3f" />
+                  <span>{currentLanguage?.name}</span>
+                </div>
+                <select
+                  value={lang}
+                  onChange={(e) => {
+                    setLang(e.target.value);
+                  }}
+                  aria-label="Select Language"
+                  style={{ padding: '6px 8px', borderRadius: '6px', border: '1px solid #cbd5e1', fontSize: '0.82rem', fontWeight: 700, color: '#065f46', background: '#ffffff' }}
+                >
+                  {supportedLanguages.map(l => (
+                    <option key={l.code} value={l.code}>{l.name} ({l.englishName})</option>
+                  ))}
+                </select>
+              </div>
+
               <button
                 type="button"
                 onClick={() => {
@@ -1602,7 +1853,7 @@ export default function Header() {
                 style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '10px 14px', borderRadius: '8px', background: '#f8fafc', border: '1px solid #e2e8f0', color: '#1e293b', fontWeight: 700, cursor: 'pointer', textAlign: 'left' }}
               >
                 <MapPin size={18} color="#059669" />
-                <span>स्थान बदलें: {selectedLocation.displayName}</span>
+                <span>{t('changeLocation', 'स्थान बदलें')}: {selectedLocation.displayName}</span>
               </button>
 
               <button
@@ -1611,9 +1862,9 @@ export default function Header() {
                   setShowMobileDrawer(false);
                   setShowDownloadModal(true);
                 }}
-                style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '12px 14px', borderRadius: '8px', background: '#017953', border: 'none', color: '#ffffff', fontWeight: 800, cursor: 'pointer', justifyContent: 'center', marginTop: '12px' }}
+                style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '12px 14px', borderRadius: '8px', background: '#017953', border: 'none', color: '#ffffff', fontWeight: 800, cursor: 'pointer', justifyContent: 'center', marginTop: '8px' }}
               >
-                <Smartphone size={18} /> {t('downloadAppTitle', 'Download Mobile App')}
+                <Smartphone size={18} /> {t('downloadApp', 'ऐप डाउनलोड करें')}
               </button>
             </div>
           </div>

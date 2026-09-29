@@ -17,6 +17,7 @@ import CenterDiscoveryPage from './pages/CenterDiscoveryPage';
 import HelpPage from './pages/HelpPage';
 import QrPassPage from './pages/QrPassPage';
 import FarmerPaymentPage from './pages/FarmerPaymentPage';
+import Footer from './components/Footer';
 
 const ProtectedRoute = ({ children, allowedRoles }) => {
   const { user, loading } = useAuth();
@@ -102,22 +103,7 @@ export default function App() {
                 <Route path="*" element={<Navigate to="/" replace />} />
               </Routes>
             </main>
-
-            <footer style={{ background: '#064022', color: '#ecfdf5', padding: '24px 0', marginTop: 'auto', borderTop: '3px solid #059669' }}>
-              <div className="portal-container" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px', fontSize: '0.85rem' }}>
-                <div>
-                  <strong>किसान कल्याण पोर्टल (Kisan Kalyan Portal)</strong> • भारत सरकार
-                  <div style={{ color: '#a7f3d0', fontSize: '0.78rem', marginTop: '2px' }}>
-                    Smart Procurement & Storage Management Portal © 2026. All Rights Reserved.
-                  </div>
-                </div>
-                <div style={{ display: 'flex', gap: '16px' }}>
-                  <a href="/help" style={{ color: '#fef08a', textDecoration: 'none' }}>मदद व संपर्क</a>
-                  <a href="/centers" style={{ color: '#fef08a', textDecoration: 'none' }}>खरीद केंद्र</a>
-                  <a href="/login" style={{ color: '#fef08a', textDecoration: 'none' }}>अधिकारी लॉगिन</a>
-                </div>
-              </div>
-            </footer>
+            <Footer />
           </div>
         </BrowserRouter>
         </BookingProvider>

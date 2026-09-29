@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { useLanguage } from '../context/LanguageContext';
 import { 
   MapPin, 
   Search, 
@@ -27,6 +28,7 @@ import tractorFieldImg from '../assets/tractor_field.png';
 export default function CenterDiscoveryPage() {
   const navigate = useNavigate();
   const location = useLocation();
+  const { t } = useLanguage();
   const [activeFilter, setActiveFilter] = useState('all');
   
   // Read ?q= query param from header search if present
@@ -153,10 +155,10 @@ export default function CenterDiscoveryPage() {
             </div>
             <div>
               <h2 style={{ fontSize: '1.05rem', fontWeight: 800, color: '#0f172a', lineHeight: 1.25, marginBottom: '6px' }}>
-                नजदीकी खरीद केंद्र खोजें
+                {t('findCentresTitle', 'नजदीकी खरीद केंद्र खोजें')}
               </h2>
               <p style={{ fontSize: '0.78rem', color: '#64748b', lineHeight: 1.4 }}>
-                दूरी, वर्तमान भीड़ और उपलब्ध स्लॉट सभी जानकारी देखें
+                {t('findCentresSub', 'दूरी, वर्तमान भीड़ और उपलब्ध स्लॉट सभी जानकारी देखें')}
               </p>
             </div>
           </div>
@@ -183,7 +185,7 @@ export default function CenterDiscoveryPage() {
               }}
             >
               <Building2 size={18} />
-              <span>सभी केंद्र</span>
+              <span>{t('filterAll', 'सभी केंद्र')}</span>
             </button>
 
             <button 
@@ -205,7 +207,7 @@ export default function CenterDiscoveryPage() {
               }}
             >
               <Compass size={18} color="#059669" />
-              <span>मेरे नजदीक</span>
+              <span>{t('filterNearby', 'मेरे नजदीक')}</span>
             </button>
 
             <button 
@@ -227,7 +229,7 @@ export default function CenterDiscoveryPage() {
               }}
             >
               <Building2 size={18} color="#0284c7" />
-              <span>मेरे जिले में</span>
+              <span>{t('filterDistrict', 'मेरे जिले में')}</span>
             </button>
 
             <button 
@@ -249,7 +251,7 @@ export default function CenterDiscoveryPage() {
               }}
             >
               <Map size={18} color="#d97706" />
-              <span>मानचित्र पर देखें</span>
+              <span>{t('viewOnMap', 'मानचित्र पर देखें')}</span>
             </button>
 
             <button 
@@ -271,7 +273,7 @@ export default function CenterDiscoveryPage() {
               }}
             >
               <Heart size={18} color="#e11d48" />
-              <span>पसंदीदा केंद्र</span>
+              <span>{t('filterFavorites', 'पसंदीदा केंद्र')}</span>
             </button>
           </div>
 
@@ -318,7 +320,7 @@ export default function CenterDiscoveryPage() {
                 type="text" 
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="केंद्र का नाम, गांव, मंडी या जिला खोजें..."
+                placeholder={t('searchMandiDistrict', 'केंद्र का नाम, गांव, मंडी या जिला खोजें...')}
                 style={{ 
                   width: '100%', 
                   padding: '9px 12px 9px 38px', 
@@ -375,7 +377,7 @@ export default function CenterDiscoveryPage() {
               }}
             >
               <Navigation size={15} color="#059669" />
-              <span>मेरा स्थान</span>
+              <span>{t('detectLocationBtn', 'मेरा स्थान')}</span>
             </button>
 
             {/* Map View Button */}
@@ -396,14 +398,14 @@ export default function CenterDiscoveryPage() {
               }}
             >
               <Map size={15} />
-              <span>मानचित्र दृश्य</span>
+              <span>{t('viewOnMap', 'मानचित्र दृश्य')}</span>
             </button>
           </div>
 
           {/* Results Summary Bar */}
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0 4px' }}>
             <div style={{ fontSize: '1.05rem', fontWeight: 800, color: '#1e293b' }}>
-              कुल 24 खरीद केंद्र मिले
+              {t('totalCentresFound', 'कुल 24 खरीद केंद्र मिले')}
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
               <select 
@@ -420,9 +422,9 @@ export default function CenterDiscoveryPage() {
                   cursor: 'pointer'
                 }}
               >
-                <option value="nearest">निकटतम पहले ⌵</option>
-                <option value="slots">सर्वाधिक स्लॉट ⌵</option>
-                <option value="wait">न्यूनतम प्रतीक्षा ⌵</option>
+                <option value="nearest">{t('sortByDistance', 'दूरी अनुसार')} ⌵</option>
+                <option value="slots">{t('sortBySlots', 'सर्वाधिक स्लॉट')} ⌵</option>
+                <option value="wait">{t('sortByWaitTime', 'प्रतीक्षा समय अनुसार')} ⌵</option>
               </select>
             </div>
           </div>
@@ -524,7 +526,7 @@ export default function CenterDiscoveryPage() {
                   <div style={{ display: 'flex', gap: '20px', textAlign: 'center' }}>
                     <div>
                       <div style={{ fontSize: '0.72rem', color: '#64748b', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '3px' }}>
-                        <span>👤</span> उपलब्ध स्लॉट
+                        <span>👤</span> {t('availableSlots', 'उपलब्ध स्लॉट')}
                       </div>
                       <div style={{ fontSize: '1.4rem', fontWeight: 800, color: '#017953' }}>
                         {center.availableSlots}
@@ -533,7 +535,7 @@ export default function CenterDiscoveryPage() {
 
                     <div>
                       <div style={{ fontSize: '0.72rem', color: '#64748b', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '3px' }}>
-                        <span>👥</span> किसान कतार
+                        <span>👥</span> {t('farmersInQueue', 'किसान कतार')}
                       </div>
                       <div style={{ fontSize: '1.4rem', fontWeight: 800, color: '#0f172a' }}>
                         {center.queueFarmers}
@@ -542,7 +544,7 @@ export default function CenterDiscoveryPage() {
 
                     <div>
                       <div style={{ fontSize: '0.72rem', color: '#64748b', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '3px' }}>
-                        <span>⏱️</span> प्रतीक्षा समय
+                        <span>⏱️</span> {t('estWaitTime', 'प्रतीक्षा समय')}
                       </div>
                       <div style={{ fontSize: '1.15rem', fontWeight: 800, color: '#ea580c' }}>
                         {center.waitTime}
@@ -571,7 +573,7 @@ export default function CenterDiscoveryPage() {
                       }}
                     >
                       <Calendar size={14} />
-                      <span>स्लॉट बुक करें</span>
+                      <span>{t('bookSlot', 'स्लॉट बुक करें')}</span>
                     </button>
 
                     <button 
@@ -591,7 +593,7 @@ export default function CenterDiscoveryPage() {
                         gap: '4px'
                       }}
                     >
-                      <span>विवरण देखें</span>
+                      <span>{t('viewDetails', 'विवरण देखें')}</span>
                       <ArrowRight size={13} />
                     </button>
                   </div>

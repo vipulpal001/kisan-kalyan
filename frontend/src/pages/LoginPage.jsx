@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { useLanguage } from '../context/LanguageContext';
 import api from '../services/api';
 import { Lock, User, AlertCircle, ArrowRight } from 'lucide-react';
 
@@ -11,6 +12,7 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false);
 
   const { login } = useAuth();
+  const { t } = useLanguage();
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
@@ -29,7 +31,7 @@ export default function LoginPage() {
         navigate('/farmer/dashboard');
       }
     } catch (err) {
-      setError(err.response?.data?.message || 'लॉगिन विफल रहा / Login failed');
+      setError(err.response?.data?.message || t('loginFailed', 'लॉगिन विफल रहा / Login failed'));
     } finally {
       setLoading(false);
     }
@@ -42,9 +44,9 @@ export default function LoginPage() {
           <div style={{ width: '56px', height: '56px', borderRadius: '16px', background: '#ecfdf5', color: '#059669', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.8rem', marginBottom: '12px' }}>
             🌾
           </div>
-          <h2 style={{ fontSize: '1.6rem', fontWeight: 800, color: '#064e3b' }}>पोर्टल लॉगिन</h2>
+          <h2 style={{ fontSize: '1.6rem', fontWeight: 800, color: '#064e3b' }}>{t('loginTitle', 'पोर्टल लॉगिन')}</h2>
           <p style={{ color: '#6b7280', fontSize: '0.9rem', marginTop: '4px' }}>
-            किसान, ऑपरेटर एवं प्रशासक लॉगिन
+            {t('loginSub', 'किसान, ऑपरेटर एवं प्रशासक लॉगिन')}
           </p>
         </div>
 
@@ -57,7 +59,7 @@ export default function LoginPage() {
         <form onSubmit={handleSubmit}>
           <div style={{ marginBottom: '18px' }}>
             <label style={{ display: 'block', fontSize: '0.88rem', fontWeight: 600, color: '#374151', marginBottom: '6px' }}>
-              उपयोगकर्ता नाम (Username)
+              {t('usernameLabel', 'उपयोगकर्ता नाम (Username)')}
             </label>
             <div style={{ position: 'relative' }}>
               <User size={18} color="#9ca3af" style={{ position: 'absolute', left: '12px', top: '12px' }} />
@@ -73,7 +75,7 @@ export default function LoginPage() {
 
           <div style={{ marginBottom: '24px' }}>
             <label style={{ display: 'block', fontSize: '0.88rem', fontWeight: 600, color: '#374151', marginBottom: '6px' }}>
-              पासवर्ड (Password)
+              {t('passwordLabel', 'पासवर्ड (Password)')}
             </label>
             <div style={{ position: 'relative' }}>
               <Lock size={18} color="#9ca3af" style={{ position: 'absolute', left: '12px', top: '12px' }} />
@@ -88,43 +90,43 @@ export default function LoginPage() {
           </div>
 
           <button type="submit" disabled={loading} className="btn-primary" style={{ width: '100%', padding: '12px', fontSize: '1rem', fontWeight: 700 }}>
-            {loading ? 'सत्यापित हो रहा है...' : 'लॉगिन करें (Login)'} <ArrowRight size={18} />
+            {loading ? t('loggingIn', 'सत्यापित हो रहा है...') : t('loginBtn', 'लॉगिन करें (Login)')} <ArrowRight size={18} />
           </button>
         </form>
 
         <div style={{ marginTop: '24px', textAlign: 'center', borderTop: '1px solid #f3f4f6', paddingTop: '18px' }}>
           <p style={{ fontSize: '0.88rem', color: '#6b7280' }}>
-            नया किसान खाता?{' '}
+            {t('newFarmerPrompt', 'नया किसान खाता?')}{' '}
             <Link to="/register" style={{ color: '#059669', fontWeight: 700, textDecoration: 'none' }}>
-              नया पंजीकरण करें
+              {t('registerNow', 'नया पंजीकरण करें')}
             </Link>
           </p>
         </div>
 
         {/* Quick Credentials Helper for Testing */}
         <div style={{ marginTop: '20px', background: '#f8fafc', padding: '14px', borderRadius: '10px', fontSize: '0.8rem', color: '#475569', border: '1px solid #e2e8f0' }}>
-          <strong style={{ display: 'block', marginBottom: '8px', color: '#0f172a' }}>त्वरित डेमो लॉगिन (Quick 1-Click Login):</strong>
+          <strong style={{ display: 'block', marginBottom: '8px', color: '#0f172a' }}>{t('demoAccountsTitle', 'त्वरित परीक्षण हेतु डेमो खाते:')}</strong>
           <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
             <button 
               type="button"
               onClick={() => { setUsername('ramesh.singh'); setPassword('farmer123'); }}
               style={{ background: '#ecfdf5', color: '#047857', border: '1px solid #a7f3d0', padding: '6px 12px', borderRadius: '6px', fontSize: '0.78rem', fontWeight: 700, cursor: 'pointer' }}
             >
-              🌾 किसान (Ramesh)
+              🌾 {t('farmerAccount', 'किसान (Farmer)')} (Ramesh)
             </button>
             <button 
               type="button"
               onClick={() => { setUsername('rajesh.verma'); setPassword('farmer123'); }}
               style={{ background: '#eff6ff', color: '#1d4ed8', border: '1px solid #bfdbfe', padding: '6px 12px', borderRadius: '6px', fontSize: '0.78rem', fontWeight: 700, cursor: 'pointer' }}
             >
-              ⚖️ ऑपरेटर (Rajesh)
+              ⚖️ {t('operatorAccount', 'मंडी ऑपरेटर (Operator)')} (Rajesh)
             </button>
             <button 
               type="button"
               onClick={() => { setUsername('admin'); setPassword('admin123'); }}
               style={{ background: '#fdf4ff', color: '#86198f', border: '1px solid #f0abfc', padding: '6px 12px', borderRadius: '6px', fontSize: '0.78rem', fontWeight: 700, cursor: 'pointer' }}
             >
-              🏛️ प्रशासक (Admin)
+              🏛️ {t('adminAccount', 'प्रशासक (Admin)')}
             </button>
           </div>
         </div>

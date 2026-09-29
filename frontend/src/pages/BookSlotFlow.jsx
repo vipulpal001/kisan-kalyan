@@ -2,6 +2,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useBooking } from '../context/BookingContext';
+import { useLanguage } from '../context/LanguageContext';
 import api from '../services/api';
 import { 
   Check, 
@@ -52,6 +53,7 @@ import annadataSketch from '../assets/annadata_sketch.png';
 export default function BookSlotFlow() {
   const navigate = useNavigate();
   const { user } = useAuth();
+  const { t, lang } = useLanguage();
   const { 
     slots: contextSlots, 
     centres: contextCentres, 
@@ -121,25 +123,25 @@ export default function BookSlotFlow() {
   // Backend crop list
   const [produceList, setProduceList] = useState([]);
 
-  // Voice narration helper
+  // Voice narration helper with selected language support
   const speakText = (text) => {
     if ('speechSynthesis' in window) {
       window.speechSynthesis.cancel();
       const utterance = new SpeechSynthesisUtterance(text);
-      utterance.lang = 'hi-IN';
+      utterance.lang = lang === 'en' ? 'en-IN' : (lang === 'hi' ? 'hi-IN' : `${lang}-IN`);
       utterance.rate = 0.9;
       window.speechSynthesis.speak(utterance);
     }
   };
 
-  // 5 Crops data
-  const CROPS = [
+  // 5 Crops data dynamically translated
+  const CROPS = useMemo(() => [
     {
       id: 'wheat',
       code: 'WHT-2026',
-      name: 'गेहूं',
+      name: t('cropWheat', 'गेहूं'),
       subtext: 'Rabi 2026',
-      mspText: 'MSP : ₹2,275/क्विंटल',
+      mspText: `MSP : ₹2,275${t('perQuintal', '/क्विंटल')}`,
       mspValue: 2275,
       image: cropWheat,
       season: 'Rabi 2026'
@@ -147,9 +149,9 @@ export default function BookSlotFlow() {
     {
       id: 'rice',
       code: 'RIC-2026',
-      name: 'धान (चावल)',
+      name: t('cropRice', 'धान (चावल)'),
       subtext: 'Kharif 2026',
-      mspText: 'MSP : ₹2,300/क्विंटल',
+      mspText: `MSP : ₹2,300${t('perQuintal', '/क्विंटल')}`,
       mspValue: 2300,
       image: cropRice,
       season: 'Kharif 2026'
@@ -157,9 +159,9 @@ export default function BookSlotFlow() {
     {
       id: 'maize',
       code: 'MAI-2026',
-      name: 'मक्का',
+      name: t('cropMaize', 'मक्का'),
       subtext: 'Kharif 2026',
-      mspText: 'MSP : ₹2,090/क्विंटल',
+      mspText: `MSP : ₹2,090${t('perQuintal', '/क्विंटल')}`,
       mspValue: 2090,
       image: cropMaize,
       season: 'Kharif 2026'
@@ -167,9 +169,9 @@ export default function BookSlotFlow() {
     {
       id: 'mustard',
       code: 'MUS-2026',
-      name: 'सरसों',
+      name: t('cropMustard', 'सरसों'),
       subtext: 'Rabi 2026',
-      mspText: 'MSP : ₹5,650/क्विंटल',
+      mspText: `MSP : ₹5,650${t('perQuintal', '/क्विंटल')}`,
       mspValue: 5650,
       image: cropMustard,
       season: 'Rabi 2026'
@@ -177,14 +179,14 @@ export default function BookSlotFlow() {
     {
       id: 'gram',
       code: 'GRA-2026',
-      name: 'चना',
+      name: t('cropGram', 'चना'),
       subtext: 'Rabi 2026',
-      mspText: 'MSP : ₹5,440/क्विंटल',
+      mspText: `MSP : ₹5,440${t('perQuintal', '/क्विंटल')}`,
       mspValue: 5440,
       image: cropGram,
       season: 'Rabi 2026'
     }
-  ];
+  ], [t]);
 
   // Quality grading options
   const QUALITY_OPTIONS = [
@@ -265,13 +267,13 @@ export default function BookSlotFlow() {
 
   // 7 Stepper definitions matching exact sequence
   const STEPPER_STEPS = [
-    { id: 1, main: '1. फसल चुनें', sub: 'अपनी फसल का चयन करें' },
-    { id: 2, main: '2. मात्रा चुनें', sub: 'अनुमानित उपज दर्ज करें' },
-    { id: 3, main: '3. गुणवत्ता चुनें', sub: 'फसल की गुणवत्ता चुनें' },
-    { id: 4, center: true, id: 4, main: '4. केंद्र चुनें', sub: 'निकटतम खरीद केंद्र चुनें' },
-    { id: 5, main: '5. तारीख चुनें', sub: 'मंडी जाने की तारीख चुनें' },
-    { id: 6, main: '6. समय स्लॉट', sub: 'सुविधाजनक समय चुनें' },
-    { id: 7, main: '7. पुष्टि करें', sub: 'टोकन प्राप्त करें' }
+    { id: 1, main: t('bookStep1Main', '1. फसल चुनें'), sub: t('bookStep1Sub', 'अपनी फसल का चयन करें') },
+    { id: 2, main: t('bookStep2Main', '2. मात्रा चुनें'), sub: t('bookStep2Sub', 'अनुमानित उपज दर्ज करें') },
+    { id: 3, main: t('bookStep3Main', '3. गुणवत्ता चुनें'), sub: t('bookStep3Sub', 'फसल की गुणवत्ता चुनें') },
+    { id: 4, center: true, id: 4, main: t('bookStep4Main', '4. केंद्र चुनें'), sub: t('bookStep4Sub', 'निकटतम खरीद केंद्र चुनें') },
+    { id: 5, main: t('bookStep5Main', '5. तारीख चुनें'), sub: t('bookStep5Sub', 'मंडी जाने की तारीख चुनें') },
+    { id: 6, main: t('bookStep6Main', '6. समय स्लॉट'), sub: t('bookStep6Sub', 'सुविधाजनक समय चुनें') },
+    { id: 7, main: t('bookStep7Main', '7. पुष्टि करें'), sub: t('bookStep7Sub', 'टोकन प्राप्त करें') }
   ];
 
   // Step Navigation handlers
@@ -426,10 +428,10 @@ export default function BookSlotFlow() {
               </div>
               <div>
                 <h2 style={{ fontSize: '1.5rem', fontWeight: 800, color: '#064e3b', margin: 0 }}>
-                  सही दाम, सुरक्षित भविष्य • क्षमता-आधारित खरीद स्लॉट
+                  {t('slotBannerTitle', 'सही दाम, सुरक्षित भविष्य • क्षमता-आधारित खरीद स्लॉट')}
                 </h2>
                 <p style={{ fontSize: '0.86rem', color: '#374151', margin: '2px 0 0 0' }}>
-                  फसल की मात्रा के अनुसार वास्तविक-समय स्लॉट आरक्षण एवं पारदर्शी कतार प्रबंधन।
+                  {t('slotBannerSub', 'फसल की मात्रा के अनुसार वास्तविक-समय स्लॉट आरक्षण एवं पारदर्शी कतार प्रबंधन।')}
                 </p>
               </div>
             </div>
@@ -515,25 +517,32 @@ export default function BookSlotFlow() {
 
         {/* ================= STEP 1: फसल चुनें (Select Crop) ================= */}
         {step === 1 && (
-          <div style={{ background: '#ffffff', borderRadius: '24px', border: '1px solid #e2e8f0', padding: '24px 36px 30px 36px', boxShadow: '0 8px 30px rgba(0,0,0,0.04)' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-              <button onClick={() => navigate('/farmer/dashboard')} style={{ background: '#ffffff', border: '1px solid #d1d5db', color: '#374151', padding: '6px 18px', borderRadius: '20px', fontSize: '0.84rem', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '6px', cursor: 'pointer' }}>
-                <ArrowLeft size={16} /> <span>डैशबोर्ड पर वापस जाएं</span>
+          <div className="book-slot-card">
+            <div className="book-header-actions">
+              <button onClick={() => navigate('/farmer/dashboard')} className="book-secondary-btn">
+                <ArrowLeft size={16} /> <span>{t('backToDashboard', 'डैशबोर्ड पर वापस जाएं')}</span>
               </button>
-              <button onClick={() => speakText("कृपया अपनी बेचने योग्य फसल का चयन करें।")} style={{ background: '#fef3c7', border: '1px solid #fde68a', color: '#92400e', padding: '6px 18px', borderRadius: '20px', fontSize: '0.84rem', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '6px', cursor: 'pointer' }}>
-                <Volume2 size={16} color="#d97706" /> <span>सुनें (आवाज)</span>
+              <button 
+                onClick={() => speakText(t('selectCropAudioPrompt', 'कृपया अपनी बेचने योग्य फसल का चयन करें।'))} 
+                style={{ background: '#fef3c7', border: '1px solid #fde68a', color: '#92400e', padding: '6px 18px', borderRadius: '20px', fontSize: '0.84rem', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '6px', cursor: 'pointer' }}
+              >
+                <Volume2 size={16} color="#d97706" /> <span>{t('listenVoice', 'सुनें (आवाज)')}</span>
               </button>
             </div>
 
             <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px', marginBottom: '24px' }}>
               <div style={{ fontSize: '1.6rem', lineHeight: 1 }}>🌱</div>
               <div>
-                <h3 style={{ fontSize: '1.35rem', fontWeight: 800, color: '#111827', margin: 0 }}>अपनी बेचने योग्य फसल का चयन करें</h3>
-                <p style={{ fontSize: '0.88rem', color: '#6b7280', margin: '3px 0 0 0' }}>वह फसल चुनें जिसे आप आज सरकारी खरीद केंद्र पर बेचना चाहते हैं</p>
+                <h3 style={{ fontSize: '1.35rem', fontWeight: 800, color: '#111827', margin: 0 }}>
+                  {t('selectCropTitle', 'अपनी बेचने योग्य फसल का चयन करें')}
+                </h3>
+                <p style={{ fontSize: '0.88rem', color: '#6b7280', margin: '3px 0 0 0' }}>
+                  {t('selectCropSub', 'वह फसल चुनें जिसे आप आज सरकारी खरीद केंद्र पर बेचना चाहते हैं')}
+                </p>
               </div>
             </div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '18px', marginBottom: '32px' }}>
+            <div className="crop-grid">
               {CROPS.map((crop) => {
                 const isSelected = selectedCropKey === crop.id;
                 return (
@@ -543,18 +552,7 @@ export default function BookSlotFlow() {
                       setSelectedCropKey(crop.id);
                       speakText(`${crop.name}, ${crop.mspText}`);
                     }}
-                    style={{ 
-                      border: isSelected ? '2px solid #017953' : '1.5px solid #e5e7eb', 
-                      background: isSelected ? '#fbfdfc' : '#ffffff', 
-                      borderRadius: '16px', 
-                      padding: '16px 20px', 
-                      display: 'flex', 
-                      alignItems: 'center', 
-                      justifyContent: 'space-between', 
-                      cursor: 'pointer',
-                      transition: 'all 0.2s ease',
-                      boxShadow: isSelected ? '0 4px 14px rgba(1, 121, 83, 0.12)' : 'none'
-                    }}
+                    className={`crop-card ${isSelected ? 'selected' : ''}`}
                   >
                     <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
                       <img src={crop.image} alt={crop.name} style={{ width: '60px', height: '46px', objectFit: 'contain' }} />
@@ -578,22 +576,26 @@ export default function BookSlotFlow() {
               })}
             </div>
 
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: '20px', borderTop: '1px solid #f1f5f9' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                <div style={{ width: '38px', height: '38px', borderRadius: '50%', background: '#ecfdf5', border: '1.5px solid #a7f3d0', color: '#017953', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <div className="book-card-footer">
+              <div className="msp-guarantee-badge">
+                <div style={{ width: '38px', height: '38px', borderRadius: '50%', background: '#ecfdf5', border: '1.5px solid #a7f3d0', color: '#017953', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                   <Award size={22} color="#017953" />
                 </div>
                 <div>
-                  <div style={{ fontSize: '0.92rem', fontWeight: 800, color: '#017953' }}>न्यूनतम समर्थन मूल्य (MSP) की गारंटी</div>
-                  <div style={{ fontSize: '0.78rem', color: '#6b7280', marginTop: '1px' }}>पारदर्शी तौल और डीबीटी के माध्यम से सीधा बैंक खाता हस्तांतरण।</div>
+                  <div style={{ fontSize: '0.92rem', fontWeight: 800, color: '#017953' }}>
+                    {t('mspGuarantee', 'न्यूनतम समर्थन मूल्य (MSP) की गारंटी')}
+                  </div>
+                  <div style={{ fontSize: '0.78rem', color: '#6b7280', marginTop: '1px' }}>
+                    {t('mspGuaranteeSub', 'पारदर्शी तौल और डीबीटी के माध्यम से सीधा बैंक खाता हस्तांतरण।')}
+                  </div>
                 </div>
               </div>
 
               <button 
                 onClick={handleNext} 
-                style={{ background: '#017953', color: '#ffffff', border: 'none', borderRadius: '10px', padding: '12px 34px', fontSize: '1.02rem', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', boxShadow: '0 4px 12px rgba(1, 121, 83, 0.25)' }}
+                className="book-primary-btn"
               >
-                <span>आगे बढ़ें (मात्रा दर्ज करें)</span> <ArrowRight size={18} />
+                <span>{t('proceedQuantity', 'आगे बढ़ें (मात्रा दर्ज करें)')}</span> <ArrowRight size={18} />
               </button>
             </div>
           </div>

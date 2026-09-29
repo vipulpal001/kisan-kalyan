@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { useLanguage } from '../context/LanguageContext';
 import api from '../services/api';
 import { User, Phone, Lock, CreditCard, MapPin, AlertCircle, ArrowRight } from 'lucide-react';
 
 export default function RegisterPage() {
+  const { t } = useLanguage();
   const [formData, setFormData] = useState({
     username: '',
     password: '',
@@ -39,7 +41,7 @@ export default function RegisterPage() {
       login(res.data);
       navigate('/farmer/dashboard');
     } catch (err) {
-      setError(err.response?.data?.message || 'पंजीकरण विफल रहा / Registration failed');
+      setError(err.response?.data?.message || t('registrationFailed', 'पंजीकरण विफल रहा / Registration failed'));
     } finally {
       setLoading(false);
     }
@@ -52,9 +54,9 @@ export default function RegisterPage() {
           <div style={{ width: '56px', height: '56px', borderRadius: '16px', background: '#ecfdf5', color: '#059669', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.8rem', marginBottom: '12px' }}>
             🚜
           </div>
-          <h2 style={{ fontSize: '1.6rem', fontWeight: 800, color: '#064e3b' }}>नया किसान पंजीकरण</h2>
+          <h2 style={{ fontSize: '1.6rem', fontWeight: 800, color: '#064e3b' }}>{t('registerTitle', 'नया किसान पंजीकरण')}</h2>
           <p style={{ color: '#6b7280', fontSize: '0.9rem', marginTop: '4px' }}>
-            सरकारी खरीद एवं समर्थन मूल्य (MSP) का लाभ लेने हेतु विवरण दर्ज करें
+            {t('registerSub', 'सरकारी खरीद एवं समर्थन मूल्य (MSP) का लाभ लेने हेतु विवरण दर्ज करें')}
           </p>
         </div>
 

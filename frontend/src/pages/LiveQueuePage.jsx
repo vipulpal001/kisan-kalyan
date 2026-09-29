@@ -15,6 +15,7 @@ import {
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useBooking } from '../context/BookingContext';
+import { useLanguage } from '../context/LanguageContext';
 import mandiShed from '../assets/mandi_shed.png';
 import cropWheat from '../assets/crop_wheat.png';
 import cropMaize from '../assets/crop_maize.png';
@@ -24,6 +25,7 @@ import apmcBuilding from '../assets/apmc_building.png';
 export default function LiveQueuePage() {
   const { user } = useAuth();
   const { activeBooking, advanceQueueStage } = useBooking();
+  const { t, lang } = useLanguage();
   const [refreshing, setRefreshing] = useState(false);
   const [lastUpdated, setLastUpdated] = useState(new Date().toLocaleTimeString());
 
@@ -78,7 +80,7 @@ export default function LiveQueuePage() {
           {/* ================= LEFT SIDEBAR (Matching Screenshot) ================= */}
           <div style={{ background: '#ffffff', borderRadius: '24px', border: '1px solid #e2e8f0', padding: '24px 18px', boxShadow: '0 8px 30px rgba(0,0,0,0.04)', textAlign: 'center' }}>
             <h4 style={{ fontSize: '1.05rem', fontWeight: 800, color: '#064e3b', marginBottom: '18px', lineHeight: 1.3 }}>
-              “किसान की सुविधा हमारी प्राथमिकता”
+              {t('queueTagline', '“किसान की सुविधा हमारी प्राथमिकता”')}
             </h4>
 
             <div style={{ textAlign: 'left', display: 'flex', flexDirection: 'column', gap: '12px', fontSize: '0.82rem', color: '#374151', padding: '0 4px' }}>
@@ -86,25 +88,25 @@ export default function LiveQueuePage() {
                 <div style={{ width: '20px', height: '20px', borderRadius: '50%', background: '#ecfdf5', color: '#017953', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                   <Check size={12} strokeWidth={3} />
                 </div>
-                <span>रियल-टाइम कतार स्थिति</span>
+                <span>{t('realtimeQueue', 'रियल-टाइम कतार स्थिति')}</span>
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                 <div style={{ width: '20px', height: '20px', borderRadius: '50%', background: '#ecfdf5', color: '#017953', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                   <Check size={12} strokeWidth={3} />
                 </div>
-                <span>पारदर्शी प्रक्रिया</span>
+                <span>{t('transparentProcess', 'पारदर्शी प्रक्रिया')}</span>
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                 <div style={{ width: '20px', height: '20px', borderRadius: '50%', background: '#ecfdf5', color: '#017953', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                   <Check size={12} strokeWidth={3} />
                 </div>
-                <span>तेज और सरल सेवा</span>
+                <span>{t('fastDbt', 'त्वरित डीबीटी भुगतान')}</span>
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                 <div style={{ width: '20px', height: '20px', borderRadius: '50%', background: '#ecfdf5', color: '#017953', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                   <Check size={12} strokeWidth={3} />
                 </div>
-                <span>डिजिटल मंडी प्रबंधन</span>
+                <span>{t('weighbridgeTracking', 'धर्मकांटा तौल ट्रैकिंग')}</span>
               </div>
             </div>
 
@@ -112,7 +114,7 @@ export default function LiveQueuePage() {
             <div style={{ marginTop: '24px', paddingTop: '16px', borderTop: '1px solid #f1f5f9' }}>
               <img src={apmcBuilding} alt="Mandi Management" style={{ width: '100%', height: 'auto', borderRadius: '12px' }} />
               <div style={{ fontSize: '0.92rem', fontWeight: 800, color: '#017953', marginTop: '10px' }}>
-                समृद्ध किसान <br /> समृद्ध भारत
+                {t('sloganTop', 'समृद्ध किसान')} <br /> {t('sloganBottom', 'समृद्ध भारत')}
               </div>
             </div>
           </div>
@@ -128,11 +130,11 @@ export default function LiveQueuePage() {
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '2px' }}>
                     <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#10b981', display: 'inline-block' }}></span>
                     <span style={{ fontSize: '0.72rem', fontWeight: 800, color: '#017953', background: '#ecfdf5', padding: '2px 8px', borderRadius: '6px' }}>
-                      DEMO APMC FEED • वास्तविक समय कतार स्थिति (Demo Feed)
+                      DEMO APMC FEED • {t('realtimeQueue', 'वास्तविक समय कतार स्थिति')}
                     </span>
                   </div>
                   <h3 style={{ fontSize: '1.35rem', fontWeight: 900, color: '#111827', margin: 0 }}>
-                    मंडी लाइव कतार मॉनिटर
+                    {t('liveQueueToken', 'मंडी लाइव कतार मॉनिटर')}
                   </h3>
                   <div style={{ fontSize: '0.78rem', color: '#64748b', marginTop: '1px' }}>
                     {centerName}
@@ -162,7 +164,7 @@ export default function LiveQueuePage() {
               
               {/* Card 1: YOUR TOKEN */}
               <div style={{ background: '#ecfdf5', border: '1.5px solid #a7f3d0', borderRadius: '16px', padding: '14px 12px', textAlign: 'center' }}>
-                <span style={{ fontSize: '0.7rem', color: '#166534', fontWeight: 700, textTransform: 'uppercase' }}>YOUR TOKEN (आपका टोकन)</span>
+                <span style={{ fontSize: '0.7rem', color: '#166534', fontWeight: 700, textTransform: 'uppercase' }}>{t('yourTokenNumber', 'YOUR TOKEN')}</span>
                 <div style={{ fontSize: '1.8rem', fontWeight: 900, color: '#017953', margin: '2px 0' }}>
                   {tokenNum}
                 </div>
@@ -170,13 +172,13 @@ export default function LiveQueuePage() {
                   {cropDisplay}
                 </div>
                 <span style={{ display: 'inline-block', fontSize: '0.66rem', background: '#017953', color: '#ffffff', padding: '2px 8px', borderRadius: '10px', fontWeight: 700, marginTop: '4px' }}>
-                  ● Active (स्थान {queuePos})
+                  ● Active (Pos {queuePos})
                 </span>
               </div>
 
               {/* Card 2: NOW SERVING */}
               <div style={{ background: '#eff6ff', border: '1.5px solid #bfdbfe', borderRadius: '16px', padding: '14px 12px', textAlign: 'center' }}>
-                <span style={{ fontSize: '0.7rem', color: '#1e40af', fontWeight: 700, textTransform: 'uppercase' }}>NOW SERVING (अब सेवा में)</span>
+                <span style={{ fontSize: '0.7rem', color: '#1e40af', fontWeight: 700, textTransform: 'uppercase' }}>{t('nowCallingToken', 'NOW SERVING')}</span>
                 <div style={{ fontSize: '1.8rem', fontWeight: 900, color: '#1d4ed8', margin: '2px 0' }}>
                   {nowServingToken}
                 </div>
@@ -184,38 +186,38 @@ export default function LiveQueuePage() {
                   {counterName.split(' ')[0]}
                 </div>
                 <div style={{ fontSize: '0.68rem', color: '#64748b', marginTop: '4px' }}>
-                  धर्मकांटा तौल जारी
+                  {t('stageGross', 'धर्मकांटा तौल जारी')}
                 </div>
               </div>
 
               {/* Card 3: AHEAD OF YOU */}
               <div style={{ background: '#fefce8', border: '1.5px solid #fef08a', borderRadius: '16px', padding: '14px 12px', textAlign: 'center' }}>
-                <span style={{ fontSize: '0.7rem', color: '#854d0e', fontWeight: 700, textTransform: 'uppercase' }}>AHEAD OF YOU (आगे किसान)</span>
+                <span style={{ fontSize: '0.7rem', color: '#854d0e', fontWeight: 700, textTransform: 'uppercase' }}>{t('farmersAheadCount', 'AHEAD OF YOU')}</span>
                 <div style={{ fontSize: '1.8rem', fontWeight: 900, color: '#b45309', margin: '2px 0' }}>
                   {farmersAhead}
                 </div>
                 <div style={{ fontSize: '0.74rem', color: '#713f12', fontWeight: 700 }}>
-                  Farmers (किसान)
+                  Farmers
                 </div>
                 <div style={{ fontSize: '0.68rem', color: '#854d0e', marginTop: '4px' }}>
-                  कतार में प्रतीक्षारत
+                  In Queue
                 </div>
               </div>
 
               {/* Card 4: ESTIMATED WAIT */}
               <div style={{ background: '#fff1f2', border: '1.5px solid #fecdd3', borderRadius: '16px', padding: '14px 12px', textAlign: 'center' }}>
-                <span style={{ fontSize: '0.7rem', color: '#9f1239', fontWeight: 700, textTransform: 'uppercase' }}>ESTIMATED WAIT (प्रतीक्षा)</span>
+                <span style={{ fontSize: '0.7rem', color: '#9f1239', fontWeight: 700, textTransform: 'uppercase' }}>{t('estWaitTime', 'ESTIMATED WAIT')}</span>
                 <div style={{ fontSize: '1.8rem', fontWeight: 900, color: '#e11d48', margin: '2px 0' }}>
                   ~{waitMinutes} <span style={{ fontSize: '0.85rem', fontWeight: 700 }}>min</span>
                 </div>
                 <div style={{ fontSize: '0.7rem', color: '#9f1239', fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '3px' }}>
-                  <Zap size={12} /> <span>फास्ट लेन</span>
+                  <Zap size={12} /> <span>Fast Lane</span>
                 </div>
               </div>
 
               {/* Card 5: COUNTER NUMBER */}
               <div style={{ background: '#f3e8ff', border: '1.5px solid #d8b4fe', borderRadius: '16px', padding: '14px 12px', textAlign: 'center' }}>
-                <span style={{ fontSize: '0.7rem', color: '#6b21a8', fontWeight: 700, textTransform: 'uppercase' }}>COUNTER (काउंटर)</span>
+                <span style={{ fontSize: '0.7rem', color: '#6b21a8', fontWeight: 700, textTransform: 'uppercase' }}>{t('assignedCounter', 'COUNTER')}</span>
                 <div style={{ fontSize: '1.5rem', fontWeight: 900, color: '#7e22ce', margin: '4px 0' }}>
                   Counter 02
                 </div>

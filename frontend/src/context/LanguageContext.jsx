@@ -40,6 +40,10 @@ export function LanguageProvider({ children }) {
     }
   }, [highContrast]);
 
+  const changeLanguage = (newLang) => {
+    setLang(newLang);
+  };
+
   const toggleLanguage = () => {
     // If current is Hindi switch to English, else switch to Hindi
     setLang(prev => (prev === 'hi' ? 'en' : 'hi'));
@@ -53,11 +57,11 @@ export function LanguageProvider({ children }) {
     if (translations[lang] && translations[lang][key]) {
       return translations[lang][key];
     }
-    if (translations['hi'] && translations['hi'][key]) {
-      return translations['hi'][key];
-    }
     if (translations['en'] && translations['en'][key]) {
       return translations['en'][key];
+    }
+    if (translations['hi'] && translations['hi'][key]) {
+      return translations['hi'][key];
     }
     return fallback || key;
   };
@@ -71,6 +75,7 @@ export function LanguageProvider({ children }) {
       currentLanguage: currentLangObj,
       supportedLanguages: SUPPORTED_LANGUAGES,
       setLang, 
+      changeLanguage,
       toggleLanguage, 
       fontSize, 
       setFontSize, 
