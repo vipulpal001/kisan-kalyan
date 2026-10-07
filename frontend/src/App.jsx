@@ -18,6 +18,7 @@ import HelpPage from './pages/HelpPage';
 import QrPassPage from './pages/QrPassPage';
 import FarmerPaymentPage from './pages/FarmerPaymentPage';
 import Footer from './components/Footer';
+import MobileBottomNav from './components/MobileBottomNav';
 
 const ProtectedRoute = ({ children, allowedRoles }) => {
   const { user, loading } = useAuth();
@@ -75,6 +76,11 @@ export default function App() {
                     <FarmerPaymentPage />
                   </ProtectedRoute>
                 } />
+                <Route path="/farmer/payments" element={
+                  <ProtectedRoute allowedRoles={['FARMER', 'ADMIN']}>
+                    <FarmerPaymentPage />
+                  </ProtectedRoute>
+                } />
 
                 {/* Operator Routes */}
                 <Route path="/operator/dashboard" element={
@@ -104,6 +110,7 @@ export default function App() {
               </Routes>
             </main>
             <Footer />
+            <MobileBottomNav />
           </div>
         </BrowserRouter>
         </BookingProvider>

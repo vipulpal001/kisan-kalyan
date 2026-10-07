@@ -20,6 +20,20 @@
   --radius-md: 14px;
   --radius-lg: 20px;
   --radius-full: 9999px;
+
+  /* Theme tokens for Light Mode (default) */
+  --bg-page: #dbe9da;
+  --bg-surface: #ffffff;
+  --bg-surface-elevated: #f8fafc;
+  --bg-surface-alt: #f1f5f9;
+  --border-subtle: #e2e8f0;
+  --border-card: #e6f4ea;
+  --text-primary: #111827;
+  --text-secondary: #374151;
+  --text-tertiary: #64748b;
+  --input-bg: #ffffff;
+  --input-border: #cbd5e1;
+  --input-text: #1e293b;
 }
 
 * {
@@ -246,30 +260,636 @@ html.font-scale-large,
   font-size: 18px;
 }
 
-/* High Contrast Accessibility Mode */
+/* =========================================================================
+   COMPREHENSIVE GLOBAL DARK THEME SYSTEM
+   Applies globally when Dark Mode / High Contrast is enabled via toggle.
+   Preserves 100% of existing Light Mode layout, spacing, and UX.
+   Uses Kisan Kalyan Deep Charcoal & Forest Green brand palette.
+========================================================================= */
+
+html[data-theme="dark"],
+html.dark,
+body.dark-mode,
 body.high-contrast {
-  background-color: #f1f5f9 !important;
-  color: #000000 !important;
+  --primary-green: #10b981;
+  --primary-green-hover: #059669;
+  --dark-green: #042f1d;
+  --light-green: rgba(16, 185, 129, 0.15);
+  --accent-gold: #f59e0b;
+  --soft-gold: rgba(245, 158, 11, 0.15);
+  --bg-gradient: linear-gradient(135deg, #091711 0%, #0d2218 50%, #0b1a13 100%);
+  --border-color: #1f3d2f;
+  --card-bg: #11221a;
+  --text-dark: #f8fafc;
+  --text-muted: #94a3b8;
+  --text-subtle: #64748b;
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.45);
+  --shadow-lg: 0 10px 30px rgba(0, 0, 0, 0.55);
+
+  --bg-page: #08130e;
+  --bg-surface: #11221a;
+  --bg-surface-elevated: #162c22;
+  --bg-surface-alt: #0d1e17;
+  --border-subtle: #1e3b2e;
+  --border-card: #224334;
+  --text-primary: #f8fafc;
+  --text-secondary: #cbd5e1;
+  --text-tertiary: #94a3b8;
+  --input-bg: #0f1f17;
+  --input-border: #244738;
+  --input-text: #f8fafc;
 }
 
+/* 1. Global Page Background & Root Surface Hierarchy */
+html[data-theme="dark"],
+html.dark {
+  background-color: #08130e !important;
+  color-scheme: dark;
+}
+
+body.dark-mode,
+body.high-contrast {
+  background-color: #08130e !important;
+  background-image: linear-gradient(rgba(8, 19, 14, 0.92), rgba(8, 19, 14, 0.92)), url('/kisan_page_bg.png') !important;
+  color: #f1f5f9 !important;
+}
+
+body.dark-mode #root,
+body.high-contrast #root,
+body.dark-mode main,
+body.high-contrast main,
+body.dark-mode .landing-page-root,
+body.high-contrast .landing-page-root {
+  background-color: transparent !important;
+  color: #f1f5f9 !important;
+}
+
+/* Footer seamless dark transition */
+body.dark-mode footer,
+body.high-contrast footer {
+  background: #042418 !important;
+  border-top-color: #059669 !important;
+}
+
+/* 2. Global Cards, Containers & Elevators */
+body.dark-mode .kisan-card,
 body.high-contrast .kisan-card,
-body.high-contrast [style*="background: #ffffff"],
-body.high-contrast [style*="background:#ffffff"] {
-  border: 2px solid #0f172a !important;
-  box-shadow: 0 4px 14px rgba(0,0,0,0.18) !important;
+body.dark-mode .book-slot-card,
+body.high-contrast .book-slot-card,
+body.dark-mode .crop-card,
+body.high-contrast .crop-card,
+body.dark-mode .stepper-container,
+body.high-contrast .stepper-container {
+  background: #11221a !important;
+  border-color: #1f3d2f !important;
+  color: #f8fafc !important;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.35) !important;
 }
 
-body.high-contrast strong,
+body.dark-mode .crop-card.selected,
+body.high-contrast .crop-card.selected {
+  background: #163325 !important;
+  border-color: #10b981 !important;
+  box-shadow: 0 4px 16px rgba(16, 185, 129, 0.2) !important;
+}
+
+/* 3. Universal Inline Background Overrides (Adapting hardcoded white & light containers) */
+body.dark-mode [style*="#ffffff"]:not(img):not([alt*="QR"]):not([alt*="Emblem"]):not([alt*="Logo"]),
+body.high-contrast [style*="#ffffff"]:not(img):not([alt*="QR"]):not([alt*="Emblem"]):not([alt*="Logo"]),
+body.dark-mode [style*="255, 255, 255"]:not(img):not([alt*="QR"]):not([alt*="Emblem"]):not([alt*="Logo"]),
+body.high-contrast [style*="255, 255, 255"]:not(img):not([alt*="QR"]):not([alt*="Emblem"]):not([alt*="Logo"]),
+body.dark-mode [style*="white"]:not(img):not([alt*="QR"]):not([alt*="Emblem"]):not([alt*="Logo"]):not([class*="pulse"]):not([style*="white-space"]),
+body.high-contrast [style*="white"]:not(img):not([alt*="QR"]):not([alt*="Emblem"]):not([alt*="Logo"]):not([class*="pulse"]):not([style*="white-space"]),
+body.dark-mode [style*="251, 253, 252"],
+body.high-contrast [style*="251, 253, 252"],
+body.dark-mode [style*="#fbfdfc"],
+body.high-contrast [style*="#fbfdfc"] {
+  background-color: #11221a !important;
+  border-color: #1f3d2f !important;
+}
+
+/* Light gray & pastel containers -> Elevated dark surfaces */
+body.dark-mode [style*="#f8fafc"],
+body.high-contrast [style*="#f8fafc"],
+body.dark-mode [style*="248, 250, 252"],
+body.high-contrast [style*="248, 250, 252"],
+body.dark-mode [style*="#f1f5f9"],
+body.high-contrast [style*="#f1f5f9"],
+body.dark-mode [style*="241, 245, 249"],
+body.high-contrast [style*="241, 245, 249"],
+body.dark-mode [style*="#f3f4f6"],
+body.high-contrast [style*="#f3f4f6"],
+body.dark-mode [style*="243, 244, 246"],
+body.high-contrast [style*="243, 244, 246"],
+body.dark-mode [style*="#f9fafb"],
+body.high-contrast [style*="#f9fafb"],
+body.dark-mode [style*="249, 250, 251"],
+body.high-contrast [style*="249, 250, 251"],
+body.dark-mode [style*="#fafafa"],
+body.high-contrast [style*="#fafafa"],
+body.dark-mode [style*="250, 250, 250"],
+body.high-contrast [style*="250, 250, 250"],
+body.dark-mode [style*="#f0f9ff"],
+body.high-contrast [style*="#f0f9ff"],
+body.dark-mode [style*="240, 249, 255"],
+body.high-contrast [style*="240, 249, 255"],
+body.dark-mode [style*="#e0f2fe"],
+body.high-contrast [style*="#e0f2fe"],
+body.dark-mode [style*="224, 242, 254"],
+body.high-contrast [style*="224, 242, 254"] {
+  background-color: #0d1e17 !important;
+  border-color: #1e3b2e !important;
+}
+
+/* Soft light gradients (banners, headers) */
+body.dark-mode div[style*="linear-gradient"],
+body.high-contrast div[style*="linear-gradient"] {
+  background: linear-gradient(135deg, #0d261b 0%, #113426 50%, #163d2d 100%) !important;
+  border-color: #1e4a36 !important;
+}
+
+/* 4. Global Typography & Text Contrast */
+body.dark-mode h1,
+body.dark-mode h2,
+body.dark-mode h3,
+body.dark-mode h4,
+body.dark-mode h5,
+body.dark-mode h6,
 body.high-contrast h1,
 body.high-contrast h2,
 body.high-contrast h3,
-body.high-contrast h4 {
-  color: #000000 !important;
+body.high-contrast h4,
+body.high-contrast h5,
+body.high-contrast h6 {
+  color: #f8fafc !important;
 }
 
-body.high-contrast p,
-body.high-contrast span {
-  color: #1e293b !important;
+/* Primary text colors */
+body.dark-mode [style*="111827"],
+body.high-contrast [style*="111827"],
+body.dark-mode [style*="17, 24, 39"],
+body.high-contrast [style*="17, 24, 39"],
+body.dark-mode [style*="1e293b"],
+body.high-contrast [style*="1e293b"],
+body.dark-mode [style*="30, 41, 59"],
+body.high-contrast [style*="30, 41, 59"],
+body.dark-mode [style*="0f172a"],
+body.high-contrast [style*="0f172a"],
+body.dark-mode [style*="15, 23, 42"],
+body.high-contrast [style*="15, 23, 42"],
+body.dark-mode [style*="374151"],
+body.high-contrast [style*="374151"],
+body.dark-mode [style*="55, 65, 81"],
+body.high-contrast [style*="55, 65, 81"],
+body.dark-mode [style*="334155"],
+body.high-contrast [style*="334155"],
+body.dark-mode [style*="51, 65, 85"],
+body.high-contrast [style*="51, 65, 85"],
+body.dark-mode [style*="1f2937"],
+body.high-contrast [style*="1f2937"],
+body.dark-mode [style*="31, 41, 55"],
+body.high-contrast [style*="31, 41, 55"],
+body.dark-mode [style*="0f291e"],
+body.high-contrast [style*="0f291e"],
+body.dark-mode [style*="15, 41, 30"],
+body.high-contrast [style*="15, 41, 30"],
+body.dark-mode [style*="1e1b4b"],
+body.high-contrast [style*="1e1b4b"],
+body.dark-mode [style*="30, 27, 75"],
+body.high-contrast [style*="30, 27, 75"],
+body.dark-mode [style*="1e3a8a"],
+body.high-contrast [style*="1e3a8a"],
+body.dark-mode [style*="30, 58, 138"],
+body.high-contrast [style*="30, 58, 138"],
+body.dark-mode [style*="black"],
+body.high-contrast [style*="black"],
+body.dark-mode [style*="0, 0, 0"],
+body.high-contrast [style*="0, 0, 0"] {
+  color: #f8fafc !important;
+}
+
+/* Muted / Secondary body text */
+body.dark-mode [style*="4b5563"],
+body.high-contrast [style*="4b5563"],
+body.dark-mode [style*="75, 85, 99"],
+body.high-contrast [style*="75, 85, 99"],
+body.dark-mode [style*="6b7280"],
+body.high-contrast [style*="6b7280"],
+body.dark-mode [style*="107, 114, 128"],
+body.high-contrast [style*="107, 114, 128"],
+body.dark-mode [style*="64748b"],
+body.high-contrast [style*="64748b"],
+body.dark-mode [style*="100, 116, 139"],
+body.high-contrast [style*="100, 116, 139"],
+body.dark-mode [style*="475569"],
+body.high-contrast [style*="475569"],
+body.dark-mode [style*="71, 85, 105"],
+body.high-contrast [style*="71, 85, 105"],
+body.dark-mode [style*="9ca3af"],
+body.high-contrast [style*="9ca3af"],
+body.dark-mode [style*="156, 163, 175"],
+body.high-contrast [style*="156, 163, 175"] {
+  color: #94a3b8 !important;
+}
+
+/* Brand Green text -> High-contrast vibrant emerald in dark mode */
+body.dark-mode [style*="064e3b"],
+body.high-contrast [style*="064e3b"],
+body.dark-mode [style*="6, 78, 59"],
+body.high-contrast [style*="6, 78, 59"],
+body.dark-mode [style*="017953"],
+body.high-contrast [style*="017953"],
+body.dark-mode [style*="1, 121, 83"],
+body.high-contrast [style*="1, 121, 83"],
+body.dark-mode [style*="047857"],
+body.high-contrast [style*="047857"],
+body.dark-mode [style*="4, 120, 87"],
+body.high-contrast [style*="4, 120, 87"],
+body.dark-mode [style*="076142"],
+body.high-contrast [style*="076142"],
+body.dark-mode [style*="7, 97, 66"],
+body.high-contrast [style*="7, 97, 66"],
+body.dark-mode [style*="166534"],
+body.high-contrast [style*="166534"],
+body.dark-mode [style*="22, 101, 52"],
+body.high-contrast [style*="22, 101, 52"],
+body.dark-mode [style*="15803d"],
+body.high-contrast [style*="15803d"],
+body.dark-mode [style*="21, 128, 61"],
+body.high-contrast [style*="21, 128, 61"],
+body.dark-mode [style*="059669"],
+body.high-contrast [style*="059669"],
+body.dark-mode [style*="5, 150, 105"],
+body.high-contrast [style*="5, 150, 105"],
+body.dark-mode [style*="065f46"],
+body.high-contrast [style*="065f46"],
+body.dark-mode [style*="6, 95, 70"],
+body.high-contrast [style*="6, 95, 70"] {
+  color: #6ee7b7 !important;
+}
+
+/* Crop Cards in Book Slot Flow */
+body.dark-mode .crop-card,
+body.high-contrast .crop-card {
+  background: #11221a !important;
+  border-color: #1f3d2f !important;
+}
+body.dark-mode .crop-card div,
+body.high-contrast .crop-card div {
+  color: #f8fafc !important;
+}
+body.dark-mode .crop-card [style*="017953"],
+body.high-contrast .crop-card [style*="017953"],
+body.dark-mode .crop-card [style*="1, 121, 83"],
+body.high-contrast .crop-card [style*="1, 121, 83"] {
+  color: #6ee7b7 !important;
+}
+body.dark-mode .crop-card [style*="6b7280"],
+body.high-contrast .crop-card [style*="6b7280"],
+body.dark-mode .crop-card [style*="107, 114, 128"],
+body.high-contrast .crop-card [style*="107, 114, 128"] {
+  color: #94a3b8 !important;
+}
+
+/* Live Queue Page Top 5 Metric Cards */
+body.dark-mode div[style*="repeat(5, 1fr)"] > div,
+body.high-contrast div[style*="repeat(5, 1fr)"] > div {
+  background: #11221a !important;
+  border-color: #1f3d2f !important;
+}
+body.dark-mode div[style*="repeat(5, 1fr)"] > div:nth-child(1),
+body.high-contrast div[style*="repeat(5, 1fr)"] > div:nth-child(1) {
+  background: #0d261b !important;
+  border-color: #059669 !important;
+}
+body.dark-mode div[style*="repeat(5, 1fr)"] > div:nth-child(2),
+body.high-contrast div[style*="repeat(5, 1fr)"] > div:nth-child(2) {
+  background: #0f2238 !important;
+  border-color: #2563eb !important;
+}
+body.dark-mode div[style*="repeat(5, 1fr)"] > div:nth-child(3),
+body.high-contrast div[style*="repeat(5, 1fr)"] > div:nth-child(3) {
+  background: #2b220e !important;
+  border-color: #d97706 !important;
+}
+body.dark-mode div[style*="repeat(5, 1fr)"] > div:nth-child(4),
+body.high-contrast div[style*="repeat(5, 1fr)"] > div:nth-child(4) {
+  background: #2e1219 !important;
+  border-color: #e11d48 !important;
+}
+body.dark-mode div[style*="repeat(5, 1fr)"] > div:nth-child(5),
+body.high-contrast div[style*="repeat(5, 1fr)"] > div:nth-child(5) {
+  background: #231233 !important;
+  border-color: #9333ea !important;
+}
+
+/* Token Number & Monospace Badges in Live Queue */
+body.dark-mode [style*="Courier New"],
+body.high-contrast [style*="Courier New"] {
+  background: #0d2419 !important;
+  border-color: #059669 !important;
+  color: #6ee7b7 !important;
+}
+
+/* Help Page FAQ Q&A cards & Helpline Box */
+body.dark-mode #faq [style*="f8fafc"],
+body.high-contrast #faq [style*="f8fafc"],
+body.dark-mode #faq [style*="248, 250, 252"],
+body.high-contrast #faq [style*="248, 250, 252"] {
+  background: #0d1e17 !important;
+  border: 1px solid #1f3d2f !important;
+}
+body.dark-mode #faq strong,
+body.high-contrast #faq strong {
+  color: #6ee7b7 !important;
+}
+body.dark-mode #faq p,
+body.high-contrast #faq p {
+  color: #cbd5e1 !important;
+}
+body.dark-mode [style*="1800-180-1551"],
+body.high-contrast [style*="1800-180-1551"] {
+  color: #fca5a5 !important;
+}
+body.dark-mode #grievance [style*="fef2f2"],
+body.high-contrast #grievance [style*="fef2f2"],
+body.dark-mode #grievance [style*="254, 242, 242"],
+body.high-contrast #grievance [style*="254, 242, 242"] {
+  background: rgba(239, 68, 68, 0.15) !important;
+  border-color: rgba(239, 68, 68, 0.35) !important;
+}
+
+/* Farmer Dashboard Stepper & Subcomponents */
+body.dark-mode .stepper-desktop div,
+body.high-contrast .stepper-desktop div {
+  color: #f8fafc;
+}
+body.dark-mode .stepper-desktop div[style*="ffffff"],
+body.high-contrast .stepper-desktop div[style*="ffffff"],
+body.dark-mode .stepper-desktop div[style*="255, 255, 255"],
+body.high-contrast .stepper-desktop div[style*="255, 255, 255"] {
+  background: #11221a !important;
+  border-color: #244738 !important;
+  color: #94a3b8 !important;
+}
+body.dark-mode [style*="f0fdf4"],
+body.high-contrast [style*="f0fdf4"],
+body.dark-mode [style*="240, 253, 244"],
+body.high-contrast [style*="240, 253, 244"] {
+  background: rgba(16, 185, 129, 0.12) !important;
+  border-color: rgba(16, 185, 129, 0.3) !important;
+}
+
+/* 5. Form Fields, Inputs & Dropdowns */
+body.dark-mode input,
+body.dark-mode textarea,
+body.dark-mode select,
+body.high-contrast input,
+body.high-contrast textarea,
+body.high-contrast select {
+  background-color: #0f1f17 !important;
+  border-color: #244738 !important;
+  color: #f8fafc !important;
+}
+
+body.dark-mode input::placeholder,
+body.dark-mode textarea::placeholder,
+body.high-contrast input::placeholder,
+body.high-contrast textarea::placeholder {
+  color: #64748b !important;
+}
+
+body.dark-mode input:focus,
+body.dark-mode textarea:focus,
+body.dark-mode select:focus,
+body.high-contrast input:focus,
+body.high-contrast textarea:focus,
+body.high-contrast select:focus {
+  border-color: #10b981 !important;
+  outline: 2px solid rgba(16, 185, 129, 0.3) !important;
+}
+
+/* 6. Modals, Dialogs & Overlays */
+body.dark-mode [role="dialog"],
+body.high-contrast [role="dialog"] {
+  background-color: rgba(0, 0, 0, 0.75) !important;
+}
+
+body.dark-mode [role="dialog"] > div,
+body.high-contrast [role="dialog"] > div,
+body.dark-mode .modal-content,
+body.high-contrast .modal-content {
+  background: #11221a !important;
+  border: 1px solid #224334 !important;
+  color: #f8fafc !important;
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.6) !important;
+}
+
+/* 7. Tables & Data Grids */
+body.dark-mode table,
+body.high-contrast table {
+  color: #f1f5f9 !important;
+}
+
+body.dark-mode table thead tr,
+body.high-contrast table thead tr {
+  background-color: #0d1e17 !important;
+  border-bottom: 2px solid #1f3d2f !important;
+  color: #cbd5e1 !important;
+}
+
+body.dark-mode table th,
+body.high-contrast table th {
+  color: #cbd5e1 !important;
+  border-color: #1f3d2f !important;
+}
+
+body.dark-mode table tbody tr,
+body.high-contrast table tbody tr {
+  border-bottom: 1px solid #1a382a !important;
+  background-color: transparent !important;
+}
+
+body.dark-mode table tbody tr:hover,
+body.high-contrast table tbody tr:hover {
+  background-color: #162c22 !important;
+}
+
+body.dark-mode table td,
+body.high-contrast table td {
+  color: #f1f5f9 !important;
+  border-color: #1a382a !important;
+}
+
+/* 8. Stepper & Navigation Tabs */
+body.dark-mode .portal-nav,
+body.high-contrast .portal-nav {
+  background: #0d1e17 !important;
+  border-bottom-color: #1f3d2f !important;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.4) !important;
+}
+
+body.dark-mode .nav-tab,
+body.high-contrast .nav-tab {
+  color: #cbd5e1 !important;
+}
+
+body.dark-mode .nav-tab:hover,
+body.high-contrast .nav-tab:hover {
+  color: #6ee7b7 !important;
+  background: #162c22 !important;
+}
+
+body.dark-mode .nav-tab.active,
+body.high-contrast .nav-tab.active {
+  color: #6ee7b7 !important;
+  border-bottom-color: #10b981 !important;
+  background: #162c22 !important;
+}
+
+body.dark-mode .step-circle,
+body.high-contrast .step-circle {
+  background: #1a3528 !important;
+  color: #94a3b8 !important;
+}
+
+body.dark-mode .step-item.active .step-circle,
+body.high-contrast .step-item.active .step-circle {
+  background: #059669 !important;
+  color: #ffffff !important;
+  box-shadow: 0 0 0 4px #064e3b !important;
+}
+
+body.dark-mode .step-item.completed .step-circle,
+body.high-contrast .step-item.completed .step-circle {
+  background: #047857 !important;
+  color: #ffffff !important;
+}
+
+body.dark-mode .step-item:not(:last-child)::after,
+body.high-contrast .step-item:not(:last-child)::after {
+  background: #1f3d2f !important;
+}
+
+body.dark-mode .step-item.completed:not(:last-child)::after,
+body.high-contrast .step-item.completed:not(:last-child)::after {
+  background: #059669 !important;
+}
+
+body.dark-mode .step-title,
+body.high-contrast .step-title {
+  color: #e2e8f0 !important;
+}
+
+body.dark-mode .step-sub,
+body.high-contrast .step-sub {
+  color: #94a3b8 !important;
+}
+
+/* 9. Buttons & Interactive States */
+body.dark-mode .btn-secondary,
+body.high-contrast .btn-secondary {
+  background: #11241b !important;
+  color: #6ee7b7 !important;
+  border: 1.5px solid #059669 !important;
+}
+
+body.dark-mode .btn-secondary:hover,
+body.high-contrast .btn-secondary:hover {
+  background: #173729 !important;
+}
+
+body.dark-mode .book-secondary-btn,
+body.high-contrast .book-secondary-btn {
+  background: #11241b !important;
+  border-color: #244637 !important;
+  color: #cbd5e1 !important;
+}
+
+body.dark-mode .book-secondary-btn:hover,
+body.high-contrast .book-secondary-btn:hover {
+  background: #173729 !important;
+}
+
+/* 10. Status Badges, Chips & Alert Boxes */
+body.dark-mode [style*="background: #ecfdf5"],
+body.high-contrast [style*="background: #ecfdf5"],
+body.dark-mode [style*="background:#ecfdf5"],
+body.high-contrast [style*="background:#ecfdf5"],
+body.dark-mode [style*="background: #dcfce7"],
+body.high-contrast [style*="background: #dcfce7"] {
+  background: rgba(16, 185, 129, 0.16) !important;
+  border-color: rgba(16, 185, 129, 0.35) !important;
+  color: #6ee7b7 !important;
+}
+
+body.dark-mode [style*="background: #eff6ff"],
+body.high-contrast [style*="background: #eff6ff"],
+body.dark-mode [style*="background:#eff6ff"],
+body.high-contrast [style*="background:#eff6ff"] {
+  background: rgba(59, 130, 246, 0.16) !important;
+  border-color: rgba(59, 130, 246, 0.35) !important;
+  color: #93c5fd !important;
+}
+
+body.dark-mode [style*="background: #fefce8"],
+body.high-contrast [style*="background: #fefce8"],
+body.dark-mode [style*="background: #fef3c7"],
+body.high-contrast [style*="background: #fef3c7"],
+body.dark-mode [style*="background:#fef3c7"],
+body.high-contrast [style*="background:#fef3c7"] {
+  background: rgba(245, 158, 11, 0.16) !important;
+  border-color: rgba(245, 158, 11, 0.35) !important;
+  color: #fde047 !important;
+}
+
+body.dark-mode [style*="background: #fef2f2"],
+body.high-contrast [style*="background: #fef2f2"],
+body.dark-mode [style*="background:#fef2f2"],
+body.high-contrast [style*="background:#fef2f2"],
+body.dark-mode [style*="background: #fff1f2"],
+body.high-contrast [style*="background: #fff1f2"] {
+  background: rgba(239, 68, 68, 0.16) !important;
+  border-color: rgba(239, 68, 68, 0.35) !important;
+  color: #fca5a5 !important;
+}
+
+body.dark-mode [style*="background: #f3e8ff"],
+body.high-contrast [style*="background: #f3e8ff"],
+body.dark-mode [style*="background:#f3e8ff"],
+body.high-contrast [style*="background:#f3e8ff"] {
+  background: rgba(168, 85, 247, 0.16) !important;
+  border-color: rgba(168, 85, 247, 0.35) !important;
+  color: #d8b4fe !important;
+}
+
+/* 11. Links, Dividers & Custom Dark Scrollbar */
+body.dark-mode a:not(.btn-primary):not(.btn-secondary):not(.hero-btn-primary):not(.book-primary-btn),
+body.high-contrast a:not(.btn-primary):not(.btn-secondary):not(.hero-btn-primary):not(.book-primary-btn) {
+  color: #6ee7b7;
+}
+
+body.dark-mode ::-webkit-scrollbar,
+body.high-contrast ::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+body.dark-mode ::-webkit-scrollbar-track,
+body.high-contrast ::-webkit-scrollbar-track {
+  background: #091711;
+}
+
+body.dark-mode ::-webkit-scrollbar-thumb,
+body.high-contrast ::-webkit-scrollbar-thumb {
+  background: #1f3d2f;
+  border-radius: 4px;
+}
+
+body.dark-mode ::-webkit-scrollbar-thumb:hover,
+body.high-contrast ::-webkit-scrollbar-thumb:hover {
+  background: #059669;
 }
 
 /* Responsive Stepper: Vertical timeline on screens < 640px */
@@ -720,6 +1340,1492 @@ body.high-contrast span {
   }
 }
 
+/* =========================================================================
+   SCOPED RESPONSIVE ADAPTATIONS (MOBILE & TABLET ONLY: <= 992px)
+   CRITICAL: DESKTOP (> 992px) STYLES ARE 100% UNCHANGED
+   ========================================================================= */
+
+@media (max-width: 992px) {
+  .portal-container {
+    padding: 0 16px !important;
+  }
+
+  /* Center Discovery Page Responsive Stacking */
+  .center-discovery-layout {
+    flex-direction: column !important;
+    gap: 16px !important;
+  }
+  .center-discovery-sidebar {
+    width: 100% !important;
+  }
+  .center-discovery-main {
+    width: 100% !important;
+  }
+
+  /* Farmer Payment Page Responsive Stacking */
+  .payment-main-grid {
+    grid-template-columns: 1fr !important;
+    gap: 16px !important;
+  }
+
+  /* Procurement Status Page Responsive Layout */
+  .procurement-summary-grid {
+    grid-template-columns: 1fr !important;
+    gap: 16px !important;
+  }
+  .procurement-lower-grid {
+    grid-template-columns: 1fr !important;
+    gap: 16px !important;
+  }
+
+  /* Live Queue Monitor 3-Column Responsive Stacking */
+  .live-queue-3col-grid {
+    grid-template-columns: 1fr !important;
+    gap: 16px !important;
+  }
+
+  /* Operator Dashboard Layout Stacking */
+  .operator-dashboard-layout {
+    flex-direction: column !important;
+    gap: 16px !important;
+  }
+  .operator-sidebar {
+    width: 100% !important;
+  }
+
+  /* Admin Dashboard KPI Grid */
+  .admin-kpi-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 14px !important;
+  }
+
+  /* Help Page Grid */
+  .help-layout-grid {
+    grid-template-columns: 1fr !important;
+    gap: 20px !important;
+  }
+}
+
+@media (max-width: 768px) {
+  /* Tables Touch Scroll Container Safety */
+  table {
+    max-width: 100%;
+  }
+  .table-responsive,
+  div[style*="overflowX: 'auto'"],
+  div[style*="overflow-x: auto"] {
+    -webkit-overflow-scrolling: touch !important;
+  }
+
+  /* Farmer Payment Page Mobile Refinements */
+  .payment-kpi-grid {
+    grid-template-columns: 1fr !important;
+    gap: 12px !important;
+  }
+  .payment-disbursement-row {
+    grid-template-columns: 1fr !important;
+    gap: 10px !important;
+    text-align: left !important;
+  }
+  .payment-disbursement-row > div:first-child {
+    border-right: none !important;
+    border-bottom: 1px solid #e2e8f0;
+    padding-bottom: 8px !important;
+    padding-right: 0 !important;
+    text-align: left !important;
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
+  }
+  .payment-disbursement-row > div:last-child {
+    text-align: left !important;
+    border-top: 1px dashed #e2e8f0;
+    padding-top: 8px !important;
+  }
+
+  /* Procurement Status Stepper Touch Scroll */
+  .procurement-status-header {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 14px !important;
+  }
+  .procurement-stepper-scroll {
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+    padding-bottom: 14px !important;
+  }
+  .procurement-stepper-scroll > div:last-child {
+    min-width: 680px !important;
+  }
+  .procurement-metrics-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 10px !important;
+  }
+}
+
+@media (max-width: 640px) {
+  /* Admin KPI Cards on Phones */
+  .admin-kpi-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Modals on Small Phones */
+  div[role="dialog"] > div {
+    max-width: 95vw !important;
+    margin: 8px auto !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .procurement-metrics-grid {
+    grid-template-columns: 1fr !important;
+  }
+  .portal-container {
+    padding: 0 12px !important;
+  }
+}
+
+/* ==========================================================================
+   PRODUCTION RESPONSIVE SYSTEM (Mobile: 360-430px | Tablet: 640-1023px | Desktop: 1024px+)
+   Preserves 100% desktop styling while intelligently reflowing on mobile/tablet.
+   ========================================================================== */
+
+/* 1. Global Viewport & Safe-Area Safeguards */
+html, body, #root {
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Modal Stacking & Background Lock */
+body.modal-open {
+  overflow: hidden !important;
+}
+body.modal-open .mobile-bottom-nav {
+  display: none !important;
+}
+
+/* Safe-area bottom padding for main page content to avoid bottom nav clipping */
+@media (max-width: 992px) {
+  .portal-container {
+    padding-bottom: calc(76px + env(safe-area-inset-bottom, 16px)) !important;
+  }
+}
+
+/* 2. Touch Targets (Minimum 44px touch ergonomics) */
+button, input, select, textarea, .btn-primary, .btn-secondary, a.mobile-icon-btn {
+  -webkit-tap-highlight-color: transparent;
+}
+@media (max-width: 768px) {
+  input[type="text"],
+  input[type="tel"],
+  input[type="password"],
+  input[type="number"],
+  select {
+    min-height: 44px;
+    font-size: 16px !important; /* Prevents auto-zoom on iOS */
+  }
+}
+
+/* 3. Hero Banners & Quotes Collision Safeguard */
+@media (max-width: 768px) {
+  .hero-banner-quote {
+    display: none !important;
+  }
+  .book-slot-hero-banner,
+  .payment-top-banner {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 12px !important;
+    padding: 16px 18px !important;
+  }
+}
+
+/* 4. BookSlotFlow Responsive Layout Architecture */
+.book-slot-card {
+  background: #ffffff;
+  border-radius: 24px;
+  border: 1px solid #e2e8f0;
+  padding: 24px 36px 30px 36px;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.04);
+}
+@media (max-width: 768px) {
+  .book-slot-card {
+    padding: 18px 14px 22px 14px !important;
+    border-radius: 18px !important;
+  }
+}
+
+/* Stepper Horizontal Scroll Container on Mobile */
+.book-slot-stepper-wrapper {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+.book-slot-stepper-wrapper::-webkit-scrollbar {
+  display: none;
+}
+@media (max-width: 768px) {
+  .book-slot-stepper-inner {
+    min-width: 580px;
+    position: relative;
+    padding: 4px 10px;
+  }
+}
+
+/* Step 2: Quantity Input Layout */
+.book-slot-quantity-layout {
+  display: grid;
+  grid-template-columns: 120px 1fr 280px;
+  gap: 24px;
+  align-items: center;
+  margin-bottom: 28px;
+  background: #fafbfc;
+  border: 1px solid #f1f5f9;
+  border-radius: 18px;
+  padding: 24px;
+}
+@media (max-width: 768px) {
+  .book-slot-quantity-layout {
+    grid-template-columns: 1fr !important;
+    gap: 16px !important;
+    padding: 16px 12px !important;
+  }
+}
+
+/* Step 2: Live MSP Calc Box */
+.book-slot-calc-box {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  padding: 16px 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+@media (max-width: 768px) {
+  .book-slot-calc-box {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 14px !important;
+    padding: 16px !important;
+  }
+}
+
+/* Step 3: Quality Cards Grid */
+.book-slot-quality-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 18px;
+  margin-bottom: 28px;
+}
+@media (max-width: 768px) {
+  .book-slot-quality-grid {
+    grid-template-columns: 1fr !important;
+    gap: 14px !important;
+  }
+}
+
+/* Step 4: Center Selection Grid & Badge Row */
+.book-slot-center-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin-bottom: 28px;
+}
+@media (max-width: 768px) {
+  .book-slot-center-grid {
+    grid-template-columns: 1fr !important;
+    gap: 14px !important;
+  }
+}
+.center-card-badge-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+/* Step 5: Calendar Days Grid */
+.book-slot-calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 12px;
+  margin-bottom: 24px;
+}
+@media (max-width: 900px) {
+  .book-slot-calendar-grid {
+    display: flex !important;
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+    gap: 10px !important;
+    padding-bottom: 8px !important;
+    scrollbar-width: none;
+  }
+  .book-slot-calendar-grid::-webkit-scrollbar {
+    display: none;
+  }
+  .book-slot-calendar-grid > div {
+    min-width: 110px !important;
+    flex-shrink: 0 !important;
+  }
+}
+
+/* Step 6: Time Slot Layout & Recommendations */
+.book-slot-time-layout {
+  display: grid;
+  grid-template-columns: 270px 1fr;
+  gap: 20px;
+  align-items: start;
+}
+@media (max-width: 992px) {
+  .book-slot-time-layout {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 16px !important;
+  }
+}
+
+.book-slot-rec-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+@media (max-width: 640px) {
+  .book-slot-rec-grid {
+    grid-template-columns: 1fr !important;
+    gap: 10px !important;
+  }
+}
+
+.book-slot-times-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 14px;
+  margin-bottom: 24px;
+}
+@media (max-width: 640px) {
+  .book-slot-times-grid {
+    grid-template-columns: 1fr !important;
+    gap: 12px !important;
+  }
+}
+
+/* Step 7: Confirmation & Post-Booking Layout */
+.book-slot-confirm-layout {
+  display: grid;
+  grid-template-columns: 320px 1fr;
+  gap: 24px;
+  align-items: start;
+}
+@media (max-width: 992px) {
+  .book-slot-confirm-layout {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 16px !important;
+  }
+}
+
+.book-slot-confirm-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 14px;
+  margin-bottom: 20px;
+}
+@media (max-width: 640px) {
+  .book-slot-confirm-grid {
+    grid-template-columns: 1fr !important;
+    gap: 10px !important;
+  }
+}
+
+.booking-ticket-fields {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  font-size: 0.86rem;
+  margin-bottom: 16px;
+}
+@media (max-width: 640px) {
+  .booking-ticket-fields {
+    grid-template-columns: 1fr !important;
+    gap: 8px !important;
+  }
+}
+
+.booking-queue-metrics {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+  margin-bottom: 16px;
+  text-align: center;
+}
+@media (max-width: 640px) {
+  .booking-queue-metrics {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 8px !important;
+  }
+}
+
+/* Footer Action Buttons on Mobile */
+.book-slot-footer-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 16px;
+  border-top: 1px solid #f1f5f9;
+}
+@media (max-width: 640px) {
+  .book-slot-footer-actions {
+    flex-direction: column-reverse !important;
+    gap: 12px !important;
+    align-items: stretch !important;
+  }
+  .book-slot-footer-actions button {
+    width: 100% !important;
+    justify-content: center !important;
+  }
+}
+
+/* =========================================================================
+   BOOK SLOT FLOW - COMPLETE DARK MODE & HIGH CONTRAST THEME SYSTEM
+   ========================================================================= */
+body.dark-mode .book-slot-card,
+body.high-contrast .book-slot-card {
+  background: #11221a !important;
+  border-color: #1f3d2f !important;
+  color: #f8fafc !important;
+  box-shadow: 0 10px 32px rgba(0, 0, 0, 0.45) !important;
+}
+
+/* Stepper Bar Dark Mode */
+body.dark-mode .book-slot-stepper-inner > div:first-child,
+body.high-contrast .book-slot-stepper-inner > div:first-child {
+  background: #1f3d2f !important;
+}
+
+body.dark-mode .book-slot-stepper-inner div[style*="255, 255, 255"]:not([style*="1, 121, 83"]),
+body.high-contrast .book-slot-stepper-inner div[style*="255, 255, 255"]:not([style*="1, 121, 83"]) {
+  background: #162e22 !important;
+  border-color: #234e3a !important;
+  color: #94a3b8 !important;
+}
+
+body.dark-mode .book-slot-stepper-inner div[style*="box-shadow"],
+body.high-contrast .book-slot-stepper-inner div[style*="box-shadow"] {
+  box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.3) !important;
+}
+
+body.dark-mode .book-slot-stepper-inner div[style*="font-size: 0.88rem"],
+body.high-contrast .book-slot-stepper-inner div[style*="font-size: 0.88rem"] {
+  color: #f8fafc !important;
+}
+
+body.dark-mode .book-slot-stepper-inner div[style*="font-size: 0.7rem"],
+body.high-contrast .book-slot-stepper-inner div[style*="font-size: 0.7rem"] {
+  color: #94a3b8 !important;
+}
+
+/* Tip Box in Header */
+body.dark-mode .book-slot-tip-box,
+body.high-contrast .book-slot-tip-box {
+  background: #261f09 !important;
+  border: 1px solid #78350f !important;
+  color: #fef08a !important;
+}
+body.dark-mode .book-slot-tip-box span,
+body.high-contrast .book-slot-tip-box span {
+  color: #fef08a !important;
+}
+
+/* Step 2: Quantity Layout */
+body.dark-mode .book-slot-quantity-layout,
+body.high-contrast .book-slot-quantity-layout {
+  background: #0d1e17 !important;
+  border-color: #1a382b !important;
+  color: #f8fafc !important;
+}
+
+body.dark-mode .book-slot-quantity-layout label,
+body.high-contrast .book-slot-quantity-layout label {
+  color: #f1f5f9 !important;
+}
+
+body.dark-mode .book-slot-quantity-layout button,
+body.high-contrast .book-slot-quantity-layout button {
+  background: #162e22 !important;
+  border-color: #234e3a !important;
+  color: #f8fafc !important;
+}
+
+body.dark-mode .book-slot-quantity-layout button:hover,
+body.high-contrast .book-slot-quantity-layout button:hover {
+  background: #1b3a2b !important;
+  border-color: #34d399 !important;
+}
+
+/* Number display container in quantity step */
+body.dark-mode .book-slot-quantity-layout div[style*="border: 2px solid"],
+body.high-contrast .book-slot-quantity-layout div[style*="border: 2px solid"] {
+  background: #142920 !important;
+  border-color: #10b981 !important;
+}
+
+body.dark-mode .book-slot-quantity-layout div[style*="border: 2px solid"] span,
+body.high-contrast .book-slot-quantity-layout div[style*="border: 2px solid"] span {
+  color: #f8fafc !important;
+}
+
+/* Selected crop display box in quantity step */
+body.dark-mode .book-slot-quantity-layout div[style*="border-radius: 12px"],
+body.high-contrast .book-slot-quantity-layout div[style*="border-radius: 12px"] {
+  background: #142920 !important;
+  border-color: #234e3a !important;
+}
+
+body.dark-mode .book-slot-quantity-layout div[style*="border-radius: 12px"] div,
+body.high-contrast .book-slot-quantity-layout div[style*="border-radius: 12px"] div {
+  color: #f8fafc !important;
+}
+
+/* Change button inside crop pill */
+body.dark-mode .book-slot-quantity-layout div[style*="border-radius: 12px"] button,
+body.high-contrast .book-slot-quantity-layout div[style*="border-radius: 12px"] button {
+  background: #064e3b !important;
+  border-color: #059669 !important;
+  color: #a7f3d0 !important;
+}
+
+/* Quantity Preset Grid Buttons */
+body.dark-mode .book-slot-quantity-layout div[style*="repeat(3, 1fr)"] button,
+body.high-contrast .book-slot-quantity-layout div[style*="repeat(3, 1fr)"] button {
+  background: #162e22 !important;
+  border-color: #234e3a !important;
+  color: #f1f5f9 !important;
+}
+
+body.dark-mode .book-slot-quantity-layout div[style*="repeat(3, 1fr)"] button[style*="017953"],
+body.high-contrast .book-slot-quantity-layout div[style*="repeat(3, 1fr)"] button[style*="017953"],
+body.dark-mode .book-slot-quantity-layout div[style*="repeat(3, 1fr)"] button[style*="1, 121, 83"],
+body.high-contrast .book-slot-quantity-layout div[style*="repeat(3, 1fr)"] button[style*="1, 121, 83"] {
+  background: #017953 !important;
+  border-color: #10b981 !important;
+  color: #ffffff !important;
+}
+
+/* Step 2: Live MSP Calc Box */
+body.dark-mode .book-slot-calc-box,
+body.high-contrast .book-slot-calc-box {
+  background: #0d1e17 !important;
+  border-color: #1a382b !important;
+  color: #f8fafc !important;
+}
+
+body.dark-mode .book-slot-calc-box [style*="white-space: nowrap"],
+body.high-contrast .book-slot-calc-box [style*="white-space: nowrap"] {
+  background: transparent !important;
+  border: none !important;
+  color: #34d399 !important;
+}
+
+body.dark-mode .book-slot-calc-box div[style*="max-width: 340px"],
+body.high-contrast .book-slot-calc-box div[style*="max-width: 340px"] {
+  background: #142920 !important;
+  border-color: #234e3a !important;
+  color: #cbd5e1 !important;
+}
+
+/* Back Button across BookSlotFlow headers & footers */
+body.dark-mode .book-slot-footer-actions button:first-child,
+body.high-contrast .book-slot-footer-actions button:first-child,
+body.dark-mode .book-slot-step-header button:first-child,
+body.high-contrast .book-slot-step-header button:first-child,
+body.dark-mode .book-header-actions button:first-child,
+body.high-contrast .book-header-actions button:first-child {
+  background: #162e22 !important;
+  border-color: #234e3a !important;
+  color: #f1f5f9 !important;
+}
+
+body.dark-mode .book-slot-footer-actions button:first-child:hover,
+body.high-contrast .book-slot-footer-actions button:first-child:hover,
+body.dark-mode .book-slot-step-header button:first-child:hover,
+body.high-contrast .book-slot-step-header button:first-child:hover,
+body.dark-mode .book-header-actions button:first-child:hover,
+body.high-contrast .book-header-actions button:first-child:hover {
+  background: #1e3d2f !important;
+  border-color: #34d399 !important;
+  color: #34d399 !important;
+}
+
+/* Step 3: Quality Cards */
+body.dark-mode .book-slot-quality-grid > div,
+body.high-contrast .book-slot-quality-grid > div {
+  background: #142920 !important;
+  border-color: #1f3d2f !important;
+  color: #f8fafc !important;
+}
+
+body.dark-mode .book-slot-quality-grid > div h4,
+body.high-contrast .book-slot-quality-grid > div h4 {
+  color: #f8fafc !important;
+}
+
+body.dark-mode .book-slot-quality-grid > div div[style*="#f8fafc"],
+body.high-contrast .book-slot-quality-grid > div div[style*="#f8fafc"],
+body.dark-mode .book-slot-quality-grid > div div[style*="248, 250, 252"],
+body.high-contrast .book-slot-quality-grid > div div[style*="248, 250, 252"] {
+  background: #0d1e17 !important;
+  border-top-color: #1f3d2f !important;
+}
+
+body.dark-mode .book-slot-quality-grid > div div[style*="borderTop"] strong,
+body.high-contrast .book-slot-quality-grid > div div[style*="borderTop"] strong {
+  color: #f8fafc !important;
+}
+
+/* Step 4: Center Discovery Cards */
+body.dark-mode .book-slot-center-grid > div,
+body.high-contrast .book-slot-center-grid > div {
+  background: #142920 !important;
+  border-color: #1f3d2f !important;
+  color: #f8fafc !important;
+}
+
+/* Step 5: Calendar Days */
+body.dark-mode .book-slot-calendar-grid > div,
+body.high-contrast .book-slot-calendar-grid > div {
+  background: #142920 !important;
+  border-color: #1f3d2f !important;
+  color: #f8fafc !important;
+}
+
+/* Step 6: Time Slot Layout & APMC Sidebar */
+body.dark-mode .book-slot-time-main,
+body.high-contrast .book-slot-time-main,
+body.dark-mode .book-slot-time-layout > div,
+body.high-contrast .book-slot-time-layout > div,
+body.dark-mode .book-slot-times-grid > div,
+body.high-contrast .book-slot-times-grid > div,
+body.dark-mode .book-slot-rec-grid > div,
+body.high-contrast .book-slot-rec-grid > div {
+  background: #142920 !important;
+  border-color: #1f3d2f !important;
+  color: #f8fafc !important;
+}
+
+/* Step 7: Confirmation & Post-Booking Layout */
+body.dark-mode .book-slot-confirm-layout > div,
+body.high-contrast .book-slot-confirm-layout > div,
+body.dark-mode .book-slot-confirm-grid > div,
+body.high-contrast .book-slot-confirm-grid > div,
+body.dark-mode .booking-ticket-fields > div,
+body.high-contrast .booking-ticket-fields > div,
+body.dark-mode .booking-queue-metrics > div,
+body.high-contrast .booking-queue-metrics > div {
+  background: #142920 !important;
+  border-color: #1f3d2f !important;
+  color: #f8fafc !important;
+}
+
+/* Book Slot Flow Bottom Footer Strip */
+body.dark-mode div[style*="border-top: 1px solid rgba(0, 0, 0, 0.06)"],
+body.high-contrast div[style*="border-top: 1px solid rgba(0, 0, 0, 0.06)"],
+body.dark-mode div[style*="borderTop: '1px solid rgba(0, 0, 0, 0.06)'"],
+body.high-contrast div[style*="borderTop: '1px solid rgba(0, 0, 0, 0.06)'"] {
+  border-top-color: #1f3d2f !important;
+  color: #94a3b8 !important;
+}
+
+/* 5. RegisterPage Mobile Grid & Touch Targets */
+.register-form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+@media (max-width: 639px) {
+  .register-form-grid {
+    grid-template-columns: 1fr !important;
+    gap: 12px !important;
+  }
+}
+
+/* 6. Data Tables Touch Scroll Wrapping (MSP Rates & Arrivals) */
+.msp-table-wrapper,
+.table-scroll-container {
+  width: 100%;
+  overflow-x: auto !important;
+  -webkit-overflow-scrolling: touch !important;
+}
+.msp-table {
+  min-width: 680px !important;
+}
+
+/* 7. Live Queue Monitor Responsive Adaptations */
+.live-queue-counters-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 10px;
+}
+@media (max-width: 768px) {
+  .live-queue-counters-grid {
+    display: flex !important;
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+    gap: 8px !important;
+    padding-bottom: 6px !important;
+    scrollbar-width: none;
+  }
+  .live-queue-counters-grid::-webkit-scrollbar {
+    display: none;
+  }
+  .live-queue-counters-grid > div {
+    min-width: 130px !important;
+    flex-shrink: 0 !important;
+  }
+}
+
+.live-queue-kpis-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+}
+@media (max-width: 640px) {
+  .live-queue-kpis-grid {
+    grid-template-columns: 1fr !important;
+    gap: 10px !important;
+  }
+}
+
+/* Live Queue Waiting Stream List & Rows */
+.live-queue-table-scroll {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  min-width: 0;
+}
+
+.live-queue-stream-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+  min-width: 0;
+}
+
+.waiting-stream-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 10px 14px;
+  font-size: 0.86rem;
+  transition: all 0.2s ease;
+  min-width: 0;
+}
+
+.waiting-stream-row.is-calling {
+  background: #eff6ff;
+  border: 1.5px solid #bfdbfe;
+}
+
+.waiting-stream-row.is-you {
+  background: #f0fdf4;
+  border: 1.5px solid #bbf7d0;
+}
+
+.stream-row-main {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+  flex: 1 1 auto;
+}
+
+.stream-pos-badge {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: #f1f5f9;
+  color: #475569;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 0.8rem;
+  flex-shrink: 0;
+}
+
+.stream-pos-badge.is-calling {
+  background: #2563eb;
+  color: #ffffff;
+}
+
+.stream-pos-badge.is-you {
+  background: #017953;
+  color: #ffffff;
+}
+
+.stream-token-badge {
+  font-size: 0.95rem;
+  color: #111827;
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  padding: 2px 8px;
+  border-radius: 6px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.stream-farmer-cell {
+  min-width: 0;
+  overflow: hidden;
+}
+
+.stream-you-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.stream-you-badge {
+  font-size: 0.68rem;
+  background: #017953;
+  color: #ffffff;
+  padding: 1px 6px;
+  border-radius: 4px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.stream-farmer-name {
+  font-weight: 600;
+  color: #1e293b;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.stream-farmer-name.is-you {
+  font-weight: 800;
+  color: #064e3b;
+}
+
+.stream-row-meta {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-shrink: 0;
+}
+
+.stream-crop-cell {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.stream-crop-icon {
+  width: 20px;
+  height: 20px;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
+.stream-crop-name {
+  font-size: 0.82rem;
+  color: #4b5563;
+}
+
+.stream-status-cell {
+  text-align: right;
+  flex-shrink: 0;
+}
+
+.stream-call-btn {
+  background: #2563eb;
+  color: #ffffff;
+  border: none;
+  border-radius: 20px;
+  padding: 6px 14px;
+  font-size: 0.78rem;
+  font-weight: 800;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.15s ease, transform 0.15s ease;
+  min-height: 34px;
+}
+
+.stream-call-btn:hover {
+  background: #1d4ed8;
+  transform: translateY(-1px);
+}
+
+.stream-waiting-pill {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 20px;
+  padding: 5px 12px;
+  font-size: 0.78rem;
+  color: #64748b;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+  min-height: 32px;
+}
+
+/* Mobile & Tablet Responsive Breakdown for Waiting Stream */
+@media (max-width: 720px) {
+  .waiting-stream-row {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 10px !important;
+    padding: 12px 14px !important;
+  }
+  
+  .stream-row-main {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+    gap: 8px !important;
+    width: 100% !important;
+  }
+  
+  .stream-row-meta {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    gap: 8px !important;
+    width: 100% !important;
+    padding-top: 8px !important;
+    border-top: 1px dashed #e2e8f0 !important;
+  }
+  
+  .stream-call-btn {
+    min-height: 40px !important;
+    padding: 8px 14px !important;
+    font-size: 0.8rem !important;
+  }
+}
 
 
+/* 8. QR Pass Page Grid */
+.qr-pass-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  font-size: 0.9rem;
+}
+@media (max-width: 640px) {
+  .qr-pass-grid {
+    grid-template-columns: 1fr !important;
+    gap: 10px !important;
+  }
+}
+
+/* 9. Additional Mobile Form and Queue Refinements */
+.login-card,
+.register-card {
+  padding: 36px;
+}
+@media (max-width: 639px) {
+  .login-card,
+  .register-card {
+    padding: 20px 16px !important;
+  }
+}
+
+.qr-details-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+@media (max-width: 639px) {
+  .qr-details-grid {
+    grid-template-columns: 1fr !important;
+    gap: 12px !important;
+  }
+}
+
+.live-queue-status-cards {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 10px;
+}
+@media (max-width: 991px) {
+  .live-queue-status-cards {
+    grid-template-columns: repeat(3, 1fr) !important;
+  }
+}
+@media (max-width: 639px) {
+  .live-queue-status-cards {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 8px !important;
+  }
+  .live-queue-status-cards > div:first-child {
+    grid-column: 1 / -1 !important;
+  }
+}
+@media (max-width: 380px) {
+  .live-queue-status-cards {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+.live-queue-counters-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+}
+@media (max-width: 767px) {
+  .live-queue-counters-grid {
+    grid-template-columns: 1fr !important;
+    gap: 10px !important;
+  }
+}
+
+/* 10. Kisan Modal Card & Responsive Modal Architecture */
+.kisan-modal-card {
+  width: 900px;
+  max-width: 96vw;
+  max-height: calc(100dvh - 32px);
+  background: #ffffff;
+  border-radius: 24px;
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.28);
+  border: 1px solid #bbf7d0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.kisan-modal-header {
+  padding: 20px 24px;
+  background: linear-gradient(135deg, #017953 0%, #064e3b 100%);
+  color: #ffffff;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  flex-shrink: 0;
+}
+.kisan-modal-toolbar {
+  padding: 14px 24px;
+  background: #f8fafc;
+  border-bottom: 1px solid #e2e8f0;
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  flex-wrap: wrap;
+  flex-shrink: 0;
+}
+.kisan-modal-body {
+  padding: 24px;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  flex: 1;
+}
+@media (max-width: 639px) {
+  .kisan-modal-card {
+    border-radius: 16px;
+    max-height: calc(100dvh - 16px);
+  }
+  .kisan-modal-header {
+    padding: 14px 16px;
+  }
+  .kisan-modal-toolbar {
+    padding: 12px 14px;
+  }
+  .kisan-modal-body {
+    padding: 14px;
+  }
+}
+
+/* 11. Farmer Payment Page Responsive Architecture */
+.payment-main-grid {
+  display: grid;
+  grid-template-columns: 1fr 280px;
+  gap: 20px;
+  align-items: start;
+}
+@media (max-width: 992px) {
+  .payment-main-grid {
+    grid-template-columns: 1fr !important;
+    gap: 18px !important;
+  }
+}
+
+.payment-kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+}
+@media (max-width: 768px) {
+  .payment-kpi-grid {
+    grid-template-columns: 1fr !important;
+    gap: 12px !important;
+  }
+}
+
+.payment-disbursement-row {
+  display: grid;
+  grid-template-columns: 100px 1fr 180px;
+  gap: 16px;
+  align-items: center;
+}
+@media (max-width: 768px) {
+  .payment-disbursement-row {
+    grid-template-columns: 1fr !important;
+    gap: 12px !important;
+  }
+  .payment-disbursement-row .disbursement-date-cell {
+    border-right: none !important;
+    border-bottom: 1px solid #e2e8f0;
+    padding-right: 0 !important;
+    padding-bottom: 8px;
+    text-align: left !important;
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+  }
+  .payment-disbursement-row .disbursement-amount-cell {
+    text-align: left !important;
+    border-top: 1px dashed #e2e8f0;
+    padding-top: 8px;
+  }
+}
+
+/* 12. Procurement Tracking Page Responsive Architecture */
+.procurement-status-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 14px;
+}
+@media (max-width: 768px) {
+  .procurement-status-header {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+  }
+}
+
+.procurement-summary-grid {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr;
+  gap: 20px;
+  align-items: center;
+}
+@media (max-width: 992px) {
+  .procurement-summary-grid {
+    grid-template-columns: 1fr !important;
+    gap: 16px !important;
+  }
+}
+
+.procurement-metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+}
+@media (max-width: 768px) {
+  .procurement-metrics-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 10px !important;
+  }
+}
+@media (max-width: 480px) {
+  .procurement-metrics-grid {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+.procurement-lower-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+}
+@media (max-width: 768px) {
+  .procurement-lower-grid {
+    grid-template-columns: 1fr !important;
+    gap: 14px !important;
+  }
+}
+
+/* 13. Center Discovery Page Layout */
+.center-discovery-layout {
+  display: flex;
+  gap: 24px;
+  align-items: flex-start;
+}
+@media (max-width: 992px) {
+  .center-discovery-layout {
+    flex-direction: column !important;
+    gap: 16px !important;
+  }
+  .center-discovery-sidebar {
+    width: 100% !important;
+  }
+}
+
+.center-discovery-card {
+  display: flex;
+  gap: 18px;
+  align-items: center;
+}
+.center-discovery-img-box {
+  width: 150px;
+  height: 100px;
+  flex-shrink: 0;
+}
+.center-discovery-metrics-actions {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding-left: 16px;
+  border-left: 1px solid #f1f5f9;
+}
+.center-metrics-trio {
+  display: flex;
+  gap: 20px;
+  text-align: center;
+}
+.center-actions-col {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 130px;
+}
+@media (max-width: 900px) {
+  .center-discovery-card {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 14px !important;
+  }
+  .center-discovery-img-box {
+    width: 100% !important;
+    height: 180px !important;
+  }
+  .center-discovery-metrics-actions {
+    border-left: none !important;
+    border-top: 1px solid #f1f5f9;
+    padding-left: 0 !important;
+    padding-top: 14px !important;
+    flex-direction: column !important;
+    gap: 14px !important;
+    align-items: stretch !important;
+  }
+  .center-metrics-trio {
+    justify-content: space-around !important;
+    width: 100% !important;
+  }
+  .center-actions-col {
+    width: 100% !important;
+    min-width: 0 !important;
+  }
+  .center-actions-col button {
+    width: 100% !important;
+    min-height: 44px;
+  }
+}
+
+/* 14. Live Queue 3-Column Grid */
+.live-queue-3col-grid {
+  display: grid;
+  grid-template-columns: 240px 1fr 240px;
+  gap: 20px;
+  align-items: start;
+}
+.live-queue-3col-grid > * {
+  min-width: 0;
+}
+@media (max-width: 1100px) {
+  .live-queue-3col-grid {
+    grid-template-columns: 1fr 260px !important;
+  }
+  .live-queue-main-col {
+    order: 1 !important;
+  }
+  .live-queue-right-sidebar {
+    order: 2 !important;
+  }
+  .live-queue-left-sidebar {
+    grid-column: 1 / -1 !important;
+    order: 3 !important;
+  }
+}
+@media (max-width: 860px) {
+  .live-queue-3col-grid {
+    grid-template-columns: 1fr !important;
+    gap: 16px !important;
+  }
+  .live-queue-main-col {
+    order: 1 !important;
+  }
+  .live-queue-right-sidebar {
+    order: 2 !important;
+  }
+  .live-queue-left-sidebar {
+    order: 3 !important;
+  }
+}
+
+/* Queue Stages Progress Horizontal Swipe Flow */
+.queue-stages-flow {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 8px;
+  background: #f8fafc;
+  border-radius: 12px;
+  padding: 12px 14px;
+  border: 1px solid #e2e8f0;
+  font-size: 0.76rem;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  white-space: nowrap;
+}
+.queue-stages-flow::-webkit-scrollbar {
+  display: none;
+}
+.queue-stages-flow > span {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+}
+
+/* 15. Help Page Grid */
+.help-layout-grid {
+  display: grid;
+  grid-template-columns: 1.2fr 0.8fr;
+  gap: 24px;
+}
+@media (max-width: 992px) {
+  .help-layout-grid {
+    grid-template-columns: 1fr !important;
+    gap: 18px !important;
+  }
+}
+
+/* 16. Operator & Admin Dashboard Grids */
+.operator-dashboard-layout {
+  display: flex;
+  gap: 20px;
+  align-items: flex-start;
+}
+@media (max-width: 992px) {
+  .operator-dashboard-layout {
+    flex-direction: column !important;
+  }
+  .operator-sidebar {
+    width: 100% !important;
+  }
+}
+
+.operator-kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  margin-bottom: 14px;
+}
+@media (max-width: 860px) {
+  .operator-kpi-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+}
+@media (max-width: 480px) {
+  .operator-kpi-grid {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+.operator-dual-panel {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+@media (max-width: 768px) {
+  .operator-dual-panel {
+    grid-template-columns: 1fr !important;
+    gap: 14px !important;
+  }
+}
+
+.operator-inputs-subgrid {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+@media (max-width: 480px) {
+  .operator-inputs-subgrid {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+.admin-kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 18px;
+  margin-bottom: 30px;
+}
+@media (max-width: 1024px) {
+  .admin-kpi-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 14px !important;
+  }
+}
+@media (max-width: 540px) {
+  .admin-kpi-grid {
+    grid-template-columns: 1fr !important;
+    gap: 12px !important;
+  }
+}
+
+/* 17. Ticket & Step 6 Sub-Metrics */
+.slot-capacity-metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+  background: #f8fafc;
+  border-radius: 8px;
+  padding: 8px 10px;
+  font-size: 0.74rem;
+  margin-bottom: 10px;
+}
+@media (max-width: 440px) {
+  .slot-capacity-metrics-grid {
+    grid-template-columns: 1fr 1fr !important;
+    gap: 6px !important;
+  }
+}
+
+.ticket-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+@media (max-width: 500px) {
+  .ticket-header-row {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+  }
+}
 

@@ -16,6 +16,7 @@ import {
   FileCheck
 } from 'lucide-react';
 import { useBooking } from '../context/BookingContext';
+import { useLanguage } from '../context/LanguageContext';
 import wheatBadge from '../assets/wheat_badge.png';
 import mandiSignature from '../assets/mandi_signature.png';
 import annadataSketch from '../assets/annadata_sketch.png';
@@ -23,6 +24,7 @@ import tractorField from '../assets/tractor_field.png';
 
 export default function ProcurementStatusPage() {
   const { activeBooking } = useBooking();
+  const { t, lang } = useLanguage();
   const tokenNum = activeBooking?.tokenNumber || 'T-114-30';
   const cropName = activeBooking?.cropName || activeBooking?.produceName || 'गेहूं (Wheat / Gehun)';
   const centerName = activeBooking?.centerName || 'चुनार कृषि उपज मंडी समिति (Chunar APMC)';
@@ -41,7 +43,7 @@ export default function ProcurementStatusPage() {
         <div style={{ background: '#ffffff', borderRadius: '24px', border: '1px solid #e2e8f0', padding: '24px 30px', boxShadow: '0 8px 30px rgba(0,0,0,0.04)', marginBottom: '20px' }}>
           
           {/* Header Row */}
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
+          <div className="procurement-status-header" style={{ marginBottom: '24px' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
               <img src={wheatBadge} alt="Wheat Badge" style={{ width: '48px', height: '48px', objectFit: 'contain' }} />
               <div>
@@ -57,63 +59,65 @@ export default function ProcurementStatusPage() {
               </div>
             </div>
 
-            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
               <span style={{ fontSize: '0.76rem', background: '#fefce8', border: '1px solid #fef08a', color: '#854d0e', padding: '4px 10px', borderRadius: '12px', fontWeight: 700 }}>
                 ● प्रगति पर
               </span>
               <span style={{ fontSize: '0.8rem', color: '#4b5563' }}>
                 📅 दिनांक: <strong>{displayDate}</strong>
               </span>
-              <button style={{ background: '#017953', color: '#ffffff', border: 'none', borderRadius: '8px', padding: '8px 16px', fontSize: '0.84rem', fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <button style={{ background: '#017953', color: '#ffffff', border: 'none', borderRadius: '8px', padding: '8px 16px', minHeight: '44px', fontSize: '0.84rem', fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px' }}>
                 <FileText size={15} /> <span>रसीद देखें / डाउनलोड</span>
               </button>
             </div>
           </div>
 
           {/* 8-Step Progress Stepper Timeline */}
-          <div style={{ position: 'relative', margin: '20px 0 10px 0' }}>
-            {/* Connecting Bar */}
-            <div style={{ position: 'absolute', top: '15px', left: '30px', right: '30px', height: '3px', background: '#e2e8f0', zIndex: 1 }}></div>
-            {/* Active green progress up to step 5 */}
-            <div style={{ position: 'absolute', top: '15px', left: '30px', width: '56%', height: '3px', background: '#017953', zIndex: 1 }}></div>
+          <div className="procurement-stepper-scroll" style={{ position: 'relative', margin: '20px 0 10px 0', overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
+            <div style={{ minWidth: '760px', position: 'relative', padding: '6px 0 10px 0' }}>
+              {/* Connecting Bar */}
+              <div style={{ position: 'absolute', top: '21px', left: '30px', right: '30px', height: '3px', background: '#e2e8f0', zIndex: 1 }}></div>
+              {/* Active green progress up to step 5 */}
+              <div style={{ position: 'absolute', top: '21px', left: '30px', width: '56%', height: '3px', background: '#017953', zIndex: 1 }}></div>
 
-            <div style={{ display: 'flex', justifyContent: 'space-between', position: 'relative', zIndex: 2 }}>
-              {[
-                { num: 1, title: 'स्लॉट कन्फर्म', sub: 'स्लॉट और टोकन सुरक्षित', done: true },
-                { num: 2, title: 'केंद्र आगमन', sub: 'मंडी गेट पर वाहन प्रवेश', done: true },
-                { num: 3, title: 'टोकन पुकारा गया', sub: 'काउंटर 2 पर टोकन पुकारा गया', done: true },
-                { num: 4, title: 'प्रक्रिया प्रारंभ', sub: 'कागजात सत्यापन एवं ग्रेड पास', done: true },
-                { num: 5, title: 'गुणवत्ता व नमी जांच', sub: 'नमी माप (10.8%) व ग्रेडिंग', active: true },
-                { num: 6, title: 'इलेक्ट्रॉनिक वेज्रिज तौल', sub: 'वजन का मापन व पुष्टि' },
-                { num: 7, title: 'खरीद पूर्ण (J-Form जारी)', sub: 'डिजिटल रसीद और J-Form' },
-                { num: 8, title: 'भुगतान की प्रक्रिया', sub: 'DBT के माध्यम से' }
-              ].map((s) => (
-                <div key={s.num} style={{ textAlign: 'center', flex: 1, padding: '0 4px' }}>
-                  <div style={{ 
-                    width: '32px', 
-                    height: '32px', 
-                    borderRadius: '50%', 
-                    background: s.done ? '#017953' : (s.active ? '#017953' : '#ffffff'), 
-                    border: s.done || s.active ? 'none' : '1.5px solid #cbd5e1', 
-                    color: s.done || s.active ? '#ffffff' : '#64748b', 
-                    display: 'flex', 
-                    alignItems: 'center', 
-                    justifyContent: 'center', 
-                    fontWeight: 800, 
-                    fontSize: '0.88rem', 
-                    margin: '0 auto 6px auto',
-                    boxShadow: s.active ? '0 0 0 4px #bbf7d0' : 'none'
-                  }}>
-                    {s.done ? <Check size={16} strokeWidth={3} /> : s.num}
+              <div style={{ display: 'flex', justifyContent: 'space-between', position: 'relative', zIndex: 2 }}>
+                {[
+                  { num: 1, title: 'स्लॉट कन्फर्म', sub: 'स्लॉट और टोकन सुरक्षित', done: true },
+                  { num: 2, title: 'केंद्र आगमन', sub: 'मंडी गेट पर वाहन प्रवेश', done: true },
+                  { num: 3, title: 'टोकन पुकारा गया', sub: 'काउंटर 2 पर टोकन पुकारा गया', done: true },
+                  { num: 4, title: 'प्रक्रिया प्रारंभ', sub: 'कागजात सत्यापन एवं ग्रेड पास', done: true },
+                  { num: 5, title: 'गुणवत्ता व नमी जांच', sub: 'नमी माप (10.8%) व ग्रेडिंग', active: true },
+                  { num: 6, title: 'इलेक्ट्रॉनिक वेज्रिज तौल', sub: 'वजन का मापन व पुष्टि' },
+                  { num: 7, title: 'खरीद पूर्ण (J-Form जारी)', sub: 'डिजिटल रसीद और J-Form' },
+                  { num: 8, title: 'भुगतान की प्रक्रिया', sub: 'DBT के माध्यम से' }
+                ].map((s) => (
+                  <div key={s.num} style={{ textAlign: 'center', flex: 1, padding: '0 4px' }}>
+                    <div style={{ 
+                      width: '32px', 
+                      height: '32px', 
+                      borderRadius: '50%', 
+                      background: s.done ? '#017953' : (s.active ? '#017953' : '#ffffff'), 
+                      border: s.done || s.active ? 'none' : '1.5px solid #cbd5e1', 
+                      color: s.done || s.active ? '#ffffff' : '#64748b', 
+                      display: 'flex', 
+                      alignItems: 'center', 
+                      justifyContent: 'center', 
+                      fontWeight: 800, 
+                      fontSize: '0.88rem', 
+                      margin: '0 auto 6px auto',
+                      boxShadow: s.active ? '0 0 0 4px #bbf7d0' : 'none'
+                    }}>
+                      {s.done ? <Check size={16} strokeWidth={3} /> : s.num}
+                    </div>
+                    <div style={{ fontSize: '0.8rem', fontWeight: s.active ? 800 : 600, color: s.active ? '#017953' : (s.done ? '#064e3b' : '#64748b'), lineHeight: 1.2 }}>
+                      {s.title}
+                    </div>
+                    <div style={{ fontSize: '0.66rem', color: '#9ca3af', marginTop: '2px', lineHeight: 1.15 }}>
+                      {s.sub}
+                    </div>
                   </div>
-                  <div style={{ fontSize: '0.8rem', fontWeight: s.active ? 800 : 600, color: s.active ? '#017953' : (s.done ? '#064e3b' : '#64748b'), lineHeight: 1.2 }}>
-                    {s.title}
-                  </div>
-                  <div style={{ fontSize: '0.66rem', color: '#9ca3af', marginTop: '2px', lineHeight: 1.15 }}>
-                    {s.sub}
-                  </div>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
           </div>
 
@@ -125,10 +129,10 @@ export default function ProcurementStatusPage() {
             <span>📊</span> <span>अंतिम तौल एवं भुगतान विवरण</span>
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: '1.4fr 1fr', gap: '20px', alignItems: 'center' }}>
+          <div className="procurement-summary-grid">
             
             {/* 4 Metric Boxes */}
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '12px' }}>
+            <div className="procurement-metrics-grid">
               
               {/* Gross */}
               <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '14px', padding: '14px', textAlign: 'center' }}>
@@ -201,7 +205,7 @@ export default function ProcurementStatusPage() {
         </div>
 
         {/* ================= 3. LOWER GRID: QUALITY + WEIGHBRIDGE RECEIPT + PAYMENT + DOCS ================= */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '20px' }}>
+        <div className="procurement-lower-grid">
           
           {/* Quality Verification */}
           <div style={{ background: '#ffffff', borderRadius: '20px', border: '1px solid #e2e8f0', padding: '20px', boxShadow: '0 4px 20px rgba(0,0,0,0.03)' }}>

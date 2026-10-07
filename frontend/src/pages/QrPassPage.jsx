@@ -172,7 +172,7 @@ export default function QrPassPage() {
         </div>
 
         {/* Booking Details Grid */}
-        <div style={{ padding: '24px 30px', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', fontSize: '0.9rem' }}>
+        <div className="qr-details-grid" style={{ padding: '20px 24px', fontSize: '0.9rem' }}>
           <div>
             <span style={{ color: '#64748b', fontSize: '0.8rem', display: 'block' }}>{language === 'hi' ? 'किसान का नाम:' : 'Farmer Name:'}</span>
             <strong style={{ color: '#111827', fontSize: '1rem' }}>{booking.farmerName || user?.name || user?.username || (language === 'hi' ? 'किसान भाई' : 'Farmer')}</strong>

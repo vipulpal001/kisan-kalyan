@@ -1,0 +1,72 @@
+{
+  "id": "/",
+  "name": "किसान कल्याण - राष्ट्रीय कृषि खरीद पोर्टल",
+  "short_name": "किसान कल्याण",
+  "description": "स्मार्ट कृषि उपज खरीद, धर्मकांटा इलेक्ट्रॉनिक तौल, स्वचालित टोकन कतार एवं प्रत्यक्ष लाभ हस्तांतरण (DBT) पोर्टल",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "display_override": ["window-controls-overlay", "standalone", "minimal-ui"],
+  "orientation": "any",
+  "background_color": "#044e34",
+  "theme_color": "#045d3f",
+  "lang": "hi",
+  "dir": "ltr",
+  "categories": ["government", "business", "productivity", "utilities"],
+  "icons": [
+    {
+      "src": "/pwa-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/pwa-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/pwa-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/pwa-maskable-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "स्लॉट बुक करें (Book Slot)",
+      "short_name": "स्लॉट बुक",
+      "description": "सरकारी खरीद केंद्र पर अपनी फसल का स्लॉट बुक करें",
+      "url": "/farmer/book-slot",
+      "icons": [{ "src": "/pwa-192x192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "लाइव कतार (Live Queue)",
+      "short_name": "लाइव कतार",
+      "description": "मंडी की लाइव कतार व टोकन स्थिति जांचें",
+      "url": "/farmer/queue",
+      "icons": [{ "src": "/pwa-192x192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "खरीद केंद्र (Find Centres)",
+      "short_name": "खरीद केंद्र",
+      "description": "निकटतम कृषि खरीद केंद्र व APMC मंडी खोजें",
+      "url": "/centers",
+      "icons": [{ "src": "/pwa-192x192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "डीबीटी भुगतान (DBT Payments)",
+      "short_name": "भुगतान",
+      "description": "बैंक खाते में एमएसपी भुगतान स्थिति जांचें",
+      "url": "/farmer/payment",
+      "icons": [{ "src": "/pwa-192x192.png", "sizes": "192x192" }]
+    }
+  ]
+}

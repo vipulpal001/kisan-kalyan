@@ -50,7 +50,9 @@ export default function CenterDiscoveryPage() {
       name: 'चुनार कृषि उपज मंडी समिति (Chunar APMC)',
       address: 'रेलवे स्टेशन रोड के पास, चुनार, मिर्ज़ापुर, उ.प्र.',
       distance: '3.2 km दूर',
+      distKm: '3.2',
       crowd: 'भीड़ कम',
+      tipKey: 'tipChunar',
       crowdColor: '#166534',
       crowdBg: '#dcfce7',
       distanceBg: '#fee2e2',
@@ -67,7 +69,9 @@ export default function CenterDiscoveryPage() {
       name: 'वाराणसी नवीन गल्ला मंडी केंद्र',
       address: 'शिवपुर मंडी रोड, शिवपुर, वाराणसी, उ.प्र.',
       distance: '14.5 km दूर',
+      distKm: '14.5',
       crowd: 'भीड़ अधिक',
+      tipKey: 'tipVaranasi',
       crowdColor: '#b45309',
       crowdBg: '#fef3c7',
       distanceBg: '#fee2e2',
@@ -84,7 +88,9 @@ export default function CenterDiscoveryPage() {
       name: 'खन्ना एशिया अनाज मंडी',
       address: 'जी.टी. रोड, खन्ना, जिला लुधियाना, पंजाब',
       distance: '5.8 km दूर',
+      distKm: '5.8',
       crowd: 'भीड़ कम',
+      tipKey: 'tipKhanna',
       crowdColor: '#166534',
       crowdBg: '#dcfce7',
       distanceBg: '#fee2e2',
@@ -101,7 +107,9 @@ export default function CenterDiscoveryPage() {
       name: 'अहरौरा क्रय केंद्र',
       address: 'ब्लॉक रोड, अहरौरा, मिर्ज़ापुर, उ.प्र.',
       distance: '7.6 km दूर',
+      distKm: '7.6',
       crowd: 'भीड़ कम',
+      tipKey: 'tipAhraura',
       crowdColor: '#166534',
       crowdBg: '#dcfce7',
       distanceBg: '#fee2e2',
@@ -124,10 +132,10 @@ export default function CenterDiscoveryPage() {
 
   return (
     <div style={{ background: 'transparent', minHeight: '90vh', padding: '24px 0 40px 0' }}>
-      <div className="portal-container" style={{ display: 'flex', gap: '24px', alignItems: 'flex-start' }}>
+      <div className="portal-container center-discovery-layout" style={{ display: 'flex', gap: '24px', alignItems: 'flex-start' }}>
         
         {/* ================= LEFT SIDEBAR ================= */}
-        <div style={{ width: '260px', flexShrink: 0, display: 'flex', flexDirection: 'column', gap: '20px' }}>
+        <div className="center-discovery-sidebar" style={{ width: '260px', flexShrink: 0, display: 'flex', flexDirection: 'column', gap: '20px' }}>
           
           {/* Top Title Card */}
           <div style={{ 
@@ -283,23 +291,22 @@ export default function CenterDiscoveryPage() {
               fontSize: '1.25rem', 
               fontWeight: 900, 
               color: '#064e3b', 
-              fontFamily: "'Noto Sans Devanagari', sans-serif",
               lineHeight: 1.3,
               marginBottom: '12px'
             }}>
-              “किसान की सुविधा<br />हमारी प्राथमिकता”
+              {t('queueTagline', '“किसान की सुविधा हमारी प्राथमिकता”')}
             </h3>
             <img 
               src={tractorFieldImg} 
               alt="Tractor in Green Field" 
-              style={{ width: '100%', maxHeight: '180px', objectFit: 'contain', display: 'block', margin: '0 auto' }}
+              style={{ width: '100%', maxHeight: '180px', objectFit: 'cover', borderRadius: '14px', display: 'block', margin: '0 auto', boxShadow: '0 4px 14px rgba(0,0,0,0.08)' }}
             />
           </div>
 
         </div>
 
         {/* ================= RIGHT MAIN AREA ================= */}
-        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '18px' }}>
+        <div className="center-discovery-main" style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '18px' }}>
           
           {/* Top Search and Filter Bar */}
           <div style={{ 
@@ -320,7 +327,7 @@ export default function CenterDiscoveryPage() {
                 type="text" 
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder={t('searchMandiDistrict', 'केंद्र का नाम, गांव, मंडी या जिला खोजें...')}
+                placeholder={t('searchCenterPlaceholder', 'केंद्र का नाम, गांव, मंडी या जिला खोजें...')}
                 style={{ 
                   width: '100%', 
                   padding: '9px 12px 9px 38px', 
@@ -351,7 +358,7 @@ export default function CenterDiscoveryPage() {
                   cursor: 'pointer'
                 }}
               >
-                <option value="All">सभी जिले (All Districts)</option>
+                <option value="All">{t('allDistricts', 'सभी जिले (All Districts)')}</option>
                 <option value="Mirzapur">मिर्ज़ापुर (Mirzapur)</option>
                 <option value="Varanasi">वाराणसी (Varanasi)</option>
                 <option value="Ludhiana">लुधियाना (Ludhiana)</option>
@@ -377,7 +384,7 @@ export default function CenterDiscoveryPage() {
               }}
             >
               <Navigation size={15} color="#059669" />
-              <span>{t('detectLocationBtn', 'मेरा स्थान')}</span>
+              <span>{t('myLocationBtn', 'मेरा स्थान')}</span>
             </button>
 
             {/* Map View Button */}
@@ -434,20 +441,18 @@ export default function CenterDiscoveryPage() {
             {filteredCenters.map((center) => (
               <div 
                 key={center.id}
+                className="center-discovery-card"
                 style={{ 
                   background: '#ffffff', 
                   borderRadius: '14px', 
                   padding: '16px', 
                   boxShadow: '0 2px 8px rgba(0,0,0,0.04)', 
                   border: '1px solid #e2e8f0',
-                  display: 'flex',
-                  gap: '18px',
-                  alignItems: 'center',
                   transition: 'transform 0.15s ease, box-shadow 0.15s ease'
                 }}
               >
                 {/* Center Image */}
-                <div style={{ width: '150px', height: '100px', flexShrink: 0, borderRadius: '8px', overflow: 'hidden', border: '1px solid #e2e8f0' }}>
+                <div className="center-discovery-img-box" style={{ borderRadius: '8px', overflow: 'hidden', border: '1px solid #e2e8f0' }}>
                   <img 
                     src={center.image} 
                     alt={center.name} 
@@ -456,10 +461,10 @@ export default function CenterDiscoveryPage() {
                 </div>
 
                 {/* Center Info Middle */}
-                <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                <div className="center-discovery-info-box" style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '6px' }}>
                   
                   {/* Pills Row */}
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
                     <span style={{ 
                       background: center.distanceBg, 
                       color: center.distanceColor, 
@@ -472,7 +477,7 @@ export default function CenterDiscoveryPage() {
                       gap: '4px'
                     }}>
                       <MapPin size={11} />
-                      {center.distance}
+                      {center.distKm ? `${center.distKm} km ${t('distanceAway', 'दूर')}` : center.distance}
                     </span>
 
                     <span style={{ 
@@ -483,7 +488,7 @@ export default function CenterDiscoveryPage() {
                       padding: '2px 8px', 
                       borderRadius: '12px'
                     }}>
-                      {center.crowd}
+                      {center.crowd === 'भीड़ कम' ? t('crowdLow', 'भीड़ कम') : t('crowdHigh', 'भीड़ अधिक')}
                     </span>
 
                     <span style={{ fontSize: '0.75rem', color: '#64748b', fontWeight: 600 }}>
@@ -515,15 +520,15 @@ export default function CenterDiscoveryPage() {
                     marginTop: '2px'
                   }}>
                     <span>💡</span>
-                    <span>{center.tip}</span>
+                    <span>{center.tipKey ? t(center.tipKey, center.tip) : center.tip}</span>
                   </div>
                 </div>
 
                 {/* Right Metrics Box & Actions */}
-                <div style={{ display: 'flex', alignItems: 'center', gap: '20px', paddingLeft: '16px', borderLeft: '1px solid #f1f5f9' }}>
+                <div className="center-discovery-metrics-actions">
                   
                   {/* 3 Metrics */}
-                  <div style={{ display: 'flex', gap: '20px', textAlign: 'center' }}>
+                  <div className="center-metrics-trio">
                     <div>
                       <div style={{ fontSize: '0.72rem', color: '#64748b', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '3px' }}>
                         <span>👤</span> {t('availableSlots', 'उपलब्ध स्लॉट')}
@@ -553,7 +558,7 @@ export default function CenterDiscoveryPage() {
                   </div>
 
                   {/* Action Buttons */}
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', minWidth: '130px' }}>
+                  <div className="center-actions-col">
                     <button 
                       onClick={() => navigate('/farmer/book-slot', { state: { prefilledCenter: center.name } })}
                       style={{ 
@@ -618,25 +623,25 @@ export default function CenterDiscoveryPage() {
             <div style={{ display: 'flex', gap: '28px', alignItems: 'center', fontSize: '0.84rem', fontWeight: 700, color: '#065f46' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                 <Check size={16} strokeWidth={3} color="#059669" />
-                <span>सटीक और अद्यतन जानकारी</span>
+                <span>{t('accurateUpdatedInfo', 'सटीक और अद्यतन जानकारी')}</span>
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                 <MapPin size={16} color="#059669" />
-                <span>आपके पास का केंद्र</span>
+                <span>{t('centreNearYou', 'आपके पास का केंद्र')}</span>
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                 <Clock size={16} color="#059669" />
-                <span>समय की बचत</span>
+                <span>{t('timeSaving', 'समय की बचत')}</span>
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                 <span>📄</span>
-                <span>पारदर्शी प्रक्रिया</span>
+                <span>{t('transparentProcess', 'पारदर्शी प्रक्रिया')}</span>
               </div>
             </div>
 
             <div style={{ fontSize: '0.92rem', fontWeight: 800, color: '#047857', display: 'flex', alignItems: 'center', gap: '6px' }}>
               <span>🌿</span>
-              <span>“समृद्ध किसान समृद्ध भारत”</span>
+              <span>{t('sloganSub', '“समृद्ध किसान समृद्ध भारत”')}</span>
             </div>
           </div>
 

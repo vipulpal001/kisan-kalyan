@@ -1,0 +1,887 @@
+/* ==========================================================================
+   FarmerDashboard.css — Responsive Layout & Styling for Farmer Dashboard
+   Preserves 100% Desktop UI (>= 768px / >= 1024px) while delivering a
+   pixel-perfect, touch-friendly mobile government portal layout (< 768px).
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   Page Container & Baseline
+   -------------------------------------------------------------------------- */
+.farmer-dashboard {
+  background: #f8fafc;
+  min-height: 100vh;
+  padding: 24px 0 60px 0;
+  overflow-x: hidden;
+}
+
+.farmer-portal-container {
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: 0 16px;
+}
+
+/* --------------------------------------------------------------------------
+   1. Top Hero Greeting Banner & Procurement Summary Card
+   -------------------------------------------------------------------------- */
+.farmer-hero-card {
+  background: #ffffff;
+  border-radius: 24px;
+  border: 1px solid #e2e8f0;
+  position: relative;
+  overflow: hidden;
+  margin-bottom: 20px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  padding: 24px 28px;
+  gap: 24px;
+}
+
+.farmer-hero-left {
+  flex: 1 1 320px;
+  min-width: 270px;
+  z-index: 1;
+}
+
+.farmer-hero-green-card {
+  background: #044324;
+  border-radius: 20px;
+  padding: 16px 20px;
+  color: #ffffff;
+  box-shadow: 0 8px 24px rgba(4, 67, 36, 0.35);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 16px;
+  flex: 1 1 540px;
+  max-width: 620px;
+  z-index: 1;
+}
+
+.procurement-panel-inner {
+  flex: 1 1 360px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-width: 300px;
+}
+
+/* Procurement 3-Col Desktop Summary */
+.procurement-summary {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.procurement-center-col {
+  border-right: 1px solid rgba(255, 255, 255, 0.15);
+  padding-right: 12px;
+  flex: 1 1 140px;
+  min-width: 0;
+}
+
+.procurement-center-name {
+  font-size: 0.86rem;
+  color: #ffffff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 160px;
+  display: block;
+}
+
+.procurement-center-location {
+  font-size: 0.72rem;
+  color: #cbd5e1;
+  margin-top: 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 160px;
+  display: block;
+}
+
+.procurement-token-col {
+  border-right: 1px solid rgba(255, 255, 255, 0.15);
+  padding-right: 12px;
+  text-align: center;
+  flex: 0 0 auto;
+}
+
+.procurement-queue-col {
+  text-align: center;
+  flex: 0 0 auto;
+}
+
+.procurement-stats-row {
+  display: contents; /* In desktop, children stay in row flow */
+}
+
+.procurement-divider {
+  height: 1px;
+  background: rgba(255, 255, 255, 0.15);
+  width: 100%;
+}
+
+.procurement-bottom-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.farmer-portrait-box {
+  flex: 0 0 112px;
+  height: 187px;
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto;
+}
+
+.farmer-portrait-mobile-quote {
+  display: none;
+}
+
+/* --------------------------------------------------------------------------
+   2. Active Token Details Card
+   -------------------------------------------------------------------------- */
+.booking-card {
+  background: #ffffff;
+  border-radius: 24px;
+  border: 2px solid #a7f3d0;
+  padding: 20px 24px;
+  margin-bottom: 22px;
+  box-shadow: 0 4px 16px rgba(5, 150, 105, 0.08);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.booking-left-col {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 20px;
+  flex: 1 1 500px;
+}
+
+.booking-token-pill {
+  background: linear-gradient(135deg, #064e3b 0%, #059669 100%);
+  color: #ffffff;
+  border-radius: 16px;
+  padding: 14px 20px;
+  text-align: center;
+  box-shadow: 0 4px 12px rgba(4, 67, 36, 0.25);
+  min-width: 130px;
+}
+
+.booking-info-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  flex: 1;
+}
+
+.booking-info-item {
+  min-width: 0;
+}
+
+.booking-info-label {
+  font-size: 0.74rem;
+  color: #64748b;
+  font-weight: 600;
+  display: block;
+  margin-bottom: 2px;
+}
+
+.booking-info-val {
+  font-size: 0.95rem;
+  color: #111827;
+  font-weight: 800;
+  display: block;
+  word-break: normal;
+  overflow-wrap: anywhere;
+}
+
+.booking-status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.78rem;
+  font-weight: 800;
+  padding: 3px 10px;
+  border-radius: 12px;
+  white-space: nowrap;
+}
+
+.booking-right-col {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 14px;
+  flex: 0 0 auto;
+}
+
+.btn-show-qr {
+  background: linear-gradient(135deg, #059669 0%, #047857 100%);
+  color: #ffffff;
+  text-decoration: none;
+  border-radius: 14px;
+  padding: 12px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-weight: 800;
+  font-size: 0.95rem;
+  min-height: 46px;
+  box-shadow: 0 4px 12px rgba(5, 150, 105, 0.3);
+  transition: transform 0.15s ease;
+  white-space: nowrap;
+}
+
+.btn-show-qr:hover {
+  transform: translateY(-1px);
+}
+
+/* --------------------------------------------------------------------------
+   3. Quick Action Cards Grid
+   -------------------------------------------------------------------------- */
+.action-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 16px;
+  margin-bottom: 22px;
+}
+
+.action-card {
+  background: #ffffff;
+  border-radius: 20px;
+  border: 1px solid #e2e8f0;
+  padding: 18px 20px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  text-decoration: none;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  min-height: 72px;
+}
+
+.action-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.06);
+}
+
+/* --------------------------------------------------------------------------
+   4. Procurement Stepper Card
+   -------------------------------------------------------------------------- */
+.stepper-card {
+  background: #ffffff;
+  border-radius: 24px;
+  border: 1px solid #e2e8f0;
+  padding: 24px 28px;
+  margin-bottom: 22px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 24px;
+  align-items: center;
+}
+
+.stepper-desktop-view {
+  display: block;
+}
+
+.stepper-mobile-view {
+  display: none;
+}
+
+.mandi-notice-box {
+  background: #ecfdf5;
+  border-radius: 16px;
+  border: 1px solid #a7f3d0;
+  padding: 18px 20px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+/* --------------------------------------------------------------------------
+   5. Bottom Three Columns Grid (Weather, Activity, Nearby)
+   -------------------------------------------------------------------------- */
+.bottom-columns-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 20px;
+  margin-bottom: 26px;
+}
+
+.info-column-card {
+  background: #ffffff;
+  border-radius: 24px;
+  border: 1px solid #e2e8f0;
+  padding: 22px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
+}
+
+.activity-item-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.nearby-center-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.nearby-center-info {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  flex: 1;
+  min-width: 0;
+}
+
+.nearby-center-dist {
+  flex-shrink: 0;
+  white-space: nowrap;
+  font-size: 0.8rem;
+  font-weight: 700;
+  padding-top: 2px;
+}
+
+/* --------------------------------------------------------------------------
+   6. Bottom Footer Bar
+   -------------------------------------------------------------------------- */
+.footer-bar-row {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  margin-top: 10px;
+}
+
+.btn-audio-listen {
+  background: #044324;
+  color: #ffffff;
+  border: none;
+  padding: 10px 22px;
+  border-radius: 24px;
+  font-size: 0.88rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(4, 67, 36, 0.25);
+  min-height: 44px;
+}
+
+.footer-slogan {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #047857;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.footer-helpline-card {
+  background: #ffffff;
+  border: 1.5px solid #059669;
+  border-radius: 24px;
+  padding: 8px 20px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  box-shadow: 0 2px 8px rgba(5, 150, 105, 0.1);
+  min-height: 44px;
+}
+
+/* ==========================================================================
+   MOBILE & TABLET RESPONSIVE STYLES (<= 767px)
+   ========================================================================== */
+@media (max-width: 767px) {
+  .farmer-dashboard {
+    padding: 14px 0 calc(96px + env(safe-area-inset-bottom, 16px)) 0;
+  }
+
+  .farmer-portal-container {
+    padding: 0 12px;
+  }
+
+  /* 1. Hero Card Mobile Layout */
+  .farmer-hero-card {
+    padding: 16px;
+    border-radius: 20px;
+    gap: 14px;
+    margin-bottom: 14px;
+  }
+
+  .farmer-hero-left {
+    flex: 1 1 100%;
+    min-width: 0;
+    width: 100%;
+  }
+
+  .farmer-hero-green-card {
+    flex: 1 1 100%;
+    max-width: 100%;
+    width: 100%;
+    padding: 14px 14px 12px 14px;
+    border-radius: 18px;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+
+  .procurement-panel-inner {
+    flex: 1 1 100%;
+    min-width: 0;
+    width: 100%;
+    gap: 12px;
+  }
+
+  /* Transform 3-Col row into vertical mobile card */
+  .procurement-summary {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .procurement-center-col {
+    border-right: none;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+    padding-right: 0;
+    padding-bottom: 12px;
+    width: 100%;
+  }
+
+  .procurement-center-name {
+    white-space: normal;
+    overflow: visible;
+    text-overflow: clip;
+    max-width: none;
+    line-height: 1.35;
+    overflow-wrap: anywhere;
+    word-break: normal;
+    font-size: 0.95rem;
+  }
+
+  .procurement-center-location {
+    white-space: normal;
+    overflow: visible;
+    text-overflow: clip;
+    max-width: none;
+    overflow-wrap: anywhere;
+    word-break: normal;
+    font-size: 0.76rem;
+  }
+
+  /* Token & Queue Position Stats: Clean 2-column mobile row */
+  .procurement-stats-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    align-items: center;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+    padding-bottom: 12px;
+    width: 100%;
+  }
+
+  .procurement-token-col {
+    border-right: 1px solid rgba(255, 255, 255, 0.15);
+    padding-right: 8px;
+    text-align: center;
+  }
+
+  .procurement-queue-col {
+    text-align: center;
+    padding-left: 8px;
+  }
+
+  .procurement-bottom-row {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  /* Move Farmer Image into a compact, attractive banner */
+  .farmer-portrait-box {
+    width: 100%;
+    height: auto;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    padding: 8px 12px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    box-shadow: none;
+    margin: 4px 0 0 0;
+  }
+
+  .farmer-portrait-box img {
+    width: 50px !important;
+    height: 50px !important;
+    border-radius: 10px !important;
+    object-fit: cover !important;
+    flex-shrink: 0;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+  }
+
+  .farmer-portrait-mobile-quote {
+    display: block;
+    flex: 1;
+    min-width: 0;
+  }
+
+  .farmer-portrait-mobile-quote strong {
+    font-size: 0.82rem;
+    color: #fef08a;
+    font-style: italic;
+    display: block;
+    line-height: 1.3;
+  }
+
+  .farmer-portrait-mobile-quote span {
+    font-size: 0.68rem;
+    color: #a7f3d0;
+    display: block;
+    margin-top: 2px;
+  }
+
+  /* 2. Active Token Details Card Mobile Layout */
+  .booking-card {
+    padding: 14px 16px;
+    border-radius: 20px;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+    margin-bottom: 14px;
+  }
+
+  .booking-left-col {
+    flex: 0 0 auto !important;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+    width: 100%;
+  }
+
+  .booking-token-pill {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 14px;
+    width: 100%;
+    text-align: left;
+    min-width: 0;
+    border-radius: 14px;
+  }
+
+  .booking-token-pill strong {
+    font-size: 1.4rem;
+  }
+
+  .booking-info-grid {
+    flex: 0 0 auto !important;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px 12px;
+    width: 100%;
+  }
+
+  .booking-info-label {
+    font-size: 0.72rem;
+    margin-bottom: 1px;
+  }
+
+  .booking-info-val {
+    font-size: 0.88rem;
+  }
+
+  .booking-right-col {
+    flex: 0 0 auto !important;
+    flex-direction: column;
+    align-items: stretch;
+    width: 100%;
+    gap: 8px;
+    margin-top: 2px;
+  }
+
+  .btn-show-qr {
+    width: 100%;
+    min-height: 44px;
+    font-size: 0.94rem;
+    padding: 8px 16px;
+  }
+
+  /* 3. Action Cards Grid Mobile */
+  .action-cards-grid {
+    grid-template-columns: 1fr;
+    gap: 10px;
+    margin-bottom: 14px;
+  }
+
+  .action-card {
+    padding: 14px 16px;
+    border-radius: 16px;
+    min-height: 60px;
+  }
+
+  /* 4. Stepper Card Mobile Layout */
+  .stepper-card {
+    padding: 16px;
+    border-radius: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin-bottom: 14px;
+  }
+
+  .stepper-desktop-view {
+    display: none;
+  }
+
+  .stepper-mobile-view {
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    padding-left: 4px;
+    width: 100%;
+  }
+
+  .stepper-mobile-step {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    position: relative;
+    padding-bottom: 18px;
+  }
+
+  .stepper-mobile-step:last-child {
+    padding-bottom: 0;
+  }
+
+  .stepper-mobile-line {
+    position: absolute;
+    left: 15px;
+    top: 30px;
+    bottom: -4px;
+    width: 2.5px;
+    background: #e2e8f0;
+    z-index: 0;
+  }
+
+  .stepper-mobile-line.completed {
+    background: #059669;
+  }
+
+  .stepper-mobile-indicator {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    font-size: 0.84rem;
+    font-weight: 800;
+    position: relative;
+    z-index: 1;
+  }
+
+  .stepper-mobile-content {
+    flex: 1;
+    min-width: 0;
+    padding-top: 3px;
+  }
+
+  .stepper-mobile-title {
+    font-size: 0.92rem;
+    font-weight: 800;
+    color: #111827;
+    line-height: 1.3;
+  }
+
+  .stepper-mobile-status {
+    font-size: 0.74rem;
+    font-weight: 700;
+    margin-top: 2px;
+    display: inline-block;
+  }
+
+  .mandi-notice-box {
+    padding: 14px;
+    border-radius: 14px;
+    gap: 12px;
+  }
+
+  /* 5. Bottom Three Columns Mobile */
+  .bottom-columns-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+
+  .info-column-card {
+    padding: 16px;
+    border-radius: 20px;
+  }
+
+  /* 6. Footer Bar Mobile */
+  .footer-bar-row {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+    margin-top: 4px;
+  }
+
+  .btn-audio-listen {
+    width: 100%;
+    justify-content: center;
+    min-height: 48px;
+    border-radius: 16px;
+  }
+
+  .footer-slogan {
+    justify-content: center;
+    text-align: center;
+    font-size: 0.88rem;
+    padding: 2px 0;
+  }
+
+  .footer-helpline-card {
+    width: 100%;
+    border-radius: 16px;
+    min-height: 48px;
+    padding: 8px 16px;
+  }
+}
+
+/* ==========================================================================
+   ULTRA-COMPACT MOBILE SCREENS (<= 360px)
+   ========================================================================== */
+@media (max-width: 360px) {
+  .farmer-portal-container {
+    padding: 0 8px;
+  }
+
+  .farmer-hero-card,
+  .booking-card,
+  .stepper-card,
+  .info-column-card {
+    padding: 12px;
+    border-radius: 16px;
+  }
+
+  .booking-info-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .procurement-stats-row {
+    gap: 6px;
+  }
+}
+
+/* ==========================================================================
+   DARK MODE & HIGH CONTRAST THEME STYLING
+   ========================================================================== */
+body.dark-mode .farmer-dashboard,
+body.high-contrast .farmer-dashboard {
+  background: #06150e !important;
+  color: #f1f5f9 !important;
+}
+
+body.dark-mode .farmer-hero-card,
+body.high-contrast .farmer-hero-card,
+body.dark-mode .booking-card,
+body.high-contrast .booking-card,
+body.dark-mode .action-card,
+body.high-contrast .action-card,
+body.dark-mode .stepper-card,
+body.high-contrast .stepper-card,
+body.dark-mode .info-column-card,
+body.high-contrast .info-column-card,
+body.dark-mode .mandi-notice-box,
+body.high-contrast .mandi-notice-box,
+body.dark-mode .footer-helpline-card,
+body.high-contrast .footer-helpline-card {
+  background: #0d1e17 !important;
+  border-color: #1a382a !important;
+  color: #f1f5f9 !important;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4) !important;
+}
+
+body.dark-mode .booking-info-val,
+body.high-contrast .booking-info-val,
+body.dark-mode .action-card h3,
+body.high-contrast .action-card h3,
+body.dark-mode .stepper-card h3,
+body.high-contrast .stepper-card h3,
+body.dark-mode .info-column-card h3,
+body.high-contrast .info-column-card h3,
+body.dark-mode .stepper-mobile-title,
+body.high-contrast .stepper-mobile-title {
+  color: #f8fafc !important;
+}
+
+body.dark-mode .booking-info-label,
+body.high-contrast .booking-info-label,
+body.dark-mode .action-card p,
+body.high-contrast .action-card p {
+  color: #94a3b8 !important;
+}
+
+body.dark-mode .activity-item-row,
+body.high-contrast .activity-item-row,
+body.dark-mode .nearby-center-row,
+body.high-contrast .nearby-center-row {
+  background: #11261e !important;
+  border-color: #1a382a !important;
+  color: #f1f5f9 !important;
+}
+
+body.dark-mode .activity-item-row strong,
+body.high-contrast .activity-item-row strong,
+body.dark-mode .nearby-center-name,
+body.high-contrast .nearby-center-name {
+  color: #f8fafc !important;
+}
+
+body.dark-mode .nearby-center-dist,
+body.high-contrast .nearby-center-dist {
+  color: #6ee7b7 !important;
+  background: #163828 !important;
+}
+
+body.dark-mode .farmer-hero-card h1,
+body.dark-mode .farmer-hero-card h2,
+body.high-contrast .farmer-hero-card h1,
+body.high-contrast .farmer-hero-card h2 {
+  color: #6ee7b7 !important;
+}
+
+body.dark-mode .farmer-hero-card p,
+body.high-contrast .farmer-hero-card p {
+  color: #cbd5e1 !important;
+}

@@ -19,6 +19,7 @@ import {
   Clock,
   Sparkles
 } from 'lucide-react';
+import { useLanguage } from '../context/LanguageContext';
 
 import operatorBadgeImg from '../assets/operator_console_badge.png';
 import operatorShedImg from '../assets/operator_banner_shed.png';
@@ -26,6 +27,7 @@ import tractorFieldImg from '../assets/tractor_field.png';
 
 export default function OperatorDashboard() {
   const navigate = useNavigate();
+  const { t, lang } = useLanguage();
 
   // Active Token state (Default matching prompt Section 12: WHT-037 serving at Counter 02)
   const [activeToken, setActiveToken] = useState({
@@ -72,6 +74,26 @@ export default function OperatorDashboard() {
     { tokenNo: 'WHT-040', farmerName: 'मनोज तिवारी (Manoj Tiwari)', crop: 'गेहूं (80 Q)', time: '01:55 PM', status: 'Arrived / In Queue' },
     { tokenNo: 'WHT-042', farmerName: 'रामेश्वर सिंह (Ramesh Singh)', crop: 'गेहूं (65 Q)', time: '02:00 PM', status: 'Waiting (4 Ahead)' }
   ]);
+
+  const [isRefreshing, setIsRefreshing] = useState(false);
+  const netKg = Math.max(0, Number(grossWeight || 0) - Number(tareWeight || 0));
+  const netQuintals = (netKg / 100).toFixed(2);
+  const mspRate = 2275;
+  const totalAmount = Math.round(Number(netQuintals) * mspRate);
+
+  const fetchBackendQueue = async () => {
+    setIsRefreshing(true);
+    try {
+      const res = await api.get('/operator/queue');
+      if (Array.isArray(res.data) && res.data.length > 0) {
+        setWaitingList(res.data);
+      }
+    } catch (_err) {
+      // Retain active queue state gracefully
+    } finally {
+      setTimeout(() => setIsRefreshing(false), 500);
+    }
+  };
 
   // Operational action handlers (Section 12)
   const handleCallNext = () => {
@@ -153,10 +175,10 @@ export default function OperatorDashboard() {
 
   return (
     <div style={{ background: 'transparent', minHeight: '90vh', padding: '20px 0 40px 0' }}>
-      <div className="portal-container" style={{ display: 'flex', gap: '20px', alignItems: 'flex-start' }}>
+      <div className="portal-container operator-dashboard-layout" style={{ display: 'flex', gap: '20px', alignItems: 'flex-start' }}>
         
         {/* ================= 1. LEFT COLUMN ================= */}
-        <div style={{ width: '220px', flexShrink: 0, display: 'flex', flexDirection: 'column', gap: '16px' }}>
+        <div className="operator-sidebar" style={{ width: '220px', flexShrink: 0, display: 'flex', flexDirection: 'column', gap: '16px' }}>
           
           <div style={{ 
             background: '#ffffff', 
@@ -216,7 +238,7 @@ export default function OperatorDashboard() {
               <img 
                 src={tractorFieldImg} 
                 alt="Green Fields" 
-                style={{ width: '100%', maxHeight: '160px', objectFit: 'contain', display: 'block' }}
+                style={{ width: '100%', maxHeight: '160px', objectFit: 'cover', borderRadius: '12px', display: 'block', boxShadow: '0 4px 12px rgba(0,0,0,0.06)' }}
               />
             </div>
           </div>
@@ -356,7 +378,7 @@ export default function OperatorDashboard() {
             </div>
 
             {/* 4 Capacity & Queue Metric Cards */}
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '12px', marginBottom: '14px' }}>
+            <div className="operator-kpi-grid">
               
               {/* Today's Total Capacity */}
               <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '12px', padding: '12px 14px' }}>
@@ -558,7 +580,7 @@ export default function OperatorDashboard() {
           </div>
 
           {/* Two Processing Columns: QC & Weighbridge */}
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+          <div className="operator-dual-panel">
             
             {/* Panel 1: Quality Check */}
             <div style={{ 
@@ -591,7 +613,7 @@ export default function OperatorDashboard() {
                 </div>
 
                 {/* Inputs Grid */}
-                <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr', gap: '12px', marginBottom: '12px' }}>
+                <div className="operator-inputs-subgrid">
                   {/* Moisture */}
                   <div>
                     <label style={{ display: 'block', fontSize: '0.76rem', color: '#64748b', fontWeight: 600, marginBottom: '4px' }}>
@@ -734,13 +756,14 @@ export default function OperatorDashboard() {
                 </div>
 
                 {/* Gross and Tare Inputs */}
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '12px' }}>
+                <div className="operator-inputs-subgrid">
                   <div>
                     <label style={{ display: 'block', fontSize: '0.76rem', color: '#64748b', fontWeight: 600, marginBottom: '4px' }}>
                       सकल वजन (Gross Kg)
                     </label>
                     <input 
                       type="number" 
+                      inputMode="numeric"
                       value={grossWeight}
                       onChange={(e) => setGrossWeight(e.target.value)}
                       style={{ 

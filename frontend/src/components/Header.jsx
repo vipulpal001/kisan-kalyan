@@ -5,6 +5,9 @@ import { useLanguage } from '../context/LanguageContext';
 import api from '../services/api';
 import { fetchWeatherForCoordinates } from '../services/weatherService';
 import { INDIAN_STATES_DISTRICTS, DEFAULT_LOCATION } from '../services/indianLocations';
+import MspRatesModal from './MspRatesModal';
+import DailyArrivalsModal from './DailyArrivalsModal';
+import WarehouseCapacityModal from './WarehouseCapacityModal';
 import '../styles/Header.css';
 
 import { 
@@ -42,7 +45,6 @@ import {
   Check,
   Menu,
   Navigation as NavIcon,
-  Sparkles,
   ExternalLink
 } from 'lucide-react';
 
@@ -72,6 +74,9 @@ export default function Header() {
 
   // Quick search directory
   const searchCatalog = [
+    { title: 'न्यूनतम समर्थन मूल्य (MSP) दरें 2025-26', action: 'msp', category: 'Services' },
+    { title: 'दैनिक मंडी आवक रिपोर्ट (Daily Mandi Arrivals Report)', action: 'arrivals', category: 'Reports' },
+    { title: 'ई-गोदाम व साइलो भंडारण आरक्षण (E-Godown Storage)', action: 'warehouse', category: 'Services' },
     { title: 'गेहूं खरीद स्लॉट बुक करें (Wheat Slot Booking)', path: '/farmer/book-slot', category: 'Services' },
     { title: 'सरसों एवं चना स्लॉट बुकिंग (Mustard & Gram Booking)', path: '/farmer/book-slot', category: 'Services' },
     { title: 'लाइव कतार स्थिति व टोकन (Live Queue Status)', path: '/farmer/queue', category: 'Queue' },
@@ -82,7 +87,7 @@ export default function Header() {
     { title: 'चुनार कृषि उपज मंडी समिति (Chunar APMC)', path: '/centers?q=Chunar', category: 'Centres' },
     { title: 'वाराणसी नवीन गल्ला मंडी (Varanasi Mandi)', path: '/centers?q=Varanasi', category: 'Centres' },
     { title: 'खन्ना एशिया अनाज मंडी (Khanna Mandi)', path: '/centers?q=Khanna', category: 'Centres' },
-    { title: 'न्यूनतम समर्थन मूल्य (MSP) दरें 2025-26', path: '/help#msp', category: 'Help' },
+    { title: 'गुणवत्ता एवं नमी मानक (Quality Standards FAQ)', path: '/help#quality', category: 'Help' },
     { title: 'किसान सहायता एवं अक्सर पूछे जाने वाले प्रश्न (Help & FAQ)', path: '/help', category: 'Help' },
     { title: 'मंडी ऑपरेटर कंसोल (Mandi Operator)', path: '/operator/dashboard', category: 'Operator' }
   ];
@@ -94,25 +99,57 @@ export default function Header() {
   // Popover States
   const [showNotifications, setShowNotifications] = useState(false);
   const [showProfileMenu, setShowProfileMenu] = useState(false);
+  const [showProcurementMenu, setShowProcurementMenu] = useState(false);
   const [showServicesMenu, setShowServicesMenu] = useState(false);
-  const [showReportsMenu, setShowReportsMenu] = useState(false);
   const [showResourcesMenu, setShowResourcesMenu] = useState(false);
   const [showLanguageDropdown, setShowLanguageDropdown] = useState(false);
   const [showLocationModal, setShowLocationModal] = useState(false);
   const [showDownloadModal, setShowDownloadModal] = useState(false);
   const [showMobileDrawer, setShowMobileDrawer] = useState(false);
+  
+  // Dedicated Feature Modals
+  const [showMspModal, setShowMspModal] = useState(false);
+  const [showArrivalsModal, setShowArrivalsModal] = useState(false);
+  const [showWarehouseModal, setShowWarehouseModal] = useState(false);
+
+  // PWA Install Prompt State
+  const [deferredInstallPrompt, setDeferredInstallPrompt] = useState(null);
+
+  useEffect(() => {
+    const handleBeforeInstall = (e) => {
+      e.preventDefault();
+      setDeferredInstallPrompt(e);
+    };
+    window.addEventListener('beforeinstallprompt', handleBeforeInstall);
+    return () => window.removeEventListener('beforeinstallprompt', handleBeforeInstall);
+  }, []);
+
+  const handleInstallPWA = async () => {
+    if (deferredInstallPrompt) {
+      deferredInstallPrompt.prompt();
+      const { outcome } = await deferredInstallPrompt.userChoice;
+      if (outcome === 'accepted') {
+        setShowDownloadModal(false);
+      }
+      setDeferredInstallPrompt(null);
+    } else {
+      alert(lang === 'hi' 
+        ? 'किसान कल्याण PWA आपके ब्राउज़र से सीधे इंस्टॉल हो सकता है: ब्राउज़र मेनू (⋮ या शेयर) पर जाएं और "Add to Home screen / ऐप इंस्टॉल करें" चुनें।' 
+        : 'To install Kisan Kalyan PWA: tap your browser menu (⋮ or Share) and select "Add to Home screen" or "Install App".');
+    }
+  };
 
   // Popover Refs for Click-Outside
   const notifRef = useRef(null);
   const profileRef = useRef(null);
+  const procurementRef = useRef(null);
   const servicesRef = useRef(null);
-  const reportsRef = useRef(null);
   const resourcesRef = useRef(null);
   const languageRef = useRef(null);
   const mobileLanguageRef = useRef(null);
 
   // Notifications List
-  const [notifications, setNotifications] = useState([
+  const [notifications, setNotifications] = useState(() => [
     {
       notificationId: 1,
       message: t('notifSlotConfirmed', 'आपका गेहूं खरीद स्लॉट 24 सितम्बर 2026, 02:00 PM – 03:00 PM के लिए आरक्षित है। टोकन: WHT-042'),
@@ -148,7 +185,7 @@ export default function Header() {
   const [selectedLocation, setSelectedLocation] = useState(() => {
     const saved = localStorage.getItem('kisan_user_location');
     if (saved) {
-      try { return JSON.parse(saved); } catch (e) {}
+      try { return JSON.parse(saved); } catch (_e) {}
     }
     return DEFAULT_LOCATION;
   });
@@ -220,12 +257,15 @@ export default function Header() {
         setShowLanguageDropdown(false);
         setShowNotifications(false);
         setShowProfileMenu(false);
+        setShowProcurementMenu(false);
         setShowServicesMenu(false);
-        setShowReportsMenu(false);
         setShowResourcesMenu(false);
         setShowLocationModal(false);
         setShowDownloadModal(false);
         setShowMobileDrawer(false);
+        setShowMspModal(false);
+        setShowArrivalsModal(false);
+        setShowWarehouseModal(false);
       }
     };
     window.addEventListener('keydown', handleKeyDown);
@@ -241,11 +281,11 @@ export default function Header() {
       if (profileRef.current && !profileRef.current.contains(e.target)) {
         setShowProfileMenu(false);
       }
+      if (procurementRef.current && !procurementRef.current.contains(e.target)) {
+        setShowProcurementMenu(false);
+      }
       if (servicesRef.current && !servicesRef.current.contains(e.target)) {
         setShowServicesMenu(false);
-      }
-      if (reportsRef.current && !reportsRef.current.contains(e.target)) {
-        setShowReportsMenu(false);
       }
       if (resourcesRef.current && !resourcesRef.current.contains(e.target)) {
         setShowResourcesMenu(false);
@@ -263,13 +303,6 @@ export default function Header() {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  // Fetch real notifications if backend is available
-  useEffect(() => {
-    if (user) {
-      fetchNotifications();
-    }
-  }, [user, location.pathname]);
-
   const fetchNotifications = async () => {
     try {
       const res = await api.get('/farmer/notifications');
@@ -278,15 +311,22 @@ export default function Header() {
         const unread = res.data.filter(n => !n.isRead).length;
         setUnreadCount(unread);
       }
-    } catch (e) {
+    } catch (_e) {
       // Fallback notifications are maintained
     }
   };
 
+  // Fetch real notifications if backend is available
+  useEffect(() => {
+    if (user) {
+      fetchNotifications();
+    }
+  }, [user, location.pathname]);
+
   const markAllRead = async () => {
     try {
       await api.put('/farmer/notifications/read-all');
-    } catch (e) {}
+    } catch (_e) {}
     setNotifications(prev => prev.map(n => ({ ...n, isRead: true })));
     setUnreadCount(0);
   };
@@ -294,7 +334,7 @@ export default function Header() {
   const markSingleRead = async (id) => {
     try {
       await api.put(`/farmer/notifications/${id}/read`);
-    } catch (e) {}
+    } catch (_e) {}
     setNotifications(prev => prev.map(n => n.notificationId === id ? ({ ...n, isRead: true }) : n));
     setUnreadCount(prev => Math.max(0, prev - 1));
   };
@@ -314,6 +354,19 @@ export default function Header() {
     }
   };
 
+  const handleSelectSearchItem = (item) => {
+    setIsSearchOpen(false);
+    if (item.action === 'msp') {
+      setShowMspModal(true);
+    } else if (item.action === 'arrivals') {
+      setShowArrivalsModal(true);
+    } else if (item.action === 'warehouse') {
+      setShowWarehouseModal(true);
+    } else if (item.path) {
+      navigate(item.path);
+    }
+  };
+
   const handleSearchKeyDown = (e) => {
     if (e.key === 'ArrowDown') {
       e.preventDefault();
@@ -324,9 +377,7 @@ export default function Header() {
     } else if (e.key === 'Enter') {
       e.preventDefault();
       if (searchSelectedIndex >= 0 && filteredSearchSuggestions[searchSelectedIndex]) {
-        const item = filteredSearchSuggestions[searchSelectedIndex];
-        setIsSearchOpen(false);
-        navigate(item.path);
+        handleSelectSearchItem(filteredSearchSuggestions[searchSelectedIndex]);
       } else {
         executeSearch(searchQuery);
       }
@@ -375,7 +426,7 @@ export default function Header() {
           setLocationFeedback('');
         }, 1200);
       },
-      (err) => {
+      (_err) => {
         setIsDetectingLocation(false);
         setLocationFeedback('स्थान की अनुमति नहीं मिली। कृपया सूची से अपना जिला चुनें।');
       },
@@ -402,7 +453,13 @@ export default function Header() {
   };
 
   const isOperatorRoute = location.pathname.startsWith('/operator');
-  const isHomeActive = location.pathname === '/' || location.pathname === '/farmer/dashboard';
+  const getHomeRoute = () => {
+    if (!user) return '/';
+    if (user.role === 'OPERATOR') return '/operator/dashboard';
+    if (user.role === 'ADMIN') return '/admin/dashboard';
+    return '/farmer/dashboard';
+  };
+  const isHomeActive = location.pathname === '/' || location.pathname === '/farmer/dashboard' || location.pathname === '/operator/dashboard' || location.pathname === '/admin/dashboard';
 
   // Weather Condition Display
   const weatherConditionText = t(weather.conditionKey, weather.condition);
@@ -568,7 +625,7 @@ export default function Header() {
       <div className="hero-banner">
         {/* Left: Brand Identity (Crisp Logo + Portal Title) */}
         <Link 
-          to={isOperatorRoute ? "/operator/dashboard" : "/farmer/dashboard"} 
+          to={getHomeRoute()} 
           className="hero-brand-container"
           title="Kisan Kalyan Portal Home"
           aria-label="Kisan Kalyan Portal Home"
@@ -629,7 +686,7 @@ export default function Header() {
             </button>
 
             {/* Language Selector Dropdown Pill */}
-            <div ref={languageRef} style={{ position: 'relative' }}>
+            <div ref={languageRef} style={{ position: 'relative', zIndex: showLanguageDropdown ? 400 : 'auto' }}>
               <button 
                 type="button"
                 onClick={() => setShowLanguageDropdown(prev => !prev)} 
@@ -808,7 +865,7 @@ export default function Header() {
             </button>
 
             {/* Notification Bell Pill with Unread Badge */}
-            <div ref={notifRef} style={{ position: 'relative' }}>
+            <div ref={notifRef} style={{ position: 'relative', zIndex: showNotifications ? 400 : 'auto' }}>
               <button 
                 type="button"
                 onClick={() => setShowNotifications(prev => !prev)} 
@@ -924,7 +981,7 @@ export default function Header() {
             </div>
 
             {/* Profile Pill with User Avatar */}
-            <div ref={profileRef} style={{ position: 'relative' }}>
+            <div ref={profileRef} style={{ position: 'relative', zIndex: showProfileMenu ? 400 : 'auto' }}>
               <button 
                 type="button"
                 onClick={() => setShowProfileMenu(prev => !prev)} 
@@ -957,10 +1014,10 @@ export default function Header() {
                 </div>
                 <div style={{ textAlign: 'left', lineHeight: 1.15 }}>
                   <div style={{ fontWeight: 800, fontSize: '0.8rem', color: '#1e293b' }}>
-                    {user?.name || user?.username || (lang === 'hi' ? 'किसान भाई' : 'Kisan')}
+                    {user ? (user?.name || user?.username || 'Kisan') : (lang === 'hi' ? 'लॉगिन करें' : 'Login')}
                   </div>
                   <div style={{ fontSize: '0.64rem', color: '#64748b' }}>
-                    {user?.role === 'OPERATOR' ? t('userRoleOperator', 'Mandi Operator') : t('userRoleFarmer', 'Farmer')}
+                    {user ? (user?.role === 'OPERATOR' ? t('userRoleOperator', 'Mandi Operator') : t('userRoleFarmer', 'Farmer')) : (lang === 'hi' ? 'अतिथि किसान' : 'Sign In / Register')}
                   </div>
                 </div>
                 <ChevronDown size={12} color="#64748b" aria-hidden="true" />
@@ -975,7 +1032,7 @@ export default function Header() {
                     position: 'absolute', 
                     top: '38px', 
                     right: '0', 
-                    width: '230px', 
+                    width: '240px', 
                     background: '#ffffff', 
                     borderRadius: '12px', 
                     boxShadow: '0 10px 30px rgba(0,0,0,0.12)', 
@@ -984,78 +1041,124 @@ export default function Header() {
                     overflow: 'hidden' 
                   }}
                 >
-                  <div style={{ padding: '12px 16px', background: '#f8fafc', borderBottom: '1px solid #e2e8f0' }}>
-                    <div style={{ fontSize: '0.86rem', fontWeight: 800, color: '#0f172a' }}>
-                      {user?.name || user?.username || (lang === 'hi' ? 'किसान भाई' : 'Kisan')}
+                  {!user ? (
+                    <div>
+                      <div style={{ padding: '12px 16px', background: '#f8fafc', borderBottom: '1px solid #e2e8f0' }}>
+                        <div style={{ fontSize: '0.86rem', fontWeight: 800, color: '#045d3f' }}>
+                          किसान कल्याण पोर्टल
+                        </div>
+                        <div style={{ fontSize: '0.72rem', color: '#64748b', marginTop: '2px' }}>
+                          स्लॉट बुकिंग व भुगतान स्थिति हेतु लॉगिन करें
+                        </div>
+                      </div>
+
+                      <div style={{ padding: '6px 0' }}>
+                        <Link 
+                          to="/login" 
+                          onClick={() => setShowProfileMenu(false)} 
+                          style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 16px', fontSize: '0.84rem', color: '#047857', fontWeight: 700, textDecoration: 'none' }}
+                        >
+                          <User size={15} color="#047857" />
+                          <span>लॉगिन करें (Sign In)</span>
+                        </Link>
+
+                        <Link 
+                          to="/register" 
+                          onClick={() => setShowProfileMenu(false)} 
+                          style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 16px', fontSize: '0.84rem', color: '#1e293b', fontWeight: 600, textDecoration: 'none' }}
+                        >
+                          <ExternalLink size={15} color="#2563eb" />
+                          <span>नया किसान पंजीकरण (Register)</span>
+                        </Link>
+
+                        <div style={{ borderTop: '1px solid #f1f5f9', margin: '4px 0' }}></div>
+
+                        <Link 
+                          to="/help" 
+                          onClick={() => setShowProfileMenu(false)} 
+                          style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '9px 16px', fontSize: '0.82rem', color: '#334155', textDecoration: 'none' }}
+                        >
+                          <HelpCircle size={15} color="#d97706" />
+                          <span>{t('helpFaq', 'Help & Support')}</span>
+                        </Link>
+                      </div>
                     </div>
-                    <div style={{ fontSize: '0.72rem', color: '#64748b', marginTop: '2px' }}>
-                      {user?.phone || user?.phoneNumber || ''} {user?.role ? `• ${user.role}` : ''}
+                  ) : (
+                    <div>
+                      <div style={{ padding: '12px 16px', background: '#f8fafc', borderBottom: '1px solid #e2e8f0' }}>
+                        <div style={{ fontSize: '0.86rem', fontWeight: 800, color: '#0f172a' }}>
+                          {user?.name || user?.username || (lang === 'hi' ? 'किसान भाई' : 'Kisan')}
+                        </div>
+                        <div style={{ fontSize: '0.72rem', color: '#64748b', marginTop: '2px' }}>
+                          {user?.phone || user?.phoneNumber || ''} {user?.role ? `• ${user.role}` : ''}
+                        </div>
+                      </div>
+
+                      <div style={{ padding: '6px 0' }}>
+                        <Link 
+                          to="/farmer/dashboard" 
+                          onClick={() => setShowProfileMenu(false)} 
+                          style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '9px 16px', fontSize: '0.82rem', color: '#334155', textDecoration: 'none' }}
+                        >
+                          <User size={15} color="#059669" />
+                          <span>{t('myProfile', 'My Profile')}</span>
+                        </Link>
+
+                        <Link 
+                          to="/farmer/queue" 
+                          onClick={() => setShowProfileMenu(false)} 
+                          style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '9px 16px', fontSize: '0.82rem', color: '#334155', textDecoration: 'none' }}
+                        >
+                          <FileText size={15} color="#0284c7" />
+                          <span>{t('liveQueueToken', 'Live Queue & Token')}</span>
+                        </Link>
+
+                        <div 
+                          onClick={() => {
+                            setShowProfileMenu(false);
+                            navigate(isOperatorRoute ? '/farmer/dashboard' : '/operator/dashboard');
+                          }}
+                          style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '9px 16px', fontSize: '0.82rem', color: '#047857', cursor: 'pointer', fontWeight: 700 }}
+                        >
+                          <Building2 size={15} color="#047857" />
+                          <span>{isOperatorRoute ? t('switchFarmer', 'Switch to Farmer View') : t('switchOperator', 'Switch to Operator View')}</span>
+                        </div>
+
+                        <Link 
+                          to="/help" 
+                          onClick={() => setShowProfileMenu(false)} 
+                          style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '9px 16px', fontSize: '0.82rem', color: '#334155', textDecoration: 'none' }}
+                        >
+                          <HelpCircle size={15} color="#d97706" />
+                          <span>{t('helpFaq', 'Help & Support')}</span>
+                        </Link>
+
+                        <div style={{ borderTop: '1px solid #f1f5f9', margin: '4px 0' }}></div>
+
+                        <button 
+                          type="button"
+                          onClick={handleLogout} 
+                          style={{ 
+                            width: '100%', 
+                            display: 'flex', 
+                            alignItems: 'center', 
+                            gap: '8px', 
+                            padding: '9px 16px', 
+                            fontSize: '0.82rem', 
+                            color: '#dc2626', 
+                            background: 'none', 
+                            border: 'none', 
+                            cursor: 'pointer', 
+                            textAlign: 'left', 
+                            fontWeight: 600 
+                          }}
+                        >
+                          <LogOut size={15} color="#dc2626" />
+                          <span>{t('logout', 'Logout')}</span>
+                        </button>
+                      </div>
                     </div>
-                  </div>
-
-                  <div style={{ padding: '6px 0' }}>
-                    <Link 
-                      to="/farmer/dashboard" 
-                      onClick={() => setShowProfileMenu(false)} 
-                      style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '9px 16px', fontSize: '0.82rem', color: '#334155', textDecoration: 'none' }}
-                    >
-                      <User size={15} color="#059669" />
-                      <span>{t('myProfile', 'My Profile')}</span>
-                    </Link>
-
-                    <Link 
-                      to="/farmer/queue" 
-                      onClick={() => setShowProfileMenu(false)} 
-                      style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '9px 16px', fontSize: '0.82rem', color: '#334155', textDecoration: 'none' }}
-                    >
-                      <FileText size={15} color="#0284c7" />
-                      <span>{t('liveQueueToken', 'Live Queue & Token')}</span>
-                    </Link>
-
-                    <div 
-                      onClick={() => {
-                        setShowProfileMenu(false);
-                        navigate(isOperatorRoute ? '/farmer/dashboard' : '/operator/dashboard');
-                      }}
-                      style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '9px 16px', fontSize: '0.82rem', color: '#047857', cursor: 'pointer', fontWeight: 700 }}
-                    >
-                      <Building2 size={15} color="#047857" />
-                      <span>{isOperatorRoute ? t('switchFarmer', 'Switch to Farmer View') : t('switchOperator', 'Switch to Operator View')}</span>
-                    </div>
-
-                    <Link 
-                      to="/help" 
-                      onClick={() => setShowProfileMenu(false)} 
-                      style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '9px 16px', fontSize: '0.82rem', color: '#334155', textDecoration: 'none' }}
-                    >
-                      <HelpCircle size={15} color="#d97706" />
-                      <span>{t('helpFaq', 'Help & Support')}</span>
-                    </Link>
-
-                    <div style={{ borderTop: '1px solid #f1f5f9', margin: '4px 0' }}></div>
-
-                    <button 
-                      type="button"
-                      onClick={handleLogout} 
-                      style={{ 
-                        width: '100%', 
-                        display: 'flex', 
-                        alignItems: 'center', 
-                        gap: '8px', 
-                        padding: '9px 16px', 
-                        fontSize: '0.82rem', 
-                        color: '#dc2626', 
-                        background: 'none', 
-                        border: 'none', 
-                        cursor: 'pointer', 
-                        textAlign: 'left', 
-                        fontWeight: 600 
-                      }}
-                    >
-                      <LogOut size={15} color="#dc2626" />
-                      <span>{t('logout', 'Logout')}</span>
-                    </button>
-                  </div>
+                  )}
                 </div>
               )}
             </div>
@@ -1158,8 +1261,7 @@ export default function Header() {
                         key={idx}
                         className={`search-flyout-item ${searchSelectedIndex === idx ? 'highlighted' : ''}`}
                         onClick={() => {
-                          setIsSearchOpen(false);
-                          navigate(item.path);
+                          handleSelectSearchItem(item);
                         }}
                       >
                         <Search size={13} color="#059669" />
@@ -1250,12 +1352,12 @@ export default function Header() {
           <span style={{ fontSize: '0.8rem', fontWeight: 700, marginLeft: '6px' }}>मेनू (Menu)</span>
         </button>
 
-        {/* Nav Tabs with Colorful Authentic Icons */}
+        {/* Nav Tabs with Clean Logical Grouping */}
         <div className="nav-tabs-wrapper main-nav-desktop-tabs">
           
-          {/* 1. Home Tab (Dark green active pill) */}
+          {/* 1. Home Tab */}
           <Link 
-            to={isOperatorRoute ? "/operator/dashboard" : "/farmer/dashboard"} 
+            to={getHomeRoute()} 
             className={`nav-tab-item ${isHomeActive ? 'active' : ''}`}
             aria-current={isHomeActive ? 'page' : undefined}
           >
@@ -1263,17 +1365,84 @@ export default function Header() {
             <span>{t('navHome', 'Home')}</span>
           </Link>
 
-          {/* 2. Book Slot */}
-          <Link 
-            to="/farmer/book-slot" 
-            className={`nav-tab-item ${location.pathname === '/farmer/book-slot' ? 'active' : ''}`}
-            aria-current={location.pathname === '/farmer/book-slot' ? 'page' : undefined}
-          >
-            <Calendar size={15} color={location.pathname === '/farmer/book-slot' ? '#ffffff' : '#2563eb'} />
-            <span>{t('navBookSlot', 'Book Slot')}</span>
-          </Link>
+          {/* 2. Procurement Dropdown ⌵ (Book Slot, Status, J-Form) */}
+          <div ref={procurementRef} style={{ position: 'relative' }}>
+            <button 
+              type="button"
+              onClick={() => {
+                setShowProcurementMenu(prev => !prev);
+                setShowServicesMenu(false);
+                setShowResourcesMenu(false);
+              }}
+              aria-haspopup="menu"
+              aria-expanded={showProcurementMenu}
+              className={`nav-tab-item ${location.pathname.startsWith('/farmer/book-slot') || location.pathname.startsWith('/farmer/procurement-status') || location.pathname.startsWith('/farmer/qr-pass') ? 'active' : ''}`}
+            >
+              <Calendar size={15} color={location.pathname.startsWith('/farmer/book-slot') || location.pathname.startsWith('/farmer/procurement-status') ? '#ffffff' : '#2563eb'} />
+              <span>{lang === 'hi' ? 'खरीद' : 'Procurement'}</span>
+              <ChevronDown size={12} color="currentColor" style={{ transform: showProcurementMenu ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s ease' }} />
+            </button>
 
-          {/* 3. Live Queue */}
+            {showProcurementMenu && (
+              <div 
+                role="menu"
+                className="nav-dropdown-menu"
+              >
+                <Link 
+                  to="/farmer/book-slot" 
+                  className="nav-menu-dropdown-item" 
+                  onClick={() => setShowProcurementMenu(false)}
+                  style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '10px' }}
+                >
+                  <Calendar size={16} color="#059669" />
+                  <div>
+                    <div style={{ fontWeight: 700, fontSize: '0.84rem', color: '#1e293b' }}>
+                      {lang === 'hi' ? 'स्लॉट बुक करें' : 'Book Procurement Slot'}
+                    </div>
+                    <div style={{ fontSize: '0.68rem', color: '#64748b' }}>
+                      {lang === 'hi' ? 'फसल तौल हेतु समय आरक्षित करें' : 'Reserve date & time for delivery'}
+                    </div>
+                  </div>
+                </Link>
+
+                <Link 
+                  to="/farmer/procurement-status" 
+                  className="nav-menu-dropdown-item" 
+                  onClick={() => setShowProcurementMenu(false)}
+                  style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '10px' }}
+                >
+                  <Package size={16} color="#d97706" />
+                  <div>
+                    <div style={{ fontWeight: 700, fontSize: '0.84rem', color: '#1e293b' }}>
+                      {lang === 'hi' ? 'खरीद स्थिति व पर्ची' : 'Procurement Status'}
+                    </div>
+                    <div style={{ fontSize: '0.68rem', color: '#64748b' }}>
+                      {lang === 'hi' ? 'तौल, नमी और आवक रिपोर्ट जांचें' : 'Track weighing & acceptance'}
+                    </div>
+                  </div>
+                </Link>
+
+                <Link 
+                  to="/farmer/qr-pass" 
+                  className="nav-menu-dropdown-item" 
+                  onClick={() => setShowProcurementMenu(false)}
+                  style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '10px' }}
+                >
+                  <FileText size={16} color="#7c3aed" />
+                  <div>
+                    <div style={{ fontWeight: 700, fontSize: '0.84rem', color: '#1e293b' }}>
+                      {lang === 'hi' ? 'डिजिटल जे-फॉर्म व टोकन' : 'Digital J-Form & QR Pass'}
+                    </div>
+                    <div style={{ fontSize: '0.68rem', color: '#64748b' }}>
+                      {lang === 'hi' ? 'गेट पास व अधिकृत बिक्री रसीद' : 'Download pass & official receipt'}
+                    </div>
+                  </div>
+                </Link>
+              </div>
+            )}
+          </div>
+
+          {/* 3. Live Queue (Direct Action Priority) */}
           <Link 
             to="/farmer/queue" 
             className={`nav-tab-item ${location.pathname === '/farmer/queue' ? 'active' : ''}`}
@@ -1283,17 +1452,7 @@ export default function Header() {
             <span>{t('navLiveQueue', 'Live Queue')}</span>
           </Link>
 
-          {/* 4. Procurement Status */}
-          <Link 
-            to="/farmer/procurement-status" 
-            className={`nav-tab-item ${location.pathname === '/farmer/procurement-status' ? 'active' : ''}`}
-            aria-current={location.pathname === '/farmer/procurement-status' ? 'page' : undefined}
-          >
-            <Package size={15} color={location.pathname === '/farmer/procurement-status' ? '#ffffff' : '#d97706'} />
-            <span>{t('navProcurementStatus', 'Procurement Status')}</span>
-          </Link>
-
-          {/* 5. Payments (DBT) */}
+          {/* 4. Payments (DBT) (Direct Action Priority) */}
           <Link 
             to="/farmer/payment" 
             className={`nav-tab-item ${location.pathname === '/farmer/payment' ? 'active' : ''}`}
@@ -1303,98 +1462,130 @@ export default function Header() {
             <span>{t('navPayments', 'Payments (DBT)')}</span>
           </Link>
 
-          {/* 6. Find Centres */}
-          <Link 
-            to="/centers" 
-            className={`nav-tab-item ${location.pathname === '/centers' ? 'active' : ''}`}
-            aria-current={location.pathname === '/centers' ? 'page' : undefined}
-          >
-            <MapPin size={15} color={location.pathname === '/centers' ? '#ffffff' : '#ec4899'} />
-            <span>{t('navFindCentres', 'Find Centres')}</span>
-          </Link>
-
-          {/* 7. Farmer Services ⌵ */}
+          {/* 5. Services Dropdown ⌵ (Find Centres, Farmer Services, Reports) */}
           <div ref={servicesRef} style={{ position: 'relative' }}>
             <button 
               type="button"
-              onClick={() => setShowServicesMenu(prev => !prev)}
+              onClick={() => {
+                setShowServicesMenu(prev => !prev);
+                setShowProcurementMenu(false);
+                setShowResourcesMenu(false);
+              }}
               aria-haspopup="menu"
               aria-expanded={showServicesMenu}
-              className="nav-tab-item"
+              className={`nav-tab-item ${location.pathname === '/centers' ? 'active' : ''}`}
             >
-              <Sprout size={15} color="#10b981" />
-              <span>{t('navFarmerServices', 'Farmer Services')}</span>
-              <ChevronDown size={12} color="#6b7280" />
+              <Sprout size={15} color={location.pathname === '/centers' ? '#ffffff' : '#10b981'} />
+              <span>{lang === 'hi' ? 'सेवाएं' : 'Services'}</span>
+              <ChevronDown size={12} color="currentColor" style={{ transform: showServicesMenu ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s ease' }} />
             </button>
 
             {showServicesMenu && (
               <div 
                 role="menu"
-                style={{ position: 'absolute', top: '34px', left: '0', width: '250px', background: '#ffffff', borderRadius: '12px', boxShadow: '0 8px 24px rgba(0,0,0,0.12)', border: '1px solid #e2e8f0', zIndex: 200, padding: '8px 0' }}
+                className="nav-dropdown-menu"
+                style={{ width: '300px' }}
               >
-                <div onClick={() => { setShowServicesMenu(false); navigate('/farmer/book-slot'); }} style={{ padding: '8px 16px', fontSize: '0.82rem', color: '#334155', cursor: 'pointer' }}>🌾 {t('serviceMspRates', 'MSP Rates 2025-26')}</div>
-                <div onClick={() => { setShowServicesMenu(false); navigate('/help#quality'); }} style={{ padding: '8px 16px', fontSize: '0.82rem', color: '#334155', cursor: 'pointer' }}>🧪 {t('serviceQualityFaq', 'Quality Standards FAQ')}</div>
-                <div onClick={() => { setShowServicesMenu(false); navigate('/farmer/qr-pass'); }} style={{ padding: '8px 16px', fontSize: '0.82rem', color: '#334155', cursor: 'pointer' }}>📱 {t('serviceQrPass', 'Digital Token & QR Pass')}</div>
-                <div onClick={() => { setShowServicesMenu(false); navigate('/farmer/book-slot'); }} style={{ padding: '8px 16px', fontSize: '0.82rem', color: '#334155', cursor: 'pointer' }}>🏛️ {t('serviceStorageBooking', 'E-Godown Storage')}</div>
+                <Link 
+                  to="/centers" 
+                  className="nav-menu-dropdown-item" 
+                  onClick={() => setShowServicesMenu(false)}
+                  style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '10px' }}
+                >
+                  <MapPin size={16} color="#e11d48" />
+                  <div>
+                    <div style={{ fontWeight: 700, fontSize: '0.84rem', color: '#1e293b' }}>
+                      {lang === 'hi' ? 'निकटतम खरीद केंद्र खोजें' : 'Find Nearest Centres'}
+                    </div>
+                    <div style={{ fontSize: '0.68rem', color: '#64748b' }}>
+                      {lang === 'hi' ? 'मंडी, केंद्र व साइलो क्षमता जांचें' : 'Explore APMCs & available capacity'}
+                    </div>
+                  </div>
+                </Link>
+
+                <div 
+                  className="nav-menu-dropdown-item" 
+                  onClick={() => { setShowServicesMenu(false); setShowMspModal(true); }}
+                  style={{ display: 'flex', alignItems: 'center', gap: '10px' }}
+                >
+                  <Coins size={16} color="#059669" />
+                  <div>
+                    <div style={{ fontWeight: 700, fontSize: '0.84rem', color: '#1e293b' }}>
+                      {t('serviceMspRates', 'MSP Rates 2025-26')}
+                    </div>
+                    <div style={{ fontSize: '0.68rem', color: '#64748b' }}>
+                      {lang === 'hi' ? 'रबी व खरीफ फसलों का न्यूनतम समर्थन मूल्य' : 'Official government support prices'}
+                    </div>
+                  </div>
+                </div>
+
+                <div 
+                  className="nav-menu-dropdown-item" 
+                  onClick={() => { setShowServicesMenu(false); setShowWarehouseModal(true); }}
+                  style={{ display: 'flex', alignItems: 'center', gap: '10px' }}
+                >
+                  <Building2 size={16} color="#0284c7" />
+                  <div>
+                    <div style={{ fontWeight: 700, fontSize: '0.84rem', color: '#1e293b' }}>
+                      {t('serviceStorageBooking', 'E-Godown Storage')}
+                    </div>
+                    <div style={{ fontSize: '0.68rem', color: '#64748b' }}>
+                      {lang === 'hi' ? 'साइलो व सुरक्षित भंडारण आरक्षण' : 'Warehouse & silo space booking'}
+                    </div>
+                  </div>
+                </div>
+
+                <div 
+                  className="nav-menu-dropdown-item" 
+                  onClick={() => { setShowServicesMenu(false); setShowArrivalsModal(true); }}
+                  style={{ display: 'flex', alignItems: 'center', gap: '10px' }}
+                >
+                  <BarChart3 size={16} color="#d97706" />
+                  <div>
+                    <div style={{ fontWeight: 700, fontSize: '0.84rem', color: '#1e293b' }}>
+                      {t('reportDailyArrival', 'Daily Mandi Arrivals Report')}
+                    </div>
+                    <div style={{ fontSize: '0.68rem', color: '#64748b' }}>
+                      {lang === 'hi' ? 'मंडी अनुसार दैनिक आवक व दरें' : 'Live daily commodity volume'}
+                    </div>
+                  </div>
+                </div>
               </div>
             )}
           </div>
 
-          {/* 8. Reports ⌵ */}
-          <div ref={reportsRef} style={{ position: 'relative' }}>
-            <button 
-              type="button"
-              onClick={() => setShowReportsMenu(prev => !prev)}
-              aria-haspopup="menu"
-              aria-expanded={showReportsMenu}
-              className="nav-tab-item"
-            >
-              <BarChart3 size={15} color="#0284c7" />
-              <span>{t('navReports', 'Reports')}</span>
-              <ChevronDown size={12} color="#6b7280" />
-            </button>
-
-            {showReportsMenu && (
-              <div 
-                role="menu"
-                style={{ position: 'absolute', top: '34px', left: '0', width: '260px', background: '#ffffff', borderRadius: '12px', boxShadow: '0 8px 24px rgba(0,0,0,0.12)', border: '1px solid #e2e8f0', zIndex: 200, padding: '8px 0' }}
-              >
-                <div onClick={() => { setShowReportsMenu(false); navigate('/operator/dashboard'); }} style={{ padding: '8px 16px', fontSize: '0.82rem', color: '#334155', cursor: 'pointer' }}>📊 {t('reportDailyArrival', 'Daily Mandi Arrivals')}</div>
-                <div onClick={() => { setShowReportsMenu(false); navigate('/admin/dashboard'); }} style={{ padding: '8px 16px', fontSize: '0.82rem', color: '#334155', cursor: 'pointer' }}>🏛️ {t('reportWarehouseStatus', 'Warehouse Capacity')}</div>
-                <div onClick={() => { setShowReportsMenu(false); navigate('/farmer/payment'); }} style={{ padding: '8px 16px', fontSize: '0.82rem', color: '#334155', cursor: 'pointer' }}>💳 {t('reportDbtSummary', 'DBT Payment Analytics')}</div>
-                <div onClick={() => { setShowReportsMenu(false); navigate('/help#audit'); }} style={{ padding: '8px 16px', fontSize: '0.82rem', color: '#334155', cursor: 'pointer' }}>📑 {t('reportAuditLog', 'Audit & Transparency')}</div>
-              </div>
-            )}
-          </div>
-
-          {/* 9. Resources ⌵ */}
+          {/* 6. Resources Dropdown ⌵ */}
           <div ref={resourcesRef} style={{ position: 'relative' }}>
             <button 
               type="button"
-              onClick={() => setShowResourcesMenu(prev => !prev)}
+              onClick={() => {
+                setShowResourcesMenu(prev => !prev);
+                setShowProcurementMenu(false);
+                setShowServicesMenu(false);
+              }}
               aria-haspopup="menu"
               aria-expanded={showResourcesMenu}
               className="nav-tab-item"
             >
               <BookOpen size={15} color="#3b82f6" />
               <span>{t('navResources', 'Resources')}</span>
-              <ChevronDown size={12} color="#6b7280" />
+              <ChevronDown size={12} color="currentColor" style={{ transform: showResourcesMenu ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s ease' }} />
             </button>
 
             {showResourcesMenu && (
               <div 
                 role="menu"
-                style={{ position: 'absolute', top: '34px', left: '0', width: '250px', background: '#ffffff', borderRadius: '12px', boxShadow: '0 8px 24px rgba(0,0,0,0.12)', border: '1px solid #e2e8f0', zIndex: 200, padding: '8px 0' }}
+                className="nav-dropdown-menu"
               >
-                <div onClick={() => { setShowResourcesMenu(false); navigate('/help'); }} style={{ padding: '8px 16px', fontSize: '0.82rem', color: '#334155', cursor: 'pointer' }}>📖 {t('resourceFarmerGuide', 'Step-by-step Guide')}</div>
-                <div onClick={() => { setShowResourcesMenu(false); navigate('/help#weighment'); }} style={{ padding: '8px 16px', fontSize: '0.82rem', color: '#334155', cursor: 'pointer' }}>⚖️ {t('resourceWeighRules', 'Electronic Weigh Regulations')}</div>
-                <div onClick={() => { setShowResourcesMenu(false); navigate('/help#grievance'); }} style={{ padding: '8px 16px', fontSize: '0.82rem', color: '#334155', cursor: 'pointer' }}>🛡️ {t('resourceDisputeRedressal', 'Grievance Protocol')}</div>
-                <div onClick={() => { setShowResourcesMenu(false); navigate('/help#faq'); }} style={{ padding: '8px 16px', fontSize: '0.82rem', color: '#334155', cursor: 'pointer' }}>❓ {t('resourceFaqPdf', 'FAQ (PDF Guide)')}</div>
+                <div className="nav-menu-dropdown-item" onClick={() => { setShowResourcesMenu(false); navigate('/help#guide'); }}>📖 {t('resourceFarmerGuide', 'Step-by-step Guide')}</div>
+                <div className="nav-menu-dropdown-item" onClick={() => { setShowResourcesMenu(false); navigate('/help#weighment'); }}>⚖️ {t('resourceWeighRules', 'Electronic Weigh Regulations')}</div>
+                <div className="nav-menu-dropdown-item" onClick={() => { setShowResourcesMenu(false); navigate('/help#grievance'); }}>🛡️ {t('resourceDisputeRedressal', 'Grievance Protocol')}</div>
+                <div className="nav-menu-dropdown-item" onClick={() => { setShowResourcesMenu(false); navigate('/help#faq'); }}>❓ {t('resourceFaqPdf', 'FAQ (PDF Guide)')}</div>
               </div>
             )}
           </div>
 
-          {/* 10. Help & Support */}
+          {/* 7. Help & Support Tab */}
           <Link 
             to="/help" 
             className={`nav-tab-item ${location.pathname === '/help' ? 'active' : ''}`}
@@ -1530,63 +1721,68 @@ export default function Header() {
           MOBILE PHONE DEDICATED HEADER (Shown only on phone / screens <= 992px)
       ========================================================================= */}
       <div className="mobile-header-tiers">
-        {/* Tier 1: Compact Gov Strip */}
+        {/* Tier 1: Micro Gov Strip */}
         <div className="mobile-top-bar">
           <div className="mobile-top-left">
+            <span className="mobile-top-flag-pip"></span>
             <img 
               src="/emblem_of_india_gold.svg" 
               alt="Ashoka Emblem" 
               className="mobile-top-emblem" 
             />
-            <span className="mobile-top-gov-text">भारत सरकार | कृषि मंत्रालय</span>
+            <span className="mobile-top-gov-text">{t('govIndia', 'भारत सरकार')} | {t('ministryAgri', 'कृषि मंत्रालय')}</span>
           </div>
           <div className="mobile-top-right">
             <a href="tel:18001801551" className="mobile-top-tel" title="हेल्पलाइन 1800-180-1551">
               <PhoneCall size={11} /> 1800-180-1551
             </a>
-            <button 
-              type="button" 
-              onClick={() => setShowLocationModal(true)} 
-              className="mobile-top-loc"
-              title="स्थान बदलें"
-            >
-              <MapPin size={11} color="#fef08a" />
-              <span>{selectedLocation.district}</span>
-            </button>
           </div>
         </div>
 
-        {/* Tier 2: Sticky Brand & Action Header */}
+        {/* Tier 2: Sleek Compact Main Bar: [☰] [Kisan Kalyan] [🌐] [🌙] [🔔] [Profile] */}
         <div className="mobile-main-bar">
-          <Link 
-            to={isOperatorRoute ? "/operator/dashboard" : "/farmer/dashboard"} 
-            className="mobile-brand-link"
-          >
-            <img 
-              src="/kisan_kalyan_official_logo.png" 
-              alt="Kisan Kalyan Logo" 
-              className="mobile-brand-logo"
-            />
-            <div className="mobile-brand-info">
-              <strong className="mobile-brand-heading">{t('portalTitle', 'किसान कल्याण')}</strong>
-              <span className="mobile-brand-sub">{t('portalSub', 'Smart Procurement')}</span>
-            </div>
-          </Link>
+          <div className="mobile-bar-left">
+            {/* Hamburger Menu Toggle [☰] */}
+            <button 
+              type="button" 
+              onClick={() => setShowMobileDrawer(true)} 
+              className="mobile-icon-btn mobile-hamburger-btn"
+              aria-label="Open Navigation Menu"
+            >
+              <Menu size={20} />
+            </button>
+
+            {/* Kisan Kalyan Brand Logo & Name */}
+            <Link 
+              to={getHomeRoute()} 
+              className="mobile-brand-link"
+              aria-label="Kisan Kalyan Home"
+            >
+              <img 
+                src="/kisan_kalyan_official_logo.png" 
+                alt="Kisan Kalyan Logo" 
+                className="mobile-brand-logo"
+              />
+              <div className="mobile-brand-info">
+                <strong className="mobile-brand-heading">{t('portalTitle', 'किसान कल्याण')}</strong>
+                <span className="mobile-brand-sub">{t('portalSub', 'स्मार्ट खरीद पोर्टल')}</span>
+              </div>
+            </Link>
+          </div>
 
           <div className="mobile-header-actions">
-            {/* Language Switcher */}
+            {/* Language Switcher [🌐] */}
             <div ref={mobileLanguageRef} style={{ position: 'relative' }}>
               <button 
                 type="button" 
                 onClick={() => setShowLanguageDropdown(prev => !prev)}
-                className="mobile-action-pill mobile-lang-pill"
+                className="mobile-icon-btn mobile-lang-pill"
                 aria-label="Change Language"
                 aria-haspopup="listbox"
                 aria-expanded={showLanguageDropdown}
               >
-                <Globe size={13} color="#045d3f" />
-                <span>{currentLanguage?.code?.toUpperCase() || 'HI'}</span>
-                <ChevronDown size={10} color="#64748b" />
+                <Globe size={16} />
+                <span className="mobile-lang-code">{currentLanguage?.code?.toUpperCase() || 'HI'}</span>
               </button>
 
               {showLanguageDropdown && (
@@ -1594,24 +1790,10 @@ export default function Header() {
                   role="listbox" 
                   aria-label="Available Indian Languages"
                   className="mobile-lang-dropdown"
-                  style={{
-                    position: 'absolute',
-                    top: '34px',
-                    right: 0,
-                    width: '210px',
-                    maxHeight: '300px',
-                    overflowY: 'auto',
-                    background: '#ffffff',
-                    borderRadius: '14px',
-                    boxShadow: '0 12px 32px rgba(0,0,0,0.22)',
-                    border: '1.5px solid #a7f3d0',
-                    zIndex: 9999,
-                    padding: '6px'
-                  }}
                 >
-                  <div style={{ padding: '6px 10px', fontSize: '0.72rem', fontWeight: 800, color: '#045d3f', borderBottom: '1px solid #f1f5f9', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <div className="mobile-lang-dropdown-header">
                     <span>भाषा / Language</span>
-                    <span style={{ fontSize: '0.64rem', color: '#64748b' }}>13 Languages</span>
+                    <span>13 Languages</span>
                   </div>
                   {supportedLanguages.map(item => (
                     <button
@@ -1621,26 +1803,11 @@ export default function Header() {
                         setLang(item.code);
                         setShowLanguageDropdown(false);
                       }}
-                      style={{
-                        width: '100%',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'space-between',
-                        padding: '8px 10px',
-                        borderRadius: '8px',
-                        background: lang === item.code ? '#ecfdf5' : 'transparent',
-                        color: lang === item.code ? '#065f46' : '#1e293b',
-                        fontWeight: lang === item.code ? 800 : 500,
-                        border: 'none',
-                        cursor: 'pointer',
-                        textAlign: 'left',
-                        fontSize: '0.82rem',
-                        margin: '2px 0'
-                      }}
+                      className={`mobile-lang-opt ${lang === item.code ? 'active' : ''}`}
                     >
                       <div>
-                        <div>{item.name}</div>
-                        <div style={{ fontSize: '0.65rem', color: '#64748b' }}>{item.englishName}</div>
+                        <div style={{ fontWeight: lang === item.code ? 800 : 600 }}>{item.name}</div>
+                        <div style={{ fontSize: '0.66rem', color: '#64748b' }}>{item.englishName}</div>
                       </div>
                       {lang === item.code && <Check size={14} color="#059669" strokeWidth={3} />}
                     </button>
@@ -1649,101 +1816,90 @@ export default function Header() {
               )}
             </div>
 
-            {/* Dark Mode Moon */}
+            {/* Dark Mode Moon/Sun [🌙] */}
             <button 
               type="button"
               onClick={toggleHighContrast}
-              className="mobile-action-btn"
+              className="mobile-icon-btn mobile-theme-btn"
               title={highContrast ? "Light Mode" : "Dark Mode"}
               aria-label="Toggle Theme"
             >
-              {highContrast ? <Sun size={15} color="#38bdf8" /> : <Moon size={15} color="#1e293b" />}
+              {highContrast ? <Sun size={17} color="#38bdf8" /> : <Moon size={17} />}
             </button>
 
-            {/* Notifications Bell */}
-            <button 
-              type="button"
-              onClick={() => setShowNotifications(prev => !prev)}
-              className="mobile-action-btn"
-              title="Notifications"
-              aria-label="Notifications"
-            >
-              <Bell size={15} color="#1e293b" />
-              {unreadCount > 0 && <span className="mobile-bell-badge">{unreadCount}</span>}
-            </button>
-
-            {/* Hamburger Menu Toggle */}
-            <button 
-              type="button" 
-              onClick={() => setShowMobileDrawer(true)} 
-              className="mobile-menu-pill"
-              aria-label="Open Navigation Menu"
-            >
-              <Menu size={16} />
-              <span>{t('mobileMenu', 'मेनू')}</span>
-            </button>
-          </div>
-        </div>
-
-        {/* Tier 3: Compact Search Bar with Weather Chip */}
-        <div className="mobile-search-strip">
-          <div className="mobile-search-box">
-            <button 
-              type="button" 
-              onClick={() => executeSearch(searchQuery)}
-              className="mobile-search-submit"
-              aria-label="Search"
-            >
-              <Search size={14} color="#045d3f" />
-            </button>
-            <input 
-              type="text"
-              value={searchQuery}
-              onFocus={() => setIsSearchOpen(true)}
-              onChange={(e) => {
-                setSearchQuery(e.target.value);
-                setIsSearchOpen(true);
-                setSearchSelectedIndex(-1);
-              }}
-              onKeyDown={handleSearchKeyDown}
-              placeholder={t('searchPlaceholder', 'केंद्र, फसल, योजना खोजें...')}
-              className="mobile-search-text-input"
-            />
-            {searchQuery && (
+            {/* Notifications Bell [🔔] with Badge */}
+            <div style={{ position: 'relative' }}>
               <button 
                 type="button" 
-                onClick={() => setSearchQuery('')}
-                className="mobile-search-clear-btn"
-                aria-label="Clear Search text"
+                onClick={() => setShowNotifications(prev => !prev)}
+                className="mobile-icon-btn mobile-notif-btn"
+                title="Notifications"
+                aria-label="Notifications"
               >
-                <X size={12} />
+                <Bell size={17} />
+                {unreadCount > 0 && <span className="mobile-bell-badge">{unreadCount}</span>}
               </button>
-            )}
-          </div>
 
-          <button 
-            type="button"
-            onClick={() => setShowLocationModal(true)}
-            className="mobile-weather-chip"
-            title={`${selectedLocation.district} Weather: ${weather.temp}°C`}
-          >
-            <span>{weather.emoji}</span>
-            <span style={{ fontWeight: 800 }}>{weather.temp}°C</span>
-          </button>
-        </div>
+              {/* Mobile Notification Popover */}
+              {showNotifications && (
+                <div className="mobile-notifications-flyout" role="dialog" aria-label="Notifications">
+                  <div className="mobile-notif-header">
+                    <span style={{ fontWeight: 800, fontSize: '0.86rem' }}>
+                      {t('notifications', 'सूचनाएं')} ({unreadCount})
+                    </span>
+                    {unreadCount > 0 && (
+                      <button 
+                        type="button"
+                        onClick={markAllRead} 
+                        style={{ background: 'none', border: 'none', color: '#059669', fontSize: '0.74rem', fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '3px' }}
+                      >
+                        <CheckCheck size={13} /> {t('markAllRead', 'सभी पढ़ें')}
+                      </button>
+                    )}
+                  </div>
+                  <div className="mobile-notif-list">
+                    {notifications.map((n) => (
+                      <div 
+                        key={n.notificationId} 
+                        onClick={() => markSingleRead(n.notificationId)}
+                        className={`mobile-notif-item ${!n.isRead ? 'unread' : ''}`}
+                      >
+                        <div style={{ fontSize: '0.8rem', lineHeight: 1.4, color: !n.isRead ? '#0f291e' : '#4b5563', fontWeight: !n.isRead ? 700 : 400 }}>
+                          {n.message}
+                        </div>
+                        <div style={{ fontSize: '0.66rem', color: '#94a3b8', marginTop: '4px' }}>
+                          {new Date(n.sentAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
 
-        {/* Tier 4: Compact Announcement Ticker */}
-        <div className="mobile-ticker-strip">
-          <div className="mobile-ticker-tag">
-            <Megaphone size={11} />
-            <span>{t('mobileUpdates', 'अपडेट')}</span>
-          </div>
-          <div className="mobile-ticker-content">
-            <span>{tickerItems[tickerIndex] || tickerItems[0]}</span>
-          </div>
-          <div className="mobile-ticker-controls">
-            <button type="button" onClick={prevTicker} aria-label="Previous"><ChevronLeft size={12} /></button>
-            <button type="button" onClick={nextTicker} aria-label="Next"><ChevronRight size={12} /></button>
+            {/* Profile / Account [👤] */}
+            <button 
+              type="button"
+              onClick={() => {
+                if (!user) {
+                  navigate('/login');
+                } else {
+                  window.dispatchEvent(new CustomEvent('open-mobile-profile'));
+                }
+              }}
+              className="mobile-icon-btn mobile-profile-btn"
+              title={user ? (user.name || 'Profile') : 'Login'}
+              aria-label="Farmer Profile or Login"
+              style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}
+            >
+              {user ? (
+                <div className="mobile-avatar-circle">
+                  {(user.name ? user.name[0] : 'U').toUpperCase()}
+                </div>
+              ) : (
+                <User size={17} />
+              )}
+            </button>
           </div>
         </div>
       </div>
@@ -1773,7 +1929,7 @@ export default function Header() {
 
             <div style={{ padding: '16px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
               <Link 
-                to="/farmer/dashboard" 
+                to={getHomeRoute()} 
                 onClick={() => setShowMobileDrawer(false)}
                 style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '10px 14px', borderRadius: '8px', background: isHomeActive ? '#ecfdf5' : '#ffffff', color: '#045d3f', textDecoration: 'none', fontWeight: 700 }}
               >
@@ -1814,6 +1970,46 @@ export default function Header() {
               >
                 <MapPin size={18} color="#ec4899" /> {t('navFindCentres', 'Find Centres')}
               </Link>
+
+              <div style={{ borderTop: '1px solid #e2e8f0', margin: '4px 0' }}></div>
+
+              {/* Farmer Services & Reports in Mobile Drawer */}
+              <button
+                type="button"
+                onClick={() => {
+                  setShowMobileDrawer(false);
+                  setShowMspModal(true);
+                }}
+                style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '10px 14px', borderRadius: '8px', background: '#f0fdf4', border: '1px solid #bbf7d0', color: '#065f46', fontWeight: 700, cursor: 'pointer', textAlign: 'left', width: '100%' }}
+              >
+                <span style={{ fontSize: '1.1rem' }}>🌾</span>
+                <span>{t('serviceMspRates', 'MSP Rates 2025-26')}</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => {
+                  setShowMobileDrawer(false);
+                  setShowArrivalsModal(true);
+                }}
+                style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '10px 14px', borderRadius: '8px', background: '#f0f9ff', border: '1px solid #bae6fd', color: '#0369a1', fontWeight: 700, cursor: 'pointer', textAlign: 'left', width: '100%' }}
+              >
+                <span style={{ fontSize: '1.1rem' }}>📊</span>
+                <span>{t('reportDailyArrival', 'Daily Mandi Arrivals')}</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => {
+                  setShowMobileDrawer(false);
+                  setShowWarehouseModal(true);
+                }}
+                style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '10px 14px', borderRadius: '8px', background: '#f8fafc', border: '1px solid #e2e8f0', color: '#334155', fontWeight: 700, cursor: 'pointer', textAlign: 'left', width: '100%' }}
+              >
+                <span style={{ fontSize: '1.1rem' }}>🏛️</span>
+                <span>{t('serviceStorageBooking', 'E-Godown Storage')}</span>
+              </button>
+
               <Link 
                 to="/help" 
                 onClick={() => setShowMobileDrawer(false)}
@@ -1854,6 +2050,19 @@ export default function Header() {
               >
                 <MapPin size={18} color="#059669" />
                 <span>{t('changeLocation', 'स्थान बदलें')}: {selectedLocation.displayName}</span>
+              </button>
+
+              {/* Theme Toggle in Mobile Drawer */}
+              <button
+                type="button"
+                onClick={toggleHighContrast}
+                style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 14px', borderRadius: '8px', background: '#f8fafc', border: '1px solid #e2e8f0', color: '#1e293b', fontWeight: 700, cursor: 'pointer', textAlign: 'left' }}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                  {highContrast ? <Sun size={18} color="#38bdf8" /> : <Moon size={18} color="#475569" />}
+                  <span>{highContrast ? (lang === 'hi' ? 'लाइट थीम (Light Mode)' : 'Light Theme') : (lang === 'hi' ? 'डार्क थीम (Dark Mode)' : 'Dark Theme')}</span>
+                </div>
+                <span style={{ fontSize: '0.75rem', color: '#047857', fontWeight: 800 }}>{highContrast ? 'ON' : 'OFF'}</span>
               </button>
 
               <button
@@ -1900,6 +2109,13 @@ export default function Header() {
               {t('downloadAppSub', 'Book slots anytime, track live queues on your mobile, and download official digital J-Forms instantly.')}
             </p>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+              <button 
+                type="button"
+                onClick={handleInstallPWA}
+                style={{ background: '#045d3f', color: '#ffffff', border: 'none', borderRadius: '12px', padding: '12px', fontWeight: 800, fontSize: '0.94rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', cursor: 'pointer', boxShadow: '0 4px 12px rgba(4, 93, 63, 0.25)' }}
+              >
+                <Smartphone size={18} /> {lang === 'hi' ? '📲 वेब ऐप (PWA) सीधे इंस्टॉल करें' : '📲 Install Web App (PWA)'}
+              </button>
               <button 
                 type="button"
                 onClick={() => { 
@@ -2052,6 +2268,24 @@ export default function Header() {
           </div>
         </div>
       )}
+
+      {/* Dedicated MSP Rates Modal */}
+      <MspRatesModal 
+        isOpen={showMspModal} 
+        onClose={() => setShowMspModal(false)} 
+      />
+
+      {/* Dedicated Daily Mandi Arrivals Report Modal */}
+      <DailyArrivalsModal 
+        isOpen={showArrivalsModal} 
+        onClose={() => setShowArrivalsModal(false)} 
+      />
+
+      {/* Dedicated Warehouse & Storage Capacity Modal */}
+      <WarehouseCapacityModal 
+        isOpen={showWarehouseModal} 
+        onClose={() => setShowWarehouseModal(false)} 
+      />
 
     </header>
   );

@@ -49,7 +49,7 @@ export default function RegisterPage() {
 
   return (
     <div className="portal-container" style={{ padding: '40px 0' }}>
-      <div className="kisan-card" style={{ maxWidth: '680px', margin: '0 auto', padding: '36px' }}>
+      <div className="kisan-card register-card" style={{ maxWidth: '680px', margin: '0 auto' }}>
         <div style={{ textAlign: 'center', marginBottom: '28px' }}>
           <div style={{ width: '56px', height: '56px', borderRadius: '16px', background: '#ecfdf5', color: '#059669', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.8rem', marginBottom: '12px' }}>
             🚜
@@ -66,7 +66,7 @@ export default function RegisterPage() {
           </div>
         )}
 
-        <form onSubmit={handleSubmit} style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+        <form onSubmit={handleSubmit} className="register-form-grid">
           <div style={{ gridColumn: '1 / -1' }}>
             <h4 style={{ fontSize: '1rem', fontWeight: 700, color: '#065f46', borderBottom: '2px solid #ecfdf5', paddingBottom: '6px', marginBottom: '12px' }}>
               १. व्यक्तिगत जानकारी (Personal Information)
@@ -84,7 +84,7 @@ export default function RegisterPage() {
               value={formData.name} 
               onChange={handleChange}
               placeholder="उदा. रमेश सिंह"
-              style={{ width: '100%', padding: '9px 12px', borderRadius: '8px', border: '1px solid #d1d5db' }}
+              style={{ width: '100%', minHeight: '44px', padding: '9px 12px', borderRadius: '8px', border: '1px solid #d1d5db', fontSize: '0.95rem' }}
             />
           </div>
 
@@ -94,12 +94,14 @@ export default function RegisterPage() {
             </label>
             <input 
               type="tel" 
+              inputMode="numeric"
+              pattern="[0-9]*"
               name="phoneNumber"
               required 
               value={formData.phoneNumber} 
               onChange={handleChange}
               placeholder="10 अंकों का मोबाइल नंबर"
-              style={{ width: '100%', padding: '9px 12px', borderRadius: '8px', border: '1px solid #d1d5db' }}
+              style={{ width: '100%', minHeight: '44px', padding: '9px 12px', borderRadius: '8px', border: '1px solid #d1d5db', fontSize: '0.95rem' }}
             />
           </div>
 
@@ -113,7 +115,7 @@ export default function RegisterPage() {
               required 
               value={formData.username} 
               onChange={handleChange}
-              style={{ width: '100%', padding: '9px 12px', borderRadius: '8px', border: '1px solid #d1d5db' }}
+              style={{ width: '100%', minHeight: '44px', padding: '9px 12px', borderRadius: '8px', border: '1px solid #d1d5db', fontSize: '0.95rem' }}
             />
           </div>
 
@@ -127,7 +129,7 @@ export default function RegisterPage() {
               required 
               value={formData.password} 
               onChange={handleChange}
-              style={{ width: '100%', padding: '9px 12px', borderRadius: '8px', border: '1px solid #d1d5db' }}
+              style={{ width: '100%', minHeight: '44px', padding: '9px 12px', borderRadius: '8px', border: '1px solid #d1d5db', fontSize: '0.95rem' }}
             />
           </div>
 
@@ -137,12 +139,14 @@ export default function RegisterPage() {
             </label>
             <input 
               type="text" 
+              inputMode="numeric"
+              pattern="[0-9]*"
               name="aadhaarNumber"
               maxLength={12}
               value={formData.aadhaarNumber} 
               onChange={handleChange}
               placeholder="123456789012"
-              style={{ width: '100%', padding: '9px 12px', borderRadius: '8px', border: '1px solid #d1d5db' }}
+              style={{ width: '100%', minHeight: '44px', padding: '9px 12px', borderRadius: '8px', border: '1px solid #d1d5db', fontSize: '0.95rem' }}
             />
           </div>
 
@@ -156,7 +160,7 @@ export default function RegisterPage() {
               value={formData.village} 
               onChange={handleChange}
               placeholder="उदा. चुनार खेड़ा"
-              style={{ width: '100%', padding: '9px 12px', borderRadius: '8px', border: '1px solid #d1d5db' }}
+              style={{ width: '100%', minHeight: '44px', padding: '9px 12px', borderRadius: '8px', border: '1px solid #d1d5db', fontSize: '0.95rem' }}
             />
           </div>
 
@@ -172,10 +176,12 @@ export default function RegisterPage() {
             </label>
             <input 
               type="text" 
+              inputMode="numeric"
+              pattern="[0-9]*"
               name="bankAccountNumber"
               value={formData.bankAccountNumber} 
               onChange={handleChange}
-              style={{ width: '100%', padding: '9px 12px', borderRadius: '8px', border: '1px solid #d1d5db' }}
+              style={{ width: '100%', minHeight: '44px', padding: '9px 12px', borderRadius: '8px', border: '1px solid #d1d5db', fontSize: '0.95rem' }}
             />
           </div>
 
@@ -190,12 +196,12 @@ export default function RegisterPage() {
               value={formData.ifscCode} 
               onChange={handleChange}
               placeholder="SBIN0001234"
-              style={{ width: '100%', padding: '9px 12px', borderRadius: '8px', border: '1px solid #d1d5db' }}
+              style={{ width: '100%', minHeight: '44px', padding: '9px 12px', borderRadius: '8px', border: '1px solid #d1d5db', fontSize: '0.95rem' }}
             />
           </div>
 
           <div style={{ gridColumn: '1 / -1', marginTop: '16px' }}>
-            <button type="submit" disabled={loading} className="btn-primary" style={{ width: '100%', padding: '12px', fontSize: '1rem', fontWeight: 700 }}>
+            <button type="submit" disabled={loading} className="btn-primary" style={{ width: '100%', minHeight: '48px', padding: '12px', fontSize: '1rem', fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
               {loading ? 'खाता बन रहा है...' : 'पंजीकरण पूर्ण करें (Complete Registration)'} <ArrowRight size={18} />
             </button>
           </div>

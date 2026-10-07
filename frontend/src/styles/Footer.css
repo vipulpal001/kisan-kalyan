@@ -1,0 +1,187 @@
+/* ==========================================================================
+   Footer.css — Responsive Government Portal Footer
+   DESKTOP IS LOCKED (Desktop version rendered for > 992px)
+   MOBILE GETS COMPACT, ACCORDION-EXPANDABLE GOVERNMENT FOOTER
+   ========================================================================== */
+
+.desktop-footer-content {
+  display: block;
+}
+
+.mobile-footer-content {
+  display: none !important;
+}
+
+@media (max-width: 992px) {
+  .desktop-footer-content {
+    display: none !important;
+  }
+
+  .mobile-footer-content {
+    display: block !important;
+    padding: 24px 16px calc(88px + env(safe-area-inset-bottom, 16px)) 16px;
+    color: #ecfdf5;
+  }
+
+  .mobile-footer-brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 14px;
+  }
+
+  .mobile-footer-emblem {
+    height: 34px;
+    width: auto;
+    object-fit: contain;
+  }
+
+  .mobile-footer-title {
+    font-size: 1.1rem;
+    font-weight: 800;
+    color: #ffffff;
+    line-height: 1.2;
+  }
+
+  .mobile-footer-subtitle {
+    font-size: 0.72rem;
+    color: #a7f3d0;
+  }
+
+  .mobile-footer-motto-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(255, 255, 255, 0.08);
+    padding: 5px 12px;
+    border-radius: 16px;
+    font-size: 0.74rem;
+    color: #fef08a;
+    font-weight: 600;
+    margin-bottom: 18px;
+  }
+
+  /* Support Action Cards */
+  .mobile-footer-support-box {
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 14px;
+    padding: 14px;
+    margin-bottom: 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .mobile-footer-helpline-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    background: #059669;
+    color: #ffffff;
+    text-decoration: none;
+    padding: 11px 16px;
+    border-radius: 10px;
+    font-weight: 800;
+    font-size: 0.95rem;
+    min-height: 44px;
+  }
+
+  .mobile-footer-helpline-btn:hover {
+    background: #047857;
+  }
+
+  .mobile-footer-email-link {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    color: #d1fae5;
+    text-decoration: none;
+    font-size: 0.8rem;
+    padding: 4px 0;
+  }
+
+  /* Accordion Groups */
+  .mobile-footer-accordion {
+    border-top: 1px solid rgba(255, 255, 255, 0.12);
+  }
+
+  .mobile-footer-accordion-header {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 4px;
+    background: transparent;
+    border: none;
+    color: #fef08a;
+    font-size: 0.88rem;
+    font-weight: 700;
+    text-align: left;
+    cursor: pointer;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .mobile-footer-accordion-list {
+    list-style: none;
+    padding: 0 4px 12px 4px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .mobile-footer-link {
+    color: #ecfdf5;
+    text-decoration: none;
+    font-size: 0.84rem;
+    display: block;
+    padding: 4px 0;
+  }
+
+  /* Legal & Copyright Row */
+  .mobile-footer-legal {
+    border-top: 1px solid rgba(255, 255, 255, 0.12);
+    padding-top: 16px;
+    margin-top: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    font-size: 0.74rem;
+    color: #a7f3d0;
+    text-align: center;
+  }
+
+  .mobile-footer-legal-links {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  .mobile-footer-legal-link {
+    color: #d1fae5;
+    text-decoration: none;
+  }
+
+  .mobile-footer-copy {
+    opacity: 0.85;
+    line-height: 1.4;
+  }
+}
+
+/* Footer Dark Mode & High Contrast */
+body.dark-mode footer,
+body.high-contrast footer {
+  background: #021a11 !important;
+  border-top-color: #047857 !important;
+}
+
+body.dark-mode .mobile-footer-support-box,
+body.high-contrast .mobile-footer-support-box {
+  background: rgba(0, 0, 0, 0.35) !important;
+  border-color: rgba(255, 255, 255, 0.1) !important;
+}

@@ -31,12 +31,12 @@ export default function LiveQueuePage() {
 
   const tokenNum = activeBooking?.tokenNumber || 'WHT-042';
   const nowServingToken = activeBooking?.currentServingToken || 'WHT-037';
-  const farmerName = activeBooking?.farmerName || user?.name || user?.username || 'किसान भाई (Farmer)';
-  const cropDisplay = activeBooking?.cropName || 'गेहूं (Wheat)';
+  const farmerName = activeBooking?.farmerName || user?.name || user?.username || t('farmerAccount', 'किसान भाई (Farmer)');
+  const cropDisplay = activeBooking?.cropName || t('cropWheat', 'गेहूं (Wheat)');
   const queuePos = activeBooking?.queuePosition || 6;
   const farmersAhead = activeBooking?.farmersAhead !== undefined ? activeBooking.farmersAhead : 5;
   const waitMinutes = activeBooking?.estimatedWaitMinutes !== undefined ? activeBooking.estimatedWaitMinutes : 25;
-  const counterName = activeBooking?.counterName || 'काउंटर 02 (Counter 02)';
+  const counterName = activeBooking?.counterName || `${t('assignedCounter', 'काउंटर')} 02`;
   const centerName = activeBooking?.centerName || 'गाज़ियाबाद गेहूं खरीद केंद्र (Ghaziabad Procurement Centre)';
   const currentStage = activeBooking?.queueStage || 'QUALITY_CHECK';
 
@@ -75,11 +75,11 @@ export default function LiveQueuePage() {
       <div className="portal-container" style={{ maxWidth: '1240px', margin: '0 auto', padding: '0 16px' }}>
 
         {/* 3-Column Layout: Left Features | Center Main Monitor & Queue | Right Daily Overview */}
-        <div style={{ display: 'grid', gridTemplateColumns: '240px 1fr 240px', gap: '20px', alignItems: 'start' }}>
+        <div className="live-queue-3col-grid">
           
           {/* ================= LEFT SIDEBAR (Matching Screenshot) ================= */}
-          <div style={{ background: '#ffffff', borderRadius: '24px', border: '1px solid #e2e8f0', padding: '24px 18px', boxShadow: '0 8px 30px rgba(0,0,0,0.04)', textAlign: 'center' }}>
-            <h4 style={{ fontSize: '1.05rem', fontWeight: 800, color: '#064e3b', marginBottom: '18px', lineHeight: 1.3 }}>
+          <div className="live-queue-left-sidebar" style={{ background: '#ffffff', borderRadius: '24px', border: '1px solid #e2e8f0', padding: '24px 18px', boxShadow: '0 8px 30px rgba(0,0,0,0.04)', textAlign: 'center' }}>
+            <h4 style={{ fontSize: '1.05rem', fontWeight: 800, color: '#064e3b', marginBottom: '18px', lineHeight: 1.3, wordBreak: 'break-word' }}>
               {t('queueTagline', '“किसान की सुविधा हमारी प्राथमिकता”')}
             </h4>
 
@@ -120,10 +120,10 @@ export default function LiveQueuePage() {
           </div>
 
           {/* ================= CENTER COLUMN: MAIN LIVE QUEUE MONITOR ================= */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '18px' }}>
+          <div className="live-queue-main-col" style={{ display: 'flex', flexDirection: 'column', gap: '18px', minWidth: 0 }}>
             
             {/* Top Monitor Header Bar */}
-            <div style={{ background: '#ffffff', borderRadius: '24px', border: '1px solid #e2e8f0', padding: '16px 24px', boxShadow: '0 8px 30px rgba(0,0,0,0.04)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <div className="live-queue-header-bar" style={{ background: '#ffffff', borderRadius: '24px', border: '1px solid #e2e8f0', padding: '16px 24px', boxShadow: '0 8px 30px rgba(0,0,0,0.04)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
                 <img src={mandiShed} alt="Mandi Shed" style={{ width: '60px', height: '52px', objectFit: 'contain' }} />
                 <div>
@@ -152,7 +152,7 @@ export default function LiveQueuePage() {
                 <button 
                   onClick={handleRefresh}
                   style={{ width: '36px', height: '36px', borderRadius: '50%', background: '#f1f5f9', border: '1px solid #cbd5e1', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', transition: 'all 0.2s ease' }}
-                  title="रिफ्रेश करें"
+                  title={t('searchClear', 'रिफ्रेश करें')}
                 >
                   <RotateCw size={16} color="#374151" className={refreshing ? 'spinning' : ''} />
                 </button>
@@ -160,7 +160,7 @@ export default function LiveQueuePage() {
             </div>
 
             {/* 5 Status Cards Row (Section 7 Exact Requirements) */}
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '10px' }}>
+            <div className="live-queue-status-cards">
               
               {/* Card 1: YOUR TOKEN */}
               <div style={{ background: '#ecfdf5', border: '1.5px solid #a7f3d0', borderRadius: '16px', padding: '14px 12px', textAlign: 'center' }}>
@@ -172,7 +172,7 @@ export default function LiveQueuePage() {
                   {cropDisplay}
                 </div>
                 <span style={{ display: 'inline-block', fontSize: '0.66rem', background: '#017953', color: '#ffffff', padding: '2px 8px', borderRadius: '10px', fontWeight: 700, marginTop: '4px' }}>
-                  ● Active (Pos {queuePos})
+                  ● {t('statusActive', 'Active')} (Pos {queuePos})
                 </span>
               </div>
 
@@ -211,7 +211,7 @@ export default function LiveQueuePage() {
                   ~{waitMinutes} <span style={{ fontSize: '0.85rem', fontWeight: 700 }}>min</span>
                 </div>
                 <div style={{ fontSize: '0.7rem', color: '#9f1239', fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '3px' }}>
-                  <Zap size={12} /> <span>Fast Lane</span>
+                  <Zap size={12} /> <span>{t('fastDbt', 'फास्ट लेन')}</span>
                 </div>
               </div>
 
@@ -238,10 +238,10 @@ export default function LiveQueuePage() {
                   <span style={{ fontSize: '1.2rem' }}>⚡</span>
                   <div>
                     <h4 style={{ fontSize: '1rem', fontWeight: 800, color: '#064e3b', margin: 0 }}>
-                      कतार प्रगति चक्र (Real-Time Queue Lifecycle Stages)
+                      {t('queueLifecycleStages', 'कतार प्रगति चक्र (Real-Time Queue Lifecycle Stages)')}
                     </h4>
                     <span style={{ fontSize: '0.72rem', color: '#64748b' }}>
-                      स्वचालित अपडेट: {lastUpdated} • टोकन {tokenNum}
+                      {lastUpdated} • {t('myToken', 'टोकन')} {tokenNum}
                     </span>
                   </div>
                 </div>
@@ -251,45 +251,34 @@ export default function LiveQueuePage() {
                     onClick={() => advanceQueueStage()}
                     style={{ background: '#017953', color: '#ffffff', border: 'none', borderRadius: '8px', padding: '6px 14px', fontSize: '0.76rem', fontWeight: 700, cursor: 'pointer' }}
                   >
-                    अगला चरण सिम्युलेट करें (Advance Stage) →
+                    {t('advanceStageSimulate', 'अगला चरण सिम्युलेट करें (Advance Stage) →')}
                   </button>
                 </div>
               </div>
 
               {/* Progress Flow Banner */}
-              <div style={{ 
-                display: 'flex', 
-                alignItems: 'center', 
-                justifyContent: 'space-between', 
-                background: '#f8fafc', 
-                borderRadius: '12px', 
-                padding: '12px 14px', 
-                border: '1px solid #e2e8f0',
-                fontSize: '0.76rem',
-                flexWrap: 'wrap',
-                gap: '8px'
-              }}>
+              <div className="queue-stages-flow">
                 <span style={{ color: '#017953', fontWeight: 800, display: 'flex', alignItems: 'center', gap: '4px' }}>
-                  <Check size={14} strokeWidth={3} /> Booking Confirmed
+                  <Check size={14} strokeWidth={3} /> {t('stepSlotBooked', 'Booking Confirmed')}
                 </span>
                 <span style={{ color: '#cbd5e1' }}>→</span>
                 <span style={{ color: '#017953', fontWeight: 800, display: 'flex', alignItems: 'center', gap: '4px' }}>
-                  <Check size={14} strokeWidth={3} /> Farmer Arrived
+                  <Check size={14} strokeWidth={3} /> {t('stepArrived', 'Farmer Arrived')}
                 </span>
                 <span style={{ color: '#cbd5e1' }}>→</span>
                 <span style={{ color: '#017953', fontWeight: 800, display: 'flex', alignItems: 'center', gap: '4px' }}>
-                  <Check size={14} strokeWidth={3} /> Verification
+                  <Check size={14} strokeWidth={3} /> {t('verificationDeadline', 'Verification')}
                 </span>
                 <span style={{ color: '#cbd5e1' }}>→</span>
                 <span style={{ color: '#2563eb', fontWeight: 900, background: '#dbeafe', border: '1px solid #bfdbfe', padding: '3px 8px', borderRadius: '6px', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                  <span>●</span> Quality Check (सक्रिय)
+                  <span>●</span> {t('stepQualityCheck', 'Quality Check')} ({t('statusActive', 'सक्रिय')})
                 </span>
                 <span style={{ color: '#cbd5e1' }}>→</span>
-                <span style={{ color: '#64748b', fontWeight: 600 }}>○ Weighing</span>
+                <span style={{ color: '#64748b', fontWeight: 600 }}>○ {t('stepWeighment', 'Weighing')}</span>
                 <span style={{ color: '#cbd5e1' }}>→</span>
-                <span style={{ color: '#64748b', fontWeight: 600 }}>○ Procurement</span>
+                <span style={{ color: '#64748b', fontWeight: 600 }}>○ {t('navProcurementStatus', 'Procurement')}</span>
                 <span style={{ color: '#cbd5e1' }}>→</span>
-                <span style={{ color: '#64748b', fontWeight: 600 }}>○ Payment</span>
+                <span style={{ color: '#64748b', fontWeight: 600 }}>○ {t('stepPayment', 'Payment')}</span>
               </div>
             </div>
 
@@ -299,19 +288,19 @@ export default function LiveQueuePage() {
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                   <Scale size={18} color="#017953" />
                   <h4 style={{ fontSize: '1.02rem', fontWeight: 800, color: '#111827', margin: 0 }}>
-                    सक्रिय धर्मकांटा काउंटर (Active Weighbridges)
+                    {t('activeWeighbridges', 'सक्रिय धर्मकांटा काउंटर (Active Weighbridges)')}
                   </h4>
                 </div>
                 <span style={{ fontSize: '0.76rem', color: '#017953', fontWeight: 700, background: '#ecfdf5', padding: '3px 10px', borderRadius: '12px' }}>
-                  ((•)) 3 काउंटर कार्यरत
+                  ((•)) {t('activeOperationalCounters', '3 काउंटर कार्यरत')}
                 </span>
               </div>
 
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '14px' }}>
+              <div className="live-queue-counters-grid">
                 {[
-                  { name: 'काउंटर 1', status: 'Active', operator: 'Vikas Sharma', token: 'T-114-28' },
-                  { name: 'काउंटर 2', status: 'Active', operator: 'Rajesh Verma', token: 'T-114-29', isCalling: true },
-                  { name: 'काउंटर 3', status: 'Active', operator: 'Sanjay Kumar', token: 'T-114-27' }
+                  { name: `${t('assignedCounter', 'काउंटर')} 1`, status: t('statusActive', 'Active'), operator: 'Vikas Sharma', token: 'T-114-28' },
+                  { name: `${t('assignedCounter', 'काउंटर')} 2`, status: t('statusActive', 'Active'), operator: 'Rajesh Verma', token: 'T-114-29', isCalling: true },
+                  { name: `${t('assignedCounter', 'काउंटर')} 3`, status: t('statusActive', 'Active'), operator: 'Sanjay Kumar', token: 'T-114-27' }
                 ].map((cnt) => (
                   <div key={cnt.name} style={{ border: cnt.isCalling ? '1.5px solid #017953' : '1px solid #e2e8f0', background: cnt.isCalling ? '#f0fdf4' : '#fafafa', borderRadius: '12px', padding: '12px 14px' }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -322,10 +311,10 @@ export default function LiveQueuePage() {
                       </span>
                     </div>
                     <div style={{ fontSize: '0.74rem', color: '#64748b', margin: '4px 0 8px 0' }}>
-                      👤 ऑपरेटर: {cnt.operator}
+                      👤 {t('operatorLabel', 'ऑपरेटर')}: {cnt.operator}
                     </div>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: '6px', borderTop: '1px solid #f1f5f9', fontSize: '0.78rem' }}>
-                      <span style={{ color: '#475569' }}>वर्तमान टोकन:</span>
+                      <span style={{ color: '#475569' }}>{t('currentTokenLabel', 'वर्तमान टोकन')}:</span>
                       <strong style={{ fontSize: '0.94rem', color: cnt.isCalling ? '#017953' : '#111827', background: cnt.isCalling ? '#dcfce7' : '#ffffff', border: '1px solid #cbd5e1', padding: '1px 8px', borderRadius: '6px' }}>
                         {cnt.token}
                       </strong>
@@ -342,119 +331,108 @@ export default function LiveQueuePage() {
                   <Users size={18} color="#017953" />
                   <div>
                     <h4 style={{ fontSize: '1.05rem', fontWeight: 800, color: '#111827', margin: 0 }}>
-                      कतार क्रम एवं टोकन सूची (Live Waiting Stream)
+                      {t('liveWaitingStream', 'कतार क्रम एवं टोकन सूची (Live Waiting Stream)')}
                     </h4>
-                    <span style={{ fontSize: '0.76rem', color: '#64748b' }}>मंडी में क्रमानुसार चलने वाली कतार</span>
+                    <span style={{ fontSize: '0.76rem', color: '#64748b' }}>{t('sequentialQueueNotice', 'मंडी में क्रमानुसार चलने वाली कतार')}</span>
                   </div>
                 </div>
 
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                   <span style={{ fontSize: '0.74rem', color: '#017953', fontWeight: 700, background: '#ecfdf5', padding: '3px 10px', borderRadius: '12px' }}>
-                    ● Live अपडेट
+                    ● {t('liveUpdateTag', 'Live अपडेट')}
                   </span>
                   <span style={{ fontSize: '0.74rem', color: '#475569', fontWeight: 700, background: '#f1f5f9', padding: '3px 10px', borderRadius: '12px' }}>
-                    👥 कुल प्रतीक्षा: 6
+                    👥 {t('totalWaitingCount', 'कुल प्रतीक्षा')}: 6
                   </span>
                 </div>
               </div>
 
               {/* Stream Rows */}
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+              <div className="live-queue-table-scroll">
+                <div className="live-queue-stream-list">
                 {[
-                  { pos: 1, token: 'T-114-29', name: 'सुरेश यादव', crop: 'गेहूं', icon: cropWheat, status: 'CALLED TO COUNTER 2', isCalling: true },
-                  { pos: 2, token: tokenNum, name: farmerName, isYou: true, crop: 'गेहूं', icon: cropWheat, status: 'Waiting (1 Ahead)' },
-                  { pos: 3, token: 'T-114-31', name: 'मनोज तिवारी', crop: 'गेहूं', icon: cropWheat, status: 'Waiting (2 Ahead)' },
-                  { pos: 4, token: 'T-114-32', name: 'देवेंद्र पाल', crop: 'गेहूं', icon: cropWheat, status: 'Waiting (3 Ahead)' },
-                  { pos: 5, token: 'T-114-33', name: 'राजू शर्मा', crop: 'मक्का', icon: cropMaize, status: 'Waiting (4 Ahead)' },
-                  { pos: 6, token: 'T-114-34', name: 'सुशील मौर्य', crop: 'चना', icon: cropGram, status: 'Waiting (5 Ahead)' }
+                  { pos: 1, token: 'T-114-29', name: 'सुरेश यादव', crop: t('cropWheat', 'गेहूं'), icon: cropWheat, status: t('calledToCounter2', 'CALLED TO COUNTER 2'), isCalling: true },
+                  { pos: 2, token: tokenNum, name: farmerName, isYou: true, crop: t('cropWheat', 'गेहूं'), icon: cropWheat, status: `${t('statusInQueue', 'In Queue')} (1 ${t('farmersAhead', 'आगे')})` },
+                  { pos: 3, token: 'T-114-31', name: 'मनोज तिवारी', crop: t('cropWheat', 'गेहूं'), icon: cropWheat, status: `${t('statusInQueue', 'In Queue')} (2 ${t('farmersAhead', 'आगे')})` },
+                  { pos: 4, token: 'T-114-32', name: 'देवेंद्र पाल', crop: t('cropWheat', 'गेहूं'), icon: cropWheat, status: `${t('statusInQueue', 'In Queue')} (3 ${t('farmersAhead', 'आगे')})` },
+                  { pos: 5, token: 'T-114-33', name: 'राजू शर्मा', crop: t('cropMaize', 'मक्का'), icon: cropMaize, status: `${t('statusInQueue', 'In Queue')} (4 ${t('farmersAhead', 'आगे')})` },
+                  { pos: 6, token: 'T-114-34', name: 'सुशील मौर्य', crop: t('cropGram', 'चना'), icon: cropGram, status: `${t('statusInQueue', 'In Queue')} (5 ${t('farmersAhead', 'आगे')})` }
                 ].map((row) => (
                   <div 
                     key={row.pos + row.token + row.name}
-                    style={{ 
-                      display: 'grid', 
-                      gridTemplateColumns: '40px 90px 1.4fr 100px 1.2fr', 
-                      alignItems: 'center',
-                      background: row.isCalling ? '#eff6ff' : (row.isYou ? '#f0fdf4' : '#ffffff'),
-                      border: row.isCalling ? '1.5px solid #bfdbfe' : (row.isYou ? '1.5px solid #bbf7d0' : '1px solid #e5e7eb'),
-                      borderRadius: '12px',
-                      padding: '10px 14px',
-                      fontSize: '0.86rem'
-                    }}
+                    className={`waiting-stream-row ${row.isCalling ? 'is-calling' : ''} ${row.isYou ? 'is-you' : ''}`}
                   >
-                    {/* Pos */}
-                    <div>
-                      <span style={{ 
-                        width: '26px', 
-                        height: '26px', 
-                        borderRadius: '50%', 
-                        background: row.isCalling ? '#2563eb' : (row.isYou ? '#017953' : '#f1f5f9'), 
-                        color: row.isCalling || row.isYou ? '#ffffff' : '#475569', 
-                        display: 'inline-flex', 
-                        alignItems: 'center', 
-                        justifyContent: 'center', 
-                        fontWeight: 800, 
-                        fontSize: '0.8rem' 
-                      }}>
+                    <div className="stream-row-main">
+                      {/* Pos Badge */}
+                      <span className={`stream-pos-badge ${row.isCalling ? 'is-calling' : (row.isYou ? 'is-you' : '')}`}>
                         {row.pos}
                       </span>
-                    </div>
 
-                    {/* Token */}
-                    <div>
-                      <strong style={{ fontSize: '0.98rem', color: '#111827', background: '#ffffff', border: '1px solid #cbd5e1', padding: '2px 8px', borderRadius: '6px' }}>
+                      {/* Token Badge */}
+                      <strong className="stream-token-badge">
                         {row.token}
                       </strong>
+
+                      {/* Farmer Name */}
+                      <div className="stream-farmer-cell">
+                        {row.isYou ? (
+                          <div className="stream-you-wrapper">
+                            <span className="stream-you-badge">
+                              {t('youBadge', 'आप (You)')}
+                            </span>
+                            <span className="stream-farmer-name is-you">
+                              {row.name}
+                            </span>
+                          </div>
+                        ) : (
+                          <span className="stream-farmer-name">
+                            {row.name}
+                          </span>
+                        )}
+                      </div>
                     </div>
 
-                    {/* Farmer Name */}
-                    <div>
-                      {row.isYou && (
-                        <span style={{ fontSize: '0.68rem', background: '#017953', color: '#ffffff', padding: '1px 6px', borderRadius: '4px', fontWeight: 700, marginRight: '6px' }}>
-                          आप (You)
-                        </span>
-                      )}
-                      <span style={{ fontWeight: row.isYou ? 800 : 600, color: row.isYou ? '#064e3b' : '#1e293b' }}>
-                        {row.name}
-                      </span>
-                    </div>
+                    <div className="stream-row-meta">
+                      {/* Crop */}
+                      <div className="stream-crop-cell">
+                        <img src={row.icon} alt={row.crop} className="stream-crop-icon" />
+                        <span className="stream-crop-name">{row.crop}</span>
+                      </div>
 
-                    {/* Crop */}
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                      <img src={row.icon} alt={row.crop} style={{ width: '20px', height: '20px', objectFit: 'contain' }} />
-                      <span style={{ fontSize: '0.82rem', color: '#4b5563' }}>{row.crop}</span>
-                    </div>
-
-                    {/* Status Button/Pill */}
-                    <div style={{ textAlign: 'right' }}>
-                      {row.isCalling ? (
-                        <button 
-                          onClick={() => speakAnnouncement(`टोकन नंबर ${row.token}, ${row.name}, कृपया काउंटर 2 पर जाएं`)}
-                          style={{ background: '#2563eb', color: '#ffffff', border: 'none', borderRadius: '20px', padding: '5px 14px', fontSize: '0.78rem', fontWeight: 800, display: 'inline-flex', alignItems: 'center', gap: '6px', cursor: 'pointer' }}
-                        >
-                          <span>📢 CALLED TO COUNTER 2</span>
-                          <ChevronRight size={14} />
-                        </button>
-                      ) : (
-                        <span style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '20px', padding: '4px 12px', fontSize: '0.78rem', color: '#64748b', display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
-                          <Clock size={12} />
-                          <span>{row.status}</span>
-                          <ChevronRight size={13} color="#94a3b8" />
-                        </span>
-                      )}
+                      {/* Status Button / Pill */}
+                      <div className="stream-status-cell">
+                        {row.isCalling ? (
+                          <button 
+                            className="stream-call-btn"
+                            onClick={() => speakAnnouncement(`टोकन नंबर ${row.token}, ${row.name}, कृपया काउंटर 2 पर जाएं`)}
+                            title={t('listenShort', 'अनाउंसमेंट सुनें')}
+                          >
+                            <span>📢 {t('calledToCounter2', 'CALLED TO COUNTER 2')}</span>
+                            <ChevronRight size={14} />
+                          </button>
+                        ) : (
+                          <span className="stream-waiting-pill">
+                            <Clock size={12} />
+                            <span>{row.status}</span>
+                            <ChevronRight size={13} color="#94a3b8" />
+                          </span>
+                        )}
+                      </div>
                     </div>
                   </div>
                 ))}
+                </div>
               </div>
 
               {/* Bottom Notice */}
-              <div style={{ marginTop: '16px', paddingTop: '14px', borderTop: '1px solid #f1f5f9', display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.8rem', color: '#065f46' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                  <Info size={16} color="#017953" />
-                  <span><strong>सूचना:</strong> जैसे ही आपका टोकन नंबर बुलाया जाएगा, स्क्रीन पर प्रदर्शित किया जाएगा और आपको SMS/घोषणा के माध्यम से सूचित किया जाएगा !</span>
+              <div style={{ marginTop: '16px', paddingTop: '14px', borderTop: '1px solid #f1f5f9', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '10px', fontSize: '0.8rem', color: '#065f46' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flex: '1 1 280px' }}>
+                  <Info size={16} color="#017953" style={{ flexShrink: 0 }} />
+                  <span><strong>{t('noticePrefix', 'सूचना:')}</strong> {t('queueCallNotice', 'जैसे ही आपका टोकन नंबर बुलाया जाएगा, स्क्रीन पर प्रदर्शित किया जाएगा और आपको SMS/घोषणा के माध्यम से सूचित किया जाएगा !')}</span>
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '4px', fontWeight: 700, color: '#017953' }}>
                   <Volume2 size={15} />
-                  <span>स्वचालित घोषणाएं चालू हैं</span>
+                  <span>{t('announcementsActive', 'स्वचालित घोषणाएं चालू हैं')}</span>
                 </div>
               </div>
             </div>
@@ -462,29 +440,29 @@ export default function LiveQueuePage() {
           </div>
 
           {/* ================= RIGHT SIDEBAR: TODAY'S OVERVIEW ================= */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+          <div className="live-queue-right-sidebar" style={{ display: 'flex', flexDirection: 'column', gap: '16px', minWidth: 0 }}>
             
             {/* Quick Stats Box */}
             <div style={{ background: '#ffffff', borderRadius: '24px', border: '1px solid #e2e8f0', padding: '20px', boxShadow: '0 8px 30px rgba(0,0,0,0.04)' }}>
               <h4 style={{ fontSize: '1rem', fontWeight: 800, color: '#111827', margin: '0 0 14px 0', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                <span>📊</span> <span>आज की झलक</span>
+                <span>📊</span> <span>{t('todayGlance', 'आज की झलक')}</span>
               </h4>
 
               <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingBottom: '8px', borderBottom: '1px solid #f1f5f9' }}>
-                  <span style={{ fontSize: '0.82rem', color: '#64748b' }}>कुल किसान:</span>
+                  <span style={{ fontSize: '0.82rem', color: '#64748b' }}>{t('totalFarmersLabel', 'कुल किसान:')}</span>
                   <strong style={{ fontSize: '1.1rem', color: '#017953' }}>128</strong>
                 </div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingBottom: '8px', borderBottom: '1px solid #f1f5f9' }}>
-                  <span style={{ fontSize: '0.82rem', color: '#64748b' }}>कुल खरीद:</span>
+                  <span style={{ fontSize: '0.82rem', color: '#64748b' }}>{t('totalProcuredLabel', 'कुल खरीद:')}</span>
                   <strong style={{ fontSize: '1.1rem', color: '#017953' }}>2,450 Q</strong>
                 </div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingBottom: '8px', borderBottom: '1px solid #f1f5f9' }}>
-                  <span style={{ fontSize: '0.82rem', color: '#64748b' }}>औसत प्रतीक्षा:</span>
+                  <span style={{ fontSize: '0.82rem', color: '#64748b' }}>{t('avgWaitLabel', 'औसत प्रतीक्षा:')}</span>
                   <strong style={{ fontSize: '1.1rem', color: '#017953' }}>16 min</strong>
                 </div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <span style={{ fontSize: '0.82rem', color: '#64748b' }}>सक्रिय काउंटर:</span>
+                  <span style={{ fontSize: '0.82rem', color: '#64748b' }}>{t('activeCountersLabel', 'सक्रिय काउंटर:')}</span>
                   <strong style={{ fontSize: '1.1rem', color: '#017953' }}>3/3</strong>
                 </div>
               </div>
@@ -496,7 +474,7 @@ export default function LiveQueuePage() {
                 🌱
               </div>
               <div style={{ fontSize: '1.05rem', fontWeight: 800, color: '#064e3b', lineHeight: 1.3 }}>
-                अन्नदाता <br /> देश की शान
+                {t('bottomSlogan', 'अन्नदाता देश की शान')}
               </div>
             </div>
 

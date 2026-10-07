@@ -23,10 +23,10 @@ export default function LoginPage() {
     try {
       const res = await api.post('/auth/login', { username, password });
       login(res.data);
-      if (res.data.role === 'FARMER') {
-        navigate('/farmer/dashboard');
-      } else if (res.data.role === 'OPERATOR') {
+      if (res.data.role === 'OPERATOR') {
         navigate('/operator/dashboard');
+      } else if (res.data.role === 'ADMIN') {
+        navigate('/admin/dashboard');
       } else {
         navigate('/farmer/dashboard');
       }
@@ -39,7 +39,7 @@ export default function LoginPage() {
 
   return (
     <div className="portal-container" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '75vh', padding: '40px 0' }}>
-      <div className="kisan-card" style={{ width: '100%', maxWidth: '440px', padding: '36px' }}>
+      <div className="kisan-card login-card" style={{ width: '100%', maxWidth: '440px' }}>
         <div style={{ textAlign: 'center', marginBottom: '28px' }}>
           <div style={{ width: '56px', height: '56px', borderRadius: '16px', background: '#ecfdf5', color: '#059669', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.8rem', marginBottom: '12px' }}>
             🌾
@@ -62,13 +62,13 @@ export default function LoginPage() {
               {t('usernameLabel', 'उपयोगकर्ता नाम (Username)')}
             </label>
             <div style={{ position: 'relative' }}>
-              <User size={18} color="#9ca3af" style={{ position: 'absolute', left: '12px', top: '12px' }} />
+              <User size={18} color="#9ca3af" style={{ position: 'absolute', left: '12px', top: '13px' }} />
               <input 
                 type="text" 
                 value={username} 
                 onChange={(e) => setUsername(e.target.value)}
                 required
-                style={{ width: '100%', padding: '10px 12px 10px 38px', borderRadius: '8px', border: '1.5px solid #d1d5db', fontSize: '0.95rem' }}
+                style={{ width: '100%', minHeight: '44px', padding: '10px 12px 10px 38px', borderRadius: '8px', border: '1.5px solid #d1d5db', fontSize: '0.95rem' }}
               />
             </div>
           </div>
@@ -78,18 +78,18 @@ export default function LoginPage() {
               {t('passwordLabel', 'पासवर्ड (Password)')}
             </label>
             <div style={{ position: 'relative' }}>
-              <Lock size={18} color="#9ca3af" style={{ position: 'absolute', left: '12px', top: '12px' }} />
+              <Lock size={18} color="#9ca3af" style={{ position: 'absolute', left: '12px', top: '13px' }} />
               <input 
                 type="password" 
                 value={password} 
                 onChange={(e) => setPassword(e.target.value)}
                 required
-                style={{ width: '100%', padding: '10px 12px 10px 38px', borderRadius: '8px', border: '1.5px solid #d1d5db', fontSize: '0.95rem' }}
+                style={{ width: '100%', minHeight: '44px', padding: '10px 12px 10px 38px', borderRadius: '8px', border: '1.5px solid #d1d5db', fontSize: '0.95rem' }}
               />
             </div>
           </div>
 
-          <button type="submit" disabled={loading} className="btn-primary" style={{ width: '100%', padding: '12px', fontSize: '1rem', fontWeight: 700 }}>
+          <button type="submit" disabled={loading} className="btn-primary" style={{ width: '100%', minHeight: '48px', padding: '12px', fontSize: '1rem', fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
             {loading ? t('loggingIn', 'सत्यापित हो रहा है...') : t('loginBtn', 'लॉगिन करें (Login)')} <ArrowRight size={18} />
           </button>
         </form>
@@ -110,21 +110,21 @@ export default function LoginPage() {
             <button 
               type="button"
               onClick={() => { setUsername('ramesh.singh'); setPassword('farmer123'); }}
-              style={{ background: '#ecfdf5', color: '#047857', border: '1px solid #a7f3d0', padding: '6px 12px', borderRadius: '6px', fontSize: '0.78rem', fontWeight: 700, cursor: 'pointer' }}
+              style={{ background: '#ecfdf5', color: '#047857', border: '1px solid #a7f3d0', padding: '8px 12px', minHeight: '40px', borderRadius: '6px', fontSize: '0.78rem', fontWeight: 700, cursor: 'pointer' }}
             >
               🌾 {t('farmerAccount', 'किसान (Farmer)')} (Ramesh)
             </button>
             <button 
               type="button"
               onClick={() => { setUsername('rajesh.verma'); setPassword('farmer123'); }}
-              style={{ background: '#eff6ff', color: '#1d4ed8', border: '1px solid #bfdbfe', padding: '6px 12px', borderRadius: '6px', fontSize: '0.78rem', fontWeight: 700, cursor: 'pointer' }}
+              style={{ background: '#eff6ff', color: '#1d4ed8', border: '1px solid #bfdbfe', padding: '8px 12px', minHeight: '40px', borderRadius: '6px', fontSize: '0.78rem', fontWeight: 700, cursor: 'pointer' }}
             >
               ⚖️ {t('operatorAccount', 'मंडी ऑपरेटर (Operator)')} (Rajesh)
             </button>
             <button 
               type="button"
               onClick={() => { setUsername('admin'); setPassword('admin123'); }}
-              style={{ background: '#fdf4ff', color: '#86198f', border: '1px solid #f0abfc', padding: '6px 12px', borderRadius: '6px', fontSize: '0.78rem', fontWeight: 700, cursor: 'pointer' }}
+              style={{ background: '#fdf4ff', color: '#86198f', border: '1px solid #f0abfc', padding: '8px 12px', minHeight: '40px', borderRadius: '6px', fontSize: '0.78rem', fontWeight: 700, cursor: 'pointer' }}
             >
               🏛️ {t('adminAccount', 'प्रशासक (Admin)')}
             </button>

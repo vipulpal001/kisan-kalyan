@@ -35,8 +35,14 @@ export function LanguageProvider({ children }) {
     localStorage.setItem('kisan_high_contrast', highContrast ? 'true' : 'false');
     if (highContrast) {
       document.body.classList.add('high-contrast');
+      document.body.classList.add('dark-mode');
+      document.documentElement.classList.add('dark');
+      document.documentElement.setAttribute('data-theme', 'dark');
     } else {
       document.body.classList.remove('high-contrast');
+      document.body.classList.remove('dark-mode');
+      document.documentElement.classList.remove('dark');
+      document.documentElement.setAttribute('data-theme', 'light');
     }
   }, [highContrast]);
 
@@ -63,7 +69,14 @@ export function LanguageProvider({ children }) {
     if (translations['hi'] && translations['hi'][key]) {
       return translations['hi'][key];
     }
-    return fallback || key;
+    if (fallback) return fallback;
+    if (typeof key === 'string') {
+      return key
+        .replace(/([A-Z])/g, ' $1')
+        .replace(/^./, (str) => str.toUpperCase())
+        .trim();
+    }
+    return '';
   };
 
   const currentLangObj = SUPPORTED_LANGUAGES.find(l => l.code === lang) || SUPPORTED_LANGUAGES[0];
@@ -81,9 +94,12 @@ export function LanguageProvider({ children }) {
       setFontSize, 
       highContrast, 
       toggleHighContrast, 
+      isDarkMode: highContrast,
+      darkMode: highContrast,
+      toggleDarkMode: toggleHighContrast,
       t 
     }}>
-      <div className={`font-size-${fontSize} ${highContrast ? 'high-contrast' : ''}`}>
+      <div className={`font-size-${fontSize} ${highContrast ? 'high-contrast dark-mode' : ''}`}>
         {children}
       </div>
     </LanguageContext.Provider>
@@ -104,6 +120,9 @@ export function useLanguage() {
       setFontSize: () => {},
       highContrast: false,
       toggleHighContrast: () => {},
+      isDarkMode: false,
+      darkMode: false,
+      toggleDarkMode: () => {},
       t: (key, fallback = '') => fallback || key,
     };
   }
