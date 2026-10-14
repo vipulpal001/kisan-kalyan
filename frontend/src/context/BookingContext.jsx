@@ -177,7 +177,7 @@ export function BookingProvider({ children }) {
         const parsed = JSON.parse(saved);
         return { ...DEFAULT_BOOKING, ...parsed };
       }
-    } catch (e) {
+    } catch {
       console.warn('Failed to parse saved booking from localStorage', e);
     }
     return DEFAULT_BOOKING;
@@ -187,7 +187,7 @@ export function BookingProvider({ children }) {
     try {
       const saved = localStorage.getItem(SLOTS_STORAGE_KEY);
       if (saved) return JSON.parse(saved);
-    } catch (e) {}
+    } catch {}
     return INITIAL_SLOTS;
   });
 
@@ -195,7 +195,7 @@ export function BookingProvider({ children }) {
     try {
       const saved = localStorage.getItem(NOTIF_STORAGE_KEY);
       if (saved) return JSON.parse(saved);
-    } catch (e) {}
+    } catch {}
     return INITIAL_NOTIFICATIONS;
   });
 
@@ -205,14 +205,14 @@ export function BookingProvider({ children }) {
   useEffect(() => {
     try {
       localStorage.setItem(SLOTS_STORAGE_KEY, JSON.stringify(slots));
-    } catch (e) {}
+    } catch {}
   }, [slots]);
 
   // Persist notifications
   useEffect(() => {
     try {
       localStorage.setItem(NOTIF_STORAGE_KEY, JSON.stringify(notifications));
-    } catch (e) {}
+    } catch {}
   }, [notifications]);
 
   // Update active booking
@@ -230,7 +230,7 @@ export function BookingProvider({ children }) {
     setActiveBooking(merged);
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(merged));
-    } catch (e) {
+    } catch {
       console.warn('Failed to save booking to localStorage', e);
     }
     setBookingHistory(prev => [merged, ...prev.filter(b => b.bookingId !== merged.bookingId)]);
@@ -289,7 +289,7 @@ export function BookingProvider({ children }) {
   };
 
   // Cancel booking & release capacity immediately
-  const cancelBooking = (bookingId) => {
+  const cancelBooking = (_bookingId) => {
     if (!activeBooking || activeBooking.bookingStatus === 'CANCELLED') return;
     const qtyToRelease = Number(activeBooking.quantity || 0);
     const slotId = activeBooking.slotId;
@@ -319,7 +319,7 @@ export function BookingProvider({ children }) {
     setActiveBooking(cancelledBooking);
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(cancelledBooking));
-    } catch (e) {}
+    } catch {}
 
     addNotification(
       'बुकिंग निरस्त (Booking Cancelled)',
@@ -392,7 +392,7 @@ export function BookingProvider({ children }) {
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(DEFAULT_BOOKING));
       localStorage.setItem(SLOTS_STORAGE_KEY, JSON.stringify(INITIAL_SLOTS));
-    } catch (e) {}
+    } catch {}
   };
 
   return (

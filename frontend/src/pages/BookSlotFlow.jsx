@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, useRef } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useBooking, INITIAL_CENTRES, INITIAL_SLOTS } from '../context/BookingContext';
@@ -14,8 +14,6 @@ import {
   Clock, 
   Award, 
   AlertCircle,
-  Building2,
-  ChevronLeft,
   ShieldCheck,
   Users,
   Info,
@@ -24,7 +22,8 @@ import {
   Printer,
   XCircle,
   AlertTriangle,
-  RefreshCw
+  RefreshCw,
+  Sparkles
 } from 'lucide-react';
 
 // Authentic Visual Assets
@@ -102,7 +101,6 @@ export default function BookSlotFlow() {
   // 6: समय स्लॉट (Capacity-Aware Slot Allocation & Smart Recommendation)
   // 7: पुष्टि करें (Confirmation, Token & Real-Time Queue Tracker)
   const [step, setStep] = useState(1);
-  const [loading, setLoading] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
   const [cancelledSuccess, setCancelledSuccess] = useState(false);

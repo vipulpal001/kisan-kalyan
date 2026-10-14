@@ -74,9 +74,10 @@ export default function FarmerDashboard() {
   const centres = dashboardData?.centres || [];
 
   // Countdown calculations
+  const deadlineStr = activeBooking?.verificationDeadline;
   const deadlineInfo = useMemo(() => {
-    if (!activeBooking?.verificationDeadline) return null;
-    const deadlineMs = new Date(activeBooking.verificationDeadline).getTime();
+    if (!deadlineStr) return null;
+    const deadlineMs = new Date(deadlineStr).getTime();
     const diffMs = deadlineMs - currentTime;
     if (diffMs <= 0) {
       return { expired: true, text: language === 'hi' ? 'समय समाप्त (Expired)' : 'Deadline Expired' };
@@ -86,7 +87,7 @@ export default function FarmerDashboard() {
     const secs = totalSecs % 60;
     const formatted = `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
     return { expired: false, formatted, totalSecs };
-  }, [activeBooking?.verificationDeadline, currentTime, language]);
+  }, [deadlineStr, currentTime, language]);
 
   // Voice guidance based on real current data
   const handleSpeak = () => {

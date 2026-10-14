@@ -488,7 +488,6 @@ export const translations = {
     // Utilities
     weatherLoading: 'Loading weather...',
     weatherError: 'Weather unavailable',
-    partlyCloudy: 'Partly Cloudy',
     sunny: 'Sunny',
     clear: 'Clear Sky',
     cloudy: 'Cloudy',

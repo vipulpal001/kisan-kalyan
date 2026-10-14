@@ -1,30 +1,12 @@
 import React from 'react';
-import { 
-  Check, 
-  Clock, 
-  FileText, 
-  Download, 
-  Scale, 
-  Truck, 
-  Award, 
-  Droplets, 
-  QrCode, 
-  ShieldCheck, 
-  ChevronRight,
-  Wallet,
-  Coins,
-  FileCheck
-} from 'lucide-react';
+import { Check, FileText, Download, Wallet } from 'lucide-react';
 import { useBooking } from '../context/BookingContext';
-import { useLanguage } from '../context/LanguageContext';
 import wheatBadge from '../assets/wheat_badge.png';
 import mandiSignature from '../assets/mandi_signature.png';
-import annadataSketch from '../assets/annadata_sketch.png';
-import tractorField from '../assets/tractor_field.png';
 
 export default function ProcurementStatusPage() {
   const { activeBooking } = useBooking();
-  const { t, lang } = useLanguage();
+  // Translation context available if needed
   const tokenNum = activeBooking?.tokenNumber || 'T-114-30';
   const cropName = activeBooking?.cropName || activeBooking?.produceName || 'गेहूं (Wheat / Gehun)';
   const centerName = activeBooking?.centerName || 'चुनार कृषि उपज मंडी समिति (Chunar APMC)';

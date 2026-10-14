@@ -2,17 +2,13 @@ import React, { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import { 
   PhoneCall, 
-  Mail, 
-  HelpCircle, 
+HelpCircle, 
   FileText, 
   ShieldCheck, 
-  Clock, 
-  Scale, 
+Scale, 
   FlaskConical, 
-  AlertTriangle, 
-  Download, 
-  CheckCircle2,
-  BookOpen
+Download, 
+BookOpen
 } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 

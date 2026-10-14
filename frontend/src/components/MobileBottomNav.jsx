@@ -18,8 +18,8 @@ import { useLanguage } from '../context/LanguageContext';
 import { useAuth } from '../context/AuthContext';
 import '../styles/MobileBottomNav.css';
 
-export default function MobileBottomNav({ onOpenMenu }) {
-  const { lang, t } = useLanguage();
+export default function MobileBottomNav({ onOpenMenu: _onOpenMenu }) {
+  const { t } = useLanguage();
   const { user, logout } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();

@@ -4,7 +4,7 @@ import { useLanguage } from '../context/LanguageContext';
 import { useAuth } from '../context/AuthContext';
 import { useBooking } from '../context/BookingContext';
 import api from '../services/api';
-import { QrCode, Calendar, Clock, MapPin, Scale, ArrowLeft, Download, ShieldCheck, AlertCircle, RefreshCw } from 'lucide-react';
+import { ArrowLeft, Download, ShieldCheck, AlertCircle } from 'lucide-react';
 
 export default function QrPassPage() {
   const location = useLocation();
@@ -15,22 +15,7 @@ export default function QrPassPage() {
 
   const [booking, setBooking] = useState(location.state?.booking || contextBooking || null);
   const [loading, setLoading] = useState(false);
-  const [currentTime, setCurrentTime] = useState(Date.now());
-
-  useEffect(() => {
-    const timer = setInterval(() => setCurrentTime(Date.now()), 1000);
-    return () => clearInterval(timer);
-  }, []);
-
-  useEffect(() => {
-    if (!booking) {
-      if (contextBooking) {
-        setBooking(contextBooking);
-      } else {
-        fetchActiveBooking();
-      }
-    }
-  }, [contextBooking]);
+  const [currentTime, setCurrentTime] = useState(() => Date.now());
 
   const fetchActiveBooking = async () => {
     try {
@@ -45,6 +30,21 @@ export default function QrPassPage() {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    const timer = setInterval(() => setCurrentTime(Date.now()), 1000);
+    return () => clearInterval(timer);
+  }, []);
+
+  useEffect(() => {
+    if (!booking) {
+      if (contextBooking) {
+        setBooking(contextBooking);
+      } else {
+        fetchActiveBooking();
+      }
+    }
+  }, [booking, contextBooking]);
 
   if (loading) {
     return (

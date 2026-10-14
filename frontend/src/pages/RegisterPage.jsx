@@ -3,7 +3,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useLanguage } from '../context/LanguageContext';
 import api from '../services/api';
-import { User, Phone, Lock, CreditCard, MapPin, AlertCircle, ArrowRight } from 'lucide-react';
+import { AlertCircle, ArrowRight } from 'lucide-react';
 
 export default function RegisterPage() {
   const { t } = useLanguage();

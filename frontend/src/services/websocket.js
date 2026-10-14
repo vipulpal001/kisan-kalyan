@@ -38,7 +38,7 @@ class WebSocketService {
       reconnectDelay: 4000,
       heartbeatIncoming: 10000,
       heartbeatOutgoing: 10000,
-      debug: (msg) => {
+      debug: (_msg) => {
         if (import.meta.env.DEV) {
           // console.debug('[STOMP]', msg);
         }
@@ -116,7 +116,7 @@ class WebSocketService {
           if (stompSub) {
             try {
               stompSub.unsubscribe();
-            } catch (e) {}
+            } catch {}
             this.activeStompSubscriptions.delete(topic);
           }
         }

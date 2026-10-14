@@ -4,16 +4,9 @@ import {
   X, 
   Search, 
   Download, 
-  BarChart3, 
-  MapPin, 
+MapPin, 
   Truck, 
-  TrendingUp, 
-  ArrowUpRight,
-  Filter,
-  CheckCircle,
-  Clock,
-  Building2
-} from 'lucide-react';
+ArrowUpRight} from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 
 export const MANDI_ARRIVALS_DATA = [

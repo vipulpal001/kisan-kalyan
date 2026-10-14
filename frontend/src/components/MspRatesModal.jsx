@@ -5,12 +5,9 @@ import {
   Search, 
   Download, 
   CheckCircle2, 
-  Calendar, 
-  ArrowUpRight, 
-  ExternalLink,
-  ShieldCheck,
-  TrendingUp,
-  FileText
+ArrowUpRight, 
+ShieldCheck,
+  TrendingUp
 } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 
@@ -169,7 +166,7 @@ export const MSP_DATA = [
 
 export default function MspRatesModal({ isOpen, onClose }) {
   const navigate = useNavigate();
-  const { t, lang } = useLanguage();
+  const { t } = useLanguage();
   const [seasonFilter, setSeasonFilter] = useState('ALL');
   const [searchTerm, setSearchTerm] = useState('');
 

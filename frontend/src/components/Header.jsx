@@ -185,7 +185,7 @@ export default function Header() {
   const [selectedLocation, setSelectedLocation] = useState(() => {
     const saved = localStorage.getItem('kisan_user_location');
     if (saved) {
-      try { return JSON.parse(saved); } catch (_e) {}
+      try { return JSON.parse(saved); } catch {}
     }
     return DEFAULT_LOCATION;
   });
@@ -311,7 +311,7 @@ export default function Header() {
         const unread = res.data.filter(n => !n.isRead).length;
         setUnreadCount(unread);
       }
-    } catch (_e) {
+    } catch {
       // Fallback notifications are maintained
     }
   };
@@ -326,7 +326,7 @@ export default function Header() {
   const markAllRead = async () => {
     try {
       await api.put('/farmer/notifications/read-all');
-    } catch (_e) {}
+    } catch {}
     setNotifications(prev => prev.map(n => ({ ...n, isRead: true })));
     setUnreadCount(0);
   };
@@ -334,7 +334,7 @@ export default function Header() {
   const markSingleRead = async (id) => {
     try {
       await api.put(`/farmer/notifications/${id}/read`);
-    } catch (_e) {}
+    } catch {}
     setNotifications(prev => prev.map(n => n.notificationId === id ? ({ ...n, isRead: true }) : n));
     setUnreadCount(prev => Math.max(0, prev - 1));
   };

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../services/api';
 import { 
@@ -15,11 +15,8 @@ import {
   ChevronDown, 
   MoreVertical,
   CheckCircle2,
-  CheckCircle,
-  Clock,
-  Sparkles
+  Clock
 } from 'lucide-react';
-import { useLanguage } from '../context/LanguageContext';
 
 import operatorBadgeImg from '../assets/operator_console_badge.png';
 import operatorShedImg from '../assets/operator_banner_shed.png';
@@ -27,7 +24,6 @@ import tractorFieldImg from '../assets/tractor_field.png';
 
 export default function OperatorDashboard() {
   const navigate = useNavigate();
-  const { t, lang } = useLanguage();
 
   // Active Token state (Default matching prompt Section 12: WHT-037 serving at Counter 02)
   const [activeToken, setActiveToken] = useState({
@@ -56,13 +52,13 @@ export default function OperatorDashboard() {
   const [moisture, setMoisture] = useState('10.8');
   const [foreignMatter, setForeignMatter] = useState('0.4');
   const [qualityGrade, setQualityGrade] = useState('FAQ Grade A (उत्तम गुणवत्ता - पूर्ण MSP)');
-  const [qcVerified, setQcVerified] = useState(true);
+  const [_qcVerified, setQcVerified] = useState(true);
 
   // Weighbridge state (Pre-filled as in screenshot)
   const [grossWeight, setGrossWeight] = useState('42350');
   const [tareWeight, setTareWeight] = useState('12200');
-  const [weighSaved, setWeighSaved] = useState(false);
-  const [jFormGenerated, setJFormGenerated] = useState(false);
+  const [_weighSaved, setWeighSaved] = useState(false);
+  const [_jFormGenerated, setJFormGenerated] = useState(false);
 
   // Counter Selector
   const [selectedCounter, setSelectedCounter] = useState('counter2');
@@ -88,7 +84,7 @@ export default function OperatorDashboard() {
       if (Array.isArray(res.data) && res.data.length > 0) {
         setWaitingList(res.data);
       }
-    } catch (_err) {
+    } catch {
       // Retain active queue state gracefully
     } finally {
       setTimeout(() => setIsRefreshing(false), 500);
@@ -352,7 +348,7 @@ export default function OperatorDashboard() {
                   color: '#475569'
                 }}
               >
-                <RotateCw size={16} />
+                <RotateCw size={16} className={isRefreshing ? 'spinning' : ''} />
               </button>
             </div>
           </div>

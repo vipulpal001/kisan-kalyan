@@ -8,15 +8,12 @@ import {
   Map, 
   Calendar, 
   Clock, 
-  Users, 
   ChevronDown, 
   Check, 
   Building2, 
   Compass, 
   Heart, 
-  Lightbulb, 
-  ArrowRight,
-  Sparkles
+  ArrowRight
 } from 'lucide-react';
 
 import chunarImg from '../assets/center_chunar.png';

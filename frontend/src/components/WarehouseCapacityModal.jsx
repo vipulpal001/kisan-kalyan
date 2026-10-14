@@ -1,16 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { 
   X, 
-  Building2, 
-  Warehouse, 
-  ShieldCheck, 
-  CheckCircle, 
-  ExternalLink, 
-  Download,
-  Search,
-  ArrowUpRight
-} from 'lucide-react';
+Search,} from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 
 export const WAREHOUSE_DATA = [
@@ -82,7 +73,7 @@ export const WAREHOUSE_DATA = [
 ];
 
 export default function WarehouseCapacityModal({ isOpen, onClose }) {
-  const navigate = useNavigate();
+  // navigate not needed
   const { t } = useLanguage();
   const [searchTerm, setSearchTerm] = useState('');
 

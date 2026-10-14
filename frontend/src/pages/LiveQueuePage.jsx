@@ -9,9 +9,7 @@ import {
   ChevronRight, 
   Volume2, 
   Info,
-  Building2,
-  Calendar,
-  Scale
+Scale
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useBooking } from '../context/BookingContext';
@@ -25,7 +23,7 @@ import apmcBuilding from '../assets/apmc_building.png';
 export default function LiveQueuePage() {
   const { user } = useAuth();
   const { activeBooking, advanceQueueStage } = useBooking();
-  const { t, lang } = useLanguage();
+  const { t } = useLanguage();
   const [refreshing, setRefreshing] = useState(false);
   const [lastUpdated, setLastUpdated] = useState(new Date().toLocaleTimeString());
 
@@ -38,7 +36,7 @@ export default function LiveQueuePage() {
   const waitMinutes = activeBooking?.estimatedWaitMinutes !== undefined ? activeBooking.estimatedWaitMinutes : 25;
   const counterName = activeBooking?.counterName || `${t('assignedCounter', 'काउंटर')} 02`;
   const centerName = activeBooking?.centerName || 'गाज़ियाबाद गेहूं खरीद केंद्र (Ghaziabad Procurement Centre)';
-  const currentStage = activeBooking?.queueStage || 'QUALITY_CHECK';
+  const _currentStage = activeBooking?.queueStage || 'QUALITY_CHECK';
 
   // Auto-refresh polling every 10 seconds
   useEffect(() => {

@@ -33,15 +33,9 @@ const DEFAULT_ANALYTICS = {
 };
 
 export default function AdminDashboard() {
-  const { t, lang } = useLanguage();
+  const { t } = useLanguage();
   const [analytics, setAnalytics] = useState(DEFAULT_ANALYTICS);
   const [loading, setLoading] = useState(false);
-
-  useEffect(() => {
-    fetchAnalytics();
-    const interval = setInterval(fetchAnalytics, 15000);
-    return () => clearInterval(interval);
-  }, []);
 
   const fetchAnalytics = async () => {
     try {
@@ -49,12 +43,18 @@ export default function AdminDashboard() {
       if (res.data) {
         setAnalytics(res.data);
       }
-    } catch (_err) {
+    } catch {
       // Retain fallback data gracefully
     } finally {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    fetchAnalytics();
+    const interval = setInterval(fetchAnalytics, 15000);
+    return () => clearInterval(interval);
+  }, []);
 
   if (loading) {
     return (

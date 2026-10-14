@@ -13,7 +13,7 @@ export const AuthProvider = ({ children }) => {
     if (savedUser && token && token !== 'demo-kisan-token-12345') {
       try {
         setUser(JSON.parse(savedUser));
-      } catch (e) {
+      } catch {
         localStorage.removeItem('kisan_user');
         localStorage.removeItem('kisan_token');
         setUser(null);
