@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import api from '../services/api';
 import { 
   Users, 
@@ -37,14 +37,9 @@ export default function AdminDashboard() {
   const [analytics, setAnalytics] = useState(DEFAULT_ANALYTICS);
   const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    fetchAnalytics();
-    const interval = setInterval(fetchAnalytics, 15000);
-    return () => clearInterval(interval);
-  }, []);
-
-  const fetchAnalytics = async () => {
+  const fetchAnalytics = useCallback(async () => {
     try {
+      setLoading(true);
       const res = await api.get('/admin/dashboard');
       if (res.data) {
         setAnalytics(res.data);
@@ -54,7 +49,13 @@ export default function AdminDashboard() {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    fetchAnalytics();
+    const interval = setInterval(fetchAnalytics, 15000);
+    return () => clearInterval(interval);
+  }, [fetchAnalytics]);
 
   if (loading) {
     return (

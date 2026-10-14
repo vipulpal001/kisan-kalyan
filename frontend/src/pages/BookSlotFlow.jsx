@@ -24,7 +24,8 @@ import {
   Printer,
   XCircle,
   AlertTriangle,
-  RefreshCw
+  RefreshCw,
+  Sparkles
 } from 'lucide-react';
 
 // Authentic Visual Assets
