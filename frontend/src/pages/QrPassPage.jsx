@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useLanguage } from '../context/LanguageContext';
 import { useAuth } from '../context/AuthContext';
@@ -17,6 +17,20 @@ export default function QrPassPage() {
   const [loading, setLoading] = useState(false);
   const [currentTime, setCurrentTime] = useState(Date.now());
 
+  const fetchActiveBooking = useCallback(async () => {
+    try {
+      setLoading(true);
+      const res = await api.get('/farmer/dashboard-summary');
+      if (res.data?.activeBooking) {
+        setBooking(res.data.activeBooking);
+      }
+    } catch (err) {
+      console.error('Failed to fetch active booking for QR Pass:', err);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
   useEffect(() => {
     const timer = setInterval(() => setCurrentTime(Date.now()), 1000);
     return () => clearInterval(timer);
@@ -30,21 +44,7 @@ export default function QrPassPage() {
         fetchActiveBooking();
       }
     }
-  }, [contextBooking]);
-
-  const fetchActiveBooking = async () => {
-    try {
-      setLoading(true);
-      const res = await api.get('/farmer/dashboard-summary');
-      if (res.data?.activeBooking) {
-        setBooking(res.data.activeBooking);
-      }
-    } catch (err) {
-      console.error('Failed to fetch active booking for QR Pass:', err);
-    } finally {
-      setLoading(false);
-    }
-  };
+  }, [booking, contextBooking, fetchActiveBooking]);
 
   if (loading) {
     return (

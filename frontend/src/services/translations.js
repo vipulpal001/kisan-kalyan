@@ -825,7 +825,6 @@ export const translations = {
     reachOnTimeTitle: 'Arrive at Mandi on Time',
     reachOnTimeSub: 'Please scan your QR code at the gate 15 minutes before your slot time.',
     weatherTitle: 'Weather & Crop Advisory',
-    partlyCloudy: 'Partly Cloudy',
     humidity: 'Humidity',
     wind: 'Wind',
     advisoryPrefix: 'Advisory:',
